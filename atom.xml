@@ -1,0 +1,1650 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://shmebluk.github.io/</id>
+    <title>Juyss&apos;s Blog</title>
+    <updated>2020-07-20T11:10:58.231Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://shmebluk.github.io/"/>
+    <link rel="self" href="https://shmebluk.github.io/atom.xml"/>
+    <subtitle>记录自己的Java学习过程</subtitle>
+    <logo>https://shmebluk.github.io/images/avatar.png</logo>
+    <icon>https://shmebluk.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2020, Juyss&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[修改Maven项目默认JDK版本]]></title>
+        <id>https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/</id>
+        <link href="https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/">
+        </link>
+        <updated>2020-06-08T15:27:28.000Z</updated>
+        <summary type="html"><![CDATA[<p>问题：</p>
+<p>1、创建maven项目的时候，jdk版本是1.5版本，而自己安装的是1.7或者1.8版本。</p>
+<p>2、每次右键项目名-maven-&gt;update project 时候，项目jdk版本变了，变回1.5版本或者其他版本</p>
+<p>解决办法如下:</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>问题：</p>
+<p>1、创建maven项目的时候，jdk版本是1.5版本，而自己安装的是1.7或者1.8版本。</p>
+<p>2、每次右键项目名-maven-&gt;update project 时候，项目jdk版本变了，变回1.5版本或者其他版本</p>
+<p>解决办法如下:</p>
+<!-- more -->
+<p>此办法修改maven设置文件,以后所有的项目默认JDK版本都为自己设置的</p>
+<ol>
+<li>修改settings.xml</li>
+</ol>
+<pre><code class="language-xml">&lt;profile&gt;
+    &lt;id&gt;jdk-1.8&lt;/id&gt;
+     &lt;activation&gt;
+          &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+          &lt;jdk&gt;1.8&lt;/jdk&gt;
+      &lt;/activation&gt;
+&lt;properties&gt;
+&lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
+&lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
+&lt;maven.compiler.compilerVersion&gt;1.8&lt;/maven.compiler.compilerVersion&gt;
+&lt;/properties&gt;
+&lt;/profile&gt;
+</code></pre>
+<ol start="2">
+<li>
+<p>更改IDEA设置<br>
+<img src="https://shmebluk.github.io//post-images/1591630435988.jpg" alt="" loading="lazy"></p>
+<p>如图所示,确保所指文件路径为你修改过的文件</p>
+</li>
+<li>
+<p>重新加载Maven项目<br>
+点击如图所示地方,重新加载Maven项目即可<br>
+<img src="https://shmebluk.github.io//post-images/1591630571223.jpg" alt="" loading="lazy"></p>
+</li>
+<li>
+<p>完成修改.</p>
+</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[数据库访问对象DAO]]></title>
+        <id>https://shmebluk.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/</id>
+        <link href="https://shmebluk.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/">
+        </link>
+        <updated>2020-06-04T15:18:52.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="dao">DAO</h2>
+<p>DAO(Database Access Object)数据库访问对象.<br>
+一个面向对象的数据库接口，它显露了 Microsoft Jet 数据库引擎（由 Microsoft Access 所使用），并允许 Visual Basic 开发者通过 ODBC 像直接连接到其他数据库一样，直接连接到 Access 表。DAO 最适用于单系统应用程序或小范围本地分布使用。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="dao">DAO</h2>
+<p>DAO(Database Access Object)数据库访问对象.<br>
+一个面向对象的数据库接口，它显露了 Microsoft Jet 数据库引擎（由 Microsoft Access 所使用），并允许 Visual Basic 开发者通过 ODBC 像直接连接到其他数据库一样，直接连接到 Access 表。DAO 最适用于单系统应用程序或小范围本地分布使用。</p>
+<!-- more -->
+<h4 id="basedaodao">BaseDAO(DAO)</h4>
+<p>封装针对于数据表的通用操作</p>
+<pre><code class="language-java">package com.DAO;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: BaseDAO
+ * @Desc:  封装针对于数据表的通用操作
+ * @package com.DAO
+ * @project DailyDemo
+ * @date 2020/6/4 11:58
+ */
+public class BaseDAO {
+
+    /**
+     * 更新一条数据
+     * @param conn  Connection
+     * @param sql  String
+     * @param args Object
+     */
+    static int update(Connection conn, String sql,Object ...args) throws SQLException {
+        QueryRunner qr = new QueryRunner();
+        int update = qr.update(conn, sql, args);
+        return update;
+    }
+
+
+    /**
+     * 查询一条数据
+     * @param conn  Connection
+     * @param clazz  Class&lt;T&gt;
+     * @param sql  String
+     * @param args   Object
+     * @param &lt;T&gt; T
+     * @return T
+     */
+    static &lt;T&gt; T select(Connection conn,Class&lt;T&gt; clazz,String sql,Object ...args) throws SQLException {
+
+        BeanHandler&lt;T&gt; bh = new BeanHandler&lt;&gt;(clazz);
+
+        QueryRunner qr = new QueryRunner();
+        T query = qr.query(conn, sql, bh, args);
+
+        return query;
+    }
+
+    /**
+     * 查询多条数据
+     * @param conn  Connection
+     * @param clazz  Class&lt;T&gt;
+     * @param sql  String
+     * @param args   Object
+     * @param &lt;T&gt; T
+     * @return List&lt;T&gt;
+     * @throws SQLException e
+     */
+    static &lt;T&gt; List&lt;T&gt; selectAll(Connection conn, Class&lt;T&gt; clazz, String sql, Object ...args) throws SQLException {
+
+        BeanListHandler&lt;T&gt; bh = new BeanListHandler&lt;&gt;(clazz);
+
+        QueryRunner qr = new QueryRunner();
+        List&lt;T&gt; query = qr.query(conn, sql, bh, args);
+
+        return query;
+    }
+
+    /**
+     * 查询特殊值
+     * @param conn  Connection
+     * @param clazz  Class&lt;T&gt;
+     * @param sql  String
+     * @param args   Object
+     * @param &lt;T&gt; T
+     * @return List&lt;T&gt;
+     * @throws SQLException e
+     */
+    static &lt;T&gt; List&lt;T&gt; getValue(Connection conn,Class&lt;T&gt; clazz,String sql,Object ...args) throws SQLException {
+
+        ScalarHandler&lt;T&gt; sh = new ScalarHandler&lt;&gt;();
+
+        QueryRunner qr = new QueryRunner();
+        List&lt;T&gt; execute = qr.execute(conn, sql, sh, args);
+
+        return execute;
+    }
+
+}
+
+</code></pre>
+<h4 id="persondao">PersonDAO</h4>
+<p>规范针对于Person表的常用操作</p>
+<pre><code class="language-java">package com.DAO;
+
+import com.bean.Person;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: PersonDAO
+ * @Desc:  规范针对于Person表的常用操作
+ * @package com.DAO
+ * @project ExampleDemo
+ * @date 2020/6/4 14:53
+ */
+public interface PersonDAO {
+
+    /**
+     * 插入一条记录
+     * @param conn Connection
+     * @param p Person
+     */
+    void insert(Connection conn ,Person p) throws SQLException;
+
+    /**
+     * 更新一条记录
+     * @param conn Connection
+     * @param id int
+     */
+    void updateById(Connection conn, Person p ,int id) throws SQLException;
+
+    /**
+     * 删除一条记录
+     * @param conn Connection
+     * @param id int
+     */
+    void deleteById(Connection conn ,int id) throws SQLException;
+
+    /**
+     * 查询
+     * @param conn Connection
+     * @param id int
+     * @return Person
+     */
+    Person selectById(Connection conn, Person p,int id) throws SQLException;
+
+    /**
+     * 查询所有记录
+     * @param conn Connection
+     * @param aClass  Class&lt;Person&gt;
+     * @return List&lt;Person&gt;
+     */
+    List&lt;Person&gt; selectAll(Connection conn, Class&lt;Person&gt; aClass) throws SQLException;
+
+    /**
+     * 查询特殊值
+     * @param conn Connection
+     * @param &lt;T&gt; T
+     * @return List&lt;T&gt;
+     */
+    &lt;T&gt; List&lt;T&gt; getValues(Connection conn) throws SQLException;
+}
+
+</code></pre>
+<h4 id="persondaoimpl">PersonDAOImpl</h4>
+<p>作为对Person表的具体操作实现类</p>
+<pre><code class="language-java">package com.DAO;
+
+import com.bean.Person;
+import com.utils.JdbcUtils;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: PersonDAOImpl
+ * @Desc:  作为对Person表的具体操作实现类
+ * @package com.DAO
+ * @project ExampleDemo
+ * @date 2020/6/4 18:10
+ */
+public class PersonDAOImpl extends BaseDAO implements PersonDAO {
+
+    @Override
+    public void insert(Connection conn, Person p) throws SQLException {
+        String sql = &quot;insert into `person` values (null,?,?,?,?)&quot;;
+        int update = update(conn, sql, null, p.getName(), p.getAge(), p.getGender(), p.getBirthday());
+        System.out.println(update + &quot;条数据被修改&quot;);
+    }
+
+    @Override
+    public void updateById(Connection conn, Person p, int id) throws SQLException {
+        String sql = &quot;update `person` set `name` = ? , `age` = ? , `gender` = ? , `birthday` = ? where `id` = ? &quot;;
+        int update = update(conn, sql, p.getName(), p.getAge(), p.getGender(), p.getBirthday(), id);
+        System.out.println(update + &quot;条数据被修改&quot;);
+    }
+
+    @Override
+    public void deleteById(Connection conn, int id) throws SQLException {
+        String sql = &quot;delete from `person` where `id` = ? &quot;;
+        int update = update(conn, sql, id);
+        System.out.println(update + &quot;条数据被修改&quot;);
+    }
+
+    @Override
+    public Person selectById(Connection conn, Person p, int id) throws SQLException {
+        String sql = &quot;select * from `person` where `id` = ?&quot;;
+        Person person = select(conn, p.getClass(), sql, id);
+        return person;
+    }
+
+    @Override
+    public List&lt;Person&gt; selectAll(Connection conn, Class&lt;Person&gt; aClass) throws SQLException {
+        String sql = &quot;select * from `person`&quot;;
+        List&lt;Person&gt; people = selectAll(conn, Person.class, sql);
+        return people;
+    }
+
+
+    @Override
+    public &lt;T&gt; List&lt;T&gt; getValues(Connection conn) throws SQLException {
+        String sql = &quot;select count(*) from `person`&quot;;
+        List&lt;Long&gt; getValue = getValue(conn, Long.class, sql);
+        return (List&lt;T&gt;) getValue;
+    }
+
+    /**
+     * 测试更新数据
+     */
+    @Test
+    public void Test01() {
+        Connection conn = JdbcUtils.getConnection();
+        Date date = new Date(165456156146L);
+        Person person = new Person(0, &quot;Dell&quot;, 10, &quot;女&quot;, date);
+        try {
+            updateById(conn, person, 21);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            JdbcUtils.closeResource(conn);
+        }
+    }
+
+    /**
+     * 测试查询数据
+     */
+    @Test
+    public void Test02() {
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConnection();
+            List&lt;Person&gt; people = selectAll(conn, Person.class);
+
+            Iterator&lt;Person&gt; iterator = people.iterator();
+            while (iterator.hasNext()) {
+                Person person = iterator.next();
+                System.out.println(person.toString());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            JdbcUtils.closeResource(conn);
+        }
+    }
+
+    /**
+     * 查询特殊值
+     */
+    @Test
+    public void Test03() {
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConnection();
+            List&lt;Object&gt; values = getValues(conn);
+            values.forEach(System.out::println);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            JdbcUtils.closeResource(conn);
+        }
+    }
+}
+
+</code></pre>
+<h2 id="bean">Bean</h2>
+<h4 id="person">Person</h4>
+<p>对应数据库中person表</p>
+<pre><code class="language-java">package com.bean;
+
+import java.sql.Date;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: Person
+ * @Desc: 对应数据库中person表
+ * @package com.bean
+ * @project DailyDemo
+ * @date 2020/6/4 11:49
+ */
+public class Person {
+
+    private int id;
+    private String name;
+    private int age;
+    private String gender;
+    private Date birthday;
+
+    public Person() {
+    }
+
+    public Person(int id, String name, int age, String gender, Date birthday) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.birthday = birthday;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;Person{&quot; +
+                &quot;id=&quot; + id +
+                &quot;, name='&quot; + name + '\'' +
+                &quot;, age=&quot; + age +
+                &quot;, gender='&quot; + gender + '\'' +
+                &quot;, birthday=&quot; + birthday +
+                '}';
+    }
+}
+
+</code></pre>
+<h2 id="utils">Utils</h2>
+<h4 id="dbutils">DbUtils</h4>
+<p>JDBC工具类, 使用 <code>druid</code>用于获取数据库连接和关闭资源</p>
+<pre><code class="language-java">package com.utils;
+
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+import org.apache.commons.dbutils.DbUtils;
+import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Properties;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: JdbcUtils
+ * @Desc: JDBC工具类, 用于获取数据库连接和关闭资源
+ * @package com.utils
+ * @project DailyDemo
+ * @date 2020/6/4 12:00
+ */
+public class JdbcUtils {
+
+    /**
+     * Druid数据库连接池获取连接
+     *
+     * @return Connection实例
+     */
+    public static Connection getConnection() {
+
+        InputStream is = null;
+        Connection conn;
+        try {
+            is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;resource\\druid.properties&quot;);
+
+            Properties prop = new Properties();
+
+            prop.load(is);
+            DataSource ds = DruidDataSourceFactory.createDataSource(prop);
+            conn = ds.getConnection();
+            System.out.println(&quot;获得数据库连接&quot;);
+            return conn;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 关闭资源
+     *
+     * @param conn Connection 对象
+     * @param stmt Statement 对象
+     * @param rs   ResultSet 对象
+     */
+    public static void closeResource(Connection conn, Statement stmt, ResultSet rs) {
+
+        if (rs != null) {
+            DbUtils.closeQuietly(rs);
+            System.out.println(rs.getClass() + &quot;关闭完成&quot;);
+        } else if (stmt != null) {
+            DbUtils.closeQuietly(stmt);
+            System.out.println(stmt.getClass() + &quot;关闭完成&quot;);
+        } else if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
+        }
+
+    }
+
+    /**
+     * 重载方法
+     * @param conn  Connection
+     * @param rs ResultSet
+     */
+    public static void closeResource(Connection conn, ResultSet rs) {
+
+        if (rs != null) {
+            DbUtils.closeQuietly(rs);
+            System.out.println(rs.getClass() + &quot;关闭完成&quot;);
+        } else if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
+        }
+
+    }
+
+    /**
+     * 重载方法
+     * @param conn  Connection
+     * @param stmt  Statement
+     */
+    public static void closeResource(Connection conn, Statement stmt) {
+
+        if (stmt != null) {
+            DbUtils.closeQuietly(stmt);
+            System.out.println(stmt.getClass() + &quot;关闭完成&quot;);
+        } else if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
+        }
+
+    }
+
+    /**
+     * 重载
+     * @param conn Connection
+     */
+    public static void closeResource(Connection conn) {
+
+        if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
+        }
+
+    }
+
+    /**
+     * 测试方法 getConnection() 和 closeResource()
+     */
+    @Test
+    public void Test01() {
+        Connection conn = getConnection();
+        System.out.println(conn);
+        closeResource(conn, null, null);
+    }
+}
+
+</code></pre>
+<h4 id="resource">resource</h4>
+<p>druid.properties配置文件</p>
+<pre><code class="language-properties">url=jdbc:mysql://localhost:3306/dailytext?serverTimezone=UTC
+username=user1
+password=102850
+driverClassName=com.mysql.cj.jdbc.Driver
+initialSiize=10
+maxActive=10
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[JDBC相关配置和操作]]></title>
+        <id>https://shmebluk.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/</id>
+        <link href="https://shmebluk.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/">
+        </link>
+        <updated>2020-06-04T14:44:20.000Z</updated>
+        <summary type="html"><![CDATA[<h4 id="获取数据库连接的几种方式以及preparedstatement和statement的对比">获取数据库连接的几种方式以及PreparedStatement和Statement的对比</h4>
+]]></summary>
+        <content type="html"><![CDATA[<h4 id="获取数据库连接的几种方式以及preparedstatement和statement的对比">获取数据库连接的几种方式以及PreparedStatement和Statement的对比</h4>
+<!-- more -->
+<h2 id="获取数据库连接的几种方式">获取数据库连接的几种方式</h2>
+<p>ps.数据库URL : String url = &quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC&quot;</p>
+<p>​	 MySQL5.0--&gt;driverClass=&quot;com.mysql.jdbc.Driver&quot;;</p>
+<p>​     MySQL8.0--&gt;driverClass=&quot;com.mysql.cj.jdbc.Driver&quot;;</p>
+<h4 id="通过driver实例获取">通过Driver实例获取</h4>
+<pre><code class="language-java">//创建Driver对象
+Driver driver = new Driver();
+//数据库URL
+String url = &quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC&quot;;
+//Properties存放用户名和密码
+Properties prop = new Properties();
+prop.setProperty(&quot;user&quot;, &quot;user1&quot;);
+prop.setProperty(&quot;password&quot;, &quot;102850&quot;);
+//调用connect(),传入url和prop
+Connection connect = driver.connect(url, prop);
+//获得连接
+System.out.println(connect);
+</code></pre>
+<h4 id="通过drivermanager获取">通过DriverManager获取</h4>
+<pre><code class="language-java">public class Jdbc8Test01 {
+
+    // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
+    static final String JDBC_DRIVER = &quot;com.mysql.cj.jdbc.Driver&quot;;
+    static final String DB_URL = &quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC&quot;;
+
+    // 数据库的用户名与密码
+    static final String USER = &quot;root&quot;;
+    static final String PASS = &quot;102850&quot;;
+
+    public static void main(String[] args) {
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            // 注册 JDBC 驱动
+            Class.forName(JDBC_DRIVER);
+
+            // 打开链接
+            System.out.println(&quot;连接数据库...&quot;);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            // 执行查询
+            System.out.println(&quot; 实例化Statement对象...&quot;);
+            stmt = conn.createStatement();
+            String sql;
+            sql = &quot;SELECT id, name, url FROM websites&quot;;
+            ResultSet rs = stmt.executeQuery(sql);
+
+            // 展开结果集数据库
+            while (rs.next()) {
+                // 通过字段检索
+                int id = rs.getInt(&quot;id&quot;);
+                String name = rs.getString(&quot;name&quot;);
+                String url = rs.getString(&quot;url&quot;);
+
+                // 输出数据
+                System.out.print(&quot;ID: &quot; + id);
+                System.out.print(&quot;, 站点名称: &quot; + name);
+                System.out.print(&quot;, 站点 URL: &quot; + url);
+                System.out.print(&quot;\n&quot;);
+            }
+            // 完成后关闭
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception se) {
+            // 处理 JDBC 错误
+            se.printStackTrace();
+        }// 处理 Class.forName 错误
+        finally {
+            // 关闭资源
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se2) {
+            }// 什么都不做
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        System.out.println(&quot;Goodbye!&quot;);
+    }
+}
+</code></pre>
+<h4 id="从配置文件获取信息">从配置文件获取信息</h4>
+<ol>
+<li>
+<p>配置文件内容</p>
+<pre><code class="language-xml">user=root
+password=102850
+url=jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC
+#MySQL8.0以上版本 JDBC 驱动名
+driverClass=com.mysql.cj.jdbc.Driver
+#MySQL8.0以下版本 JDBC 驱动名
+#driverClass=com.mysql.jdbc.Driver
+</code></pre>
+<ol start="2">
+<li>实例代码</li>
+</ol>
+<pre><code class="language-java">//获取输入流(两种方法)
+InputStream is = Jtest01.class.getClassLoader().getResourceAsStream(&quot;jdbc.properties&quot;);
+//main方法中文件路径为Project下
+FileInputStream fis = new FileInputStream(&quot;TEST02\\src\\jdbc.properties&quot;);
+
+Properties prop = new Properties();
+prop.load(fis);
+
+//获取配置信息
+String user = prop.getProperty(&quot;user&quot;);
+String password = prop.getProperty(&quot;password&quot;);
+String url = prop.getProperty(&quot;url&quot;);
+</code></pre>
+</li>
+</ol>
+<p>String driverClass = prop.getProperty(&quot;driverClass&quot;);</p>
+<p>//注册驱动<br>
+Class.forName(driverClass);</p>
+<p>//获得Connection对象,建立与数据库的连接<br>
+Connection connection1 = DriverManager.getConnection(url, user, password);<br>
+Connection connection2 = DriverManager.getConnection(url, prop);</p>
+<p>System.out.println(connection1);<br>
+System.out.println(connection2);</p>
+<pre><code>```
+</code></pre>
+<h4 id="druid数据库连接池">druid数据库连接池</h4>
+<p>配置文件druid.proterties</p>
+<pre><code class="language-properties">url=jdbc:mysql://localhost:3306/dailytext?serverTimezone=UTC
+username=user1
+password=102850
+driverClassName=com.mysql.cj.jdbc.Driver
+initialSiize=10
+maxActive=10
+</code></pre>
+<p>代码实现</p>
+<pre><code class="language-java">
+//从数据库连接池获取连接
+Properties prop = new Properties();
+
+//ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;String pathName&quot;)
+// 此种方式读取文件位置默认为src目录下(在main方法和在@Test方法中路径一样)
+InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;Resource\\druid.properties&quot;);
+
+//FileInputStream(&quot;String pathName&quot;)
+// 在main方法中,此种方式读取文件位置默认为Project目录下
+// 在@Test方法中,此种方式读取文件位置默认为Module目录下
+// FileInputStream is = new FileInputStream(&quot;JDBC\\src\\Resource\\druid.properties&quot;);
+prop.load(is);
+DataSource source = DruidDataSourceFactory.createDataSource(prop);
+Connection conn = source.getConnection();
+System.out.println(conn);
+</code></pre>
+<h2 id="preparedstatement对比statement的优点">PreparedStatement对比Statement的优点</h2>
+<p>(好处是基于PreparedStatement的预编译SQL语句功能)</p>
+<ol>
+<li>解决SQL语句拼串的问题</li>
+<li>解决SQL注入问题</li>
+<li>实现对Blob类型的字段操作</li>
+<li>提高批量操作时的效率</li>
+</ol>
+<h2 id="对数据库执行操作">对数据库执行操作</h2>
+<h4 id="步骤">步骤</h4>
+<pre><code>1.创建文件输入流,从配置文件读取配置信息,
+    ①.文件输入流位于main方法中时文件读取位置在Project目录下
+    ②.文件输入流位于@Test方法中时文件读取位置在Module目录下
+2.传入文件流
+3.读取配置信息
+4.加载JDBC驱动
+5.通过DriverManager创建connection对象,获取数据库连接
+6.编写SQL语句,使用占位符
+7.创建statement(PreparedStatement)对象,传入SQL语句进行预编译
+8.填充占位符
+9.执行SQL操作
+10.关闭资源
+</code></pre>
+<h4 id="示例代码">示例代码</h4>
+<pre><code class="language-java">public static void main(String[] args) {
+
+    FileInputStream fis = null;
+    Connection conn = null;
+    PreparedStatement pst = null;
+
+    try {
+        //获取文件输入流(main方法中文件位置在当前Project下)
+        fis = new FileInputStream(&quot;JDBC\\jdbc.properties&quot;);
+
+        //传入文件流
+        Properties prop = new Properties();
+        prop.load(fis);
+
+        //读取配置信息
+        String url = prop.getProperty(&quot;url&quot;);
+        String driverClass = prop.getProperty(&quot;driverClass&quot;);
+        System.out.println(url);
+        System.out.println(driverClass);
+
+        //加载JDBC驱动
+        Class.forName(driverClass);
+
+        //获取数据库连接
+        conn = DriverManager.getConnection(url, prop);
+        System.out.println(conn);
+
+        //预编译SQL语句
+        //String sql = &quot;INSERT INTO person(`name`,`age`,`gender`,`birthday`)VALUES(?,?,?,?)&quot;;
+        String sql = &quot;update person set `name`=? where `name`=?&quot;;
+        pst = conn.prepareStatement(sql);
+
+        //填充占位符
+        pst.setString(1, &quot;Eclipse&quot;);
+        pst.setString(2, &quot;Idea&quot;);
+
+        //执行操作(Insert;Update;Delete)
+        boolean execute = pst.execute();
+        System.out.println(execute);
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        //关闭连接
+        try {
+            if (pst!=null)
+                pst.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        try {
+            if (conn!=null)
+                conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        try {
+            if (fis!=null)
+                fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Java中读取文件的几种路径配置]]></title>
+        <id>https://shmebluk.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/</id>
+        <link href="https://shmebluk.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/">
+        </link>
+        <updated>2020-06-04T14:42:27.000Z</updated>
+        <summary type="html"><![CDATA[<h4 id="获取配置文件的两种方式区别">获取配置文件的两种方式区别</h4>
+]]></summary>
+        <content type="html"><![CDATA[<h4 id="获取配置文件的两种方式区别">获取配置文件的两种方式区别</h4>
+<!-- more -->
+<h6 id="classloadergetsystemclassloadergetresourceasstream">ClassLoader.getSystemClassLoader().getResourceAsStream()</h6>
+<pre><code class="language-java">//ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;String pathName&quot;) 
+// 此种方式读取文件位置默认为src目录下(在main方法和在@Test方法中路径一样)
+InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;Resource\\druid.properties&quot;);
+</code></pre>
+<h6 id="fileinputstream">FileInputStream()</h6>
+<pre><code class="language-java">//FileInputStream(&quot;String pathName&quot;) 
+// 在main方法中,此种方式读取文件位置默认为Project目录下
+// 在@Test方法中,此种方式读取文件位置默认为Module目录下
+FileInputStream is = new FileInputStream(&quot;JDBC\\src\\Resource\\druid.properties&quot;);
+</code></pre>
+<h4 id="getresourceasstream的区别">getResourceAsStream的区别</h4>
+<ol>
+<li><code>Class.getResourceAsStream(String path)</code> ： path 不以<code>’/'</code>开头时默认是从此类所在的包下取资源，以<code>’/'</code>开头则是从ClassPath根下获取。其只是通过path构造一个绝对路径，最终还是由ClassLoader获取资源。</li>
+<li><code>Class.getClassLoader.getResourceAsStream(String path)</code> ：默认则是从ClassPath根下获取，path不能以<code>’/'</code>开头，最终是由ClassLoader获取资源。</li>
+<li><code>ServletContext. getResourceAsStream(String path)</code>：默认从WebAPP根目录下取资源，Tomcat下path是否以<code>’/'</code>开头无所谓。</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[两种获取InputStream对象的方法]]></title>
+        <id>https://shmebluk.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/</id>
+        <link href="https://shmebluk.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/">
+        </link>
+        <updated>2020-06-04T14:38:18.000Z</updated>
+        <summary type="html"><![CDATA[<p>总结两种获取InputStream对象的方法的区别</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>总结两种获取InputStream对象的方法的区别</p>
+<!-- more -->
+<p><code>getResourceAsStream(String path)</code></p>
+<p>默认path路径位于Class所在Module的src目录下 .</p>
+<pre><code class="language-java">InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;jdbc.properties&quot;);
+
+</code></pre>
+<p><code>FileInputStream(&quot;String path&quot;)</code></p>
+<p>在main方法中时, 默认路径为为Project下; 在@Test单元测试方法中路径为当前Class所在Module目录下 .</p>
+<pre><code class="language-java">FileInputStream is = new FileInputStream(&quot;jdbc.properties&quot;);
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[事务隔离级别]]></title>
+        <id>https://shmebluk.github.io/post/shi-wu-ge-chi-ji-bie/</id>
+        <link href="https://shmebluk.github.io/post/shi-wu-ge-chi-ji-bie/">
+        </link>
+        <updated>2020-06-04T14:36:13.000Z</updated>
+        <summary type="html"><![CDATA[<h3 id="事务隔离级别学习总结">事务隔离级别学习总结</h3>
+]]></summary>
+        <content type="html"><![CDATA[<h3 id="事务隔离级别学习总结">事务隔离级别学习总结</h3>
+<!-- more -->
+<h2 id="事务的四个属性">事务的四个属性</h2>
+<h5 id="原子性">原子性</h5>
+<p>每一个事务都是一个不可分割的部分，事务中的操作要么都发生，要么都不发生。</p>
+<h5 id="隔离性">隔离性</h5>
+<p>一个事务不被其他事物的数据所干扰,多个并发事务互相隔离</p>
+<h5 id="一致性">一致性</h5>
+<p>一个事务执行会从一种统一的状态,改变为另一种统一的状态.事务前后数据完整性保持一致.</p>
+<h5 id="持久性">持久性</h5>
+<p>一旦事务被提交就持久化到文件中,不可改变</p>
+<h2 id="事务的并发问题">事务的并发问题</h2>
+<h5 id="脏读">脏读</h5>
+<p>一个事务读取了另一事物未提交的数据</p>
+<h5 id="不可重复读">不可重复读</h5>
+<p>一个事务在多次读取某一数据的期间,另一事务对数据进行了<code>update</code>操作并且<code>commit</code>,导致的数据多次读取过程中出现不一致的现象,主要针对于 <code>update</code> 操作 .</p>
+<h5 id="幻读">幻读</h5>
+<p>一个事务在多次读取某一数据的期间,另一事务对数据进行了<code>insert</code>并且<code>commit</code>,导致的数据多次读取过程中出现不一致的现象,主要针对于 <code>insert</code> 操作 .</p>
+<h2 id="事物的隔离级别">事物的隔离级别</h2>
+<table>
+<thead>
+<tr>
+<th>事务隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>读未提交(read-uncommitted)</td>
+<td>存在</td>
+<td>存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>读已提交(read-committed)</td>
+<td>不存在</td>
+<td>存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>可重复读(repeatable-read)</td>
+<td>不存在</td>
+<td>不存在</td>
+<td>存在</td>
+</tr>
+<tr>
+<td>串行化(serializable)</td>
+<td>不存在</td>
+<td>不存在</td>
+<td>不存在</td>
+</tr>
+</tbody>
+</table>
+<h2 id="事务并发问题代码演示">事务并发问题代码演示</h2>
+<h5 id="事务相关操作代码">事务相关操作代码</h5>
+<pre><code class="language-sql">-- 创建表
+CREATE TABLE `bank` (
+	`id` INT NOT NULL AUTO_INCREMENT COMMENT '账号',
+	`name` VARCHAR(10) NOT NULL,
+	`pwd` VARCHAR(30) NOT NULL,
+	`balance` INT NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`)
+)ENGINE=INNODB CHARSET=utf8;
+
+-- 查看表属性
+DESC `bank`;
+
+-- 修改多个字段名(change)或者字段属性(modify)
+ALTER TABLE `bank` 
+MODIFY `pwd` VARCHAR(50),
+CHANGE `name` `user` VARCHAR(20);
+
+-- 插入数据
+INSERT INTO `bank`
+(`user`,`pwd`,`balance`)
+VALUES
+('Rick',MD5('123456'),2000),
+('Beth',MD5('000000'),3000),
+('Jerry',MD5('102850'),1000),
+('Summer',MD5('123456'),500),
+('Morty',MD5('123456'),500);
+
+-- 查看表
+SELECT * FROM `bank`;
+
+-- 事务隔离级别练习
+
+SHOW VARIABLES LIKE 'autocommit'; -- 查看自动提交状态
+SET autocommit=0; -- 关闭自动提交
+-- 查看事务隔离级别
+SHOW VARIABLES LIKE 'transaction_isolation'; -- MySQL默认repeatable-read
+SELECT @@transaction_isolation;  -- 全局
+SELECT @@session.transaction_isolation; -- 当前会话
+
+-- 设置事务隔离级别(不加 session 为设置全局)
+SET SESSION TRANSACTION ISOLATION LEVEL
+-- read uncommitted; -- 读未提交
+-- read committed; -- 读已提交(避免脏读)
+-- repeatable read; -- 可重复读(避免脏读和不可重复读)
+-- serializable; -- 串行化
+
+-- 开启事务
+START TRANSACTION; 
+/*
+create
+insert
+update
+drop
+delete
+truncate
+*/
+
+COMMIT; -- 提交
+ROLLBACK; -- 回滚
+-- 结束事务
+
+SET autocommit=1; -- 事务结束后开启自动提交
+</code></pre>
+<h5 id="autocommit属性">autocommit属性</h5>
+<p>DDL操作一旦执行就会自动提交,不能更改属性(如创建表)</p>
+<p>DML默认自动提交,可以修改(增删改查)</p>
+<ol>
+<li>MySQL默认开启自动提交,即autocommit=1;</li>
+</ol>
+<p>默认一条SQL语句就为一个事务,执行完毕后便自动提交,</p>
+<p>此种情况下开启事务<code>start transaction</code>;MySQL会把之间的SQL语句作为一个事务执行,直到<code>commit</code>或者<code>rollback</code>,才会持久化到数据库中</p>
+<ol start="2">
+<li>
+<p>设置autocommit=0后</p>
+<p>即使没有执行<code>start transaction</code>,系统也默认开始事务，语句执行完毕后不会持久化到数据库,直到执行<code>commit</code>或者<code>rollback</code>才会提交,持久化到数据库</p>
+</li>
+</ol>
+<h5 id="事务并发问题代码">事务并发问题代码</h5>
+<pre><code class="language-sql">SELECT @@session.tx_isolation;   
+SELECT @@tx_isolation;  
+
+  
+SET SESSION TRANSACTION ISOLATION LEVEL read uncommitted;  
+SET SESSION TRANSACTION ISOLATION LEVEL read committed;  
+SET SESSION TRANSACTION ISOLATION LEVEL repeatable read;  
+SET SESSION TRANSACTION ISOLATION LEVEL serializable;  
+
+start transaction;
+
+--建表
+drop table AMOUNT;
+CREATE TABLE `AMOUNT` (
+`id`  varchar(10) NULL,
+`money`  numeric NULL
+)
+;
+--插入数据
+insert into amount(id,money) values('A', 800);
+insert into amount(id,money) values('B', 200);
+insert into amount(id,money) values('C', 1000);
+--测试可重复读，插入数据
+insert into amount(id,money) values('D', 1000);
+
+--设置事务
+SET SESSION TRANSACTION ISOLATION LEVEL read uncommitted;  
+SELECT @@tx_isolation;  
+--开启事务
+start transaction;
+
+--脏读演示，读到其他事务未提交的数据
+--案列1，事务一：A向B转200，事务二：查看B金额变化，事务一回滚事务
+update amount set money = money - 200 where id = 'A';
+update amount set money = money + 200 where id = 'B';
+
+--不可重复读演示，读到了其他事务提交的数据
+--案列2，事务一：B向A转200，事务二：B向C转200转100
+SET SESSION TRANSACTION ISOLATION LEVEL read committed;  
+
+--开启事务
+start transaction;
+--两个事务都查一下数据(转账之前需要，查一下金额是否够满足转账)
+select * from amount;
+--事务一：B向A转200
+update amount set money = money - 200 where id = 'B';
+update amount set money = money + 200 where id = 'A';
+
+commit;
+--事务二：B向C转200转100
+update amount set money = money - 100 where id = 'B';
+update amount set money = money + 100 where id = 'C';
+commit;
+--从事务二的角度来看，读到了事务一提交事务的数据，导致金额出现负数
+
+--幻读演示
+--案列3，事务一：B向A转200，事务二：B向C转200转100
+SET SESSION TRANSACTION ISOLATION LEVEL repeatable read;  
+
+--开启事务
+start transaction;
+--两个事务都查一下数据(转账之前需要，查一下金额是否够满足转账)
+select * from amount;
+--事务一：B向A转200
+update amount set money = money - 200 where id = 'B';
+update amount set money = money + 200 where id = 'A';
+
+commit;
+--事务二：B向C转200转100
+update amount set money = money - 100 where id = 'B';
+update amount set money = money + 100 where id = 'C';
+commit;
+--从事务二的角度来看，读到了事务一提交事务的数据，导致金额出现负数
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Using zeRGBa and Slider Widgets to control virtual and physical RGB LED]]></title>
+        <id>https://shmebluk.github.io/post/using-zergba-and-slider-widgets-to-control-virtual-and-physical-rgb-led/</id>
+        <link href="https://shmebluk.github.io/post/using-zergba-and-slider-widgets-to-control-virtual-and-physical-rgb-led/">
+        </link>
+        <updated>2020-06-01T04:24:11.000Z</updated>
+        <summary type="html"><![CDATA[<p>This code will allow zeRGBa or individual Red Blue Green Sliders to control the colour of both a Virtual LED (vRGB LED) and any physical one connected to the device.</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>This code will allow zeRGBa or individual Red Blue Green Sliders to control the colour of both a Virtual LED (vRGB LED) and any physical one connected to the device.</p>
+<!-- more -->
+<p>使用Arduino UNO和W5100网络扩展板,通过Blynk平台,控制RGB灯,LED灯,读取温度信息<br>
+W5100占用<code>pin[10,11,12,13]</code>,还有一个SD卡复位引脚<br>
+用PWM引脚控制共阴RGB彩灯<code>(R:pin3 G:pin5 B:pin6)</code><br>
+IO引脚控制LED灯<code>(pin7)</code><br>
+DS18B20温度传感器信号引脚<code>(pin2)</code></p>
+<pre><code class="language-C++">#define BLYNK_PRINT Serial
+
+
+#include &lt;SPI.h&gt;
+#include &lt;Ethernet.h&gt;
+#include &lt;BlynkSimpleEthernet.h&gt;
+#include &lt;OneWire.h&gt;
+#include &lt;DallasTemperature.h&gt;
+
+#define W5100_CS  10
+#define SDCARD_CS 4
+// 数据输出脚接开发板数字引脚2,正极和信号脚之间接一个4.7K欧姆的电阻
+#define ONE_WIRE_BUS 2
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&amp;oneWire);
+
+BlynkTimer timer;
+
+
+// Define your Physical RGB LED pins here
+#define RedPin 3  // Set RED RGB pin   pin3PWM
+#define GrnPin 5  // Set GREEN RGB pin pin5
+#define BluPin 6  // Set BLUE RGB pin  pin6
+
+// Define your Virtual pins here
+#define zeRGBa V0  // Set virtual RGB widget
+#define rSlide V1  // Set virtual RGB widget
+#define gSlide V2  // Set virtual RGB widget
+#define bSlide V3  // Set virtual RGB widget
+#define vRed V4  // Set virtual Red LED widget
+#define vGreen V5  // Set virtual Green LED widget
+#define vBlue V6  // Set virtual Blue LED widget
+#define vRGB V7  // Set virtual RGB widget
+#define HEXdisplay V8  // Set virtual RGB widget
+
+int rrr, ggg, bbb;  // Set RED BLUE GREEN channels
+
+
+// You should get Auth Token in the Blynk App项目秘钥
+char auth[] = &quot;lcO6bY4nLagj_JSluxbPtg8ooH4sKcYX&quot;; //项目名称:W5100_zeRGB
+//char auth[] = &quot;bGflzsrkCC04r0sRuF_s6Vebzo45kTbZ&quot;;//项目名称:共阴RGB控制
+//char ssid[] = &quot;Tenda_A0D9B8&quot;;
+//char pass[] = &quot;yang1314ai&quot;;
+//char server[] = &quot;xxx.xxx.xxx.xxx&quot;;  // IP for your Local Server
+char server[] = &quot;iot.haotech.xyz&quot;;  // URL for Blynk Cloud Server IP地址
+int port = 8080; //端口号
+
+
+
+void setup() {
+  Serial.begin(9600);  // BLYNK_PRINT data
+
+  pinMode(SDCARD_CS, OUTPUT);
+  digitalWrite(SDCARD_CS, HIGH); // Deselect the SD card
+  pinMode(RedPin, OUTPUT);  // Set RED pinMode
+  pinMode(GrnPin, OUTPUT);  // Set GREEN pinMode
+  pinMode(BluPin, OUTPUT);  // Set BLUE pinMode
+
+  Blynk.virtualWrite(vRGB, 255);  // Activate vRGB
+  Blynk.setProperty(vRGB, &quot;color&quot;, &quot;#000000&quot;);  // Set vRGB to Black
+
+//  WiFi.begin(ssid, pass); 
+//  Blynk.config(auth, server, port);
+//  Blynk.connect();
+  Blynk.begin(auth ,server , port);
+  sensors.begin();
+//定时
+  timer.setInterval(5000, getTemp);
+}
+
+
+
+BLYNK_CONNECTED() {
+  Blynk.syncAll();  // Synchronize hardware with App widgets when connected
+}
+
+
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
+
+
+
+//===== RED slider =====
+BLYNK_WRITE(rSlide) { // START Blynk Function
+  rrr = param.asInt(); // get a RED channel value
+  Blynk.virtualWrite(vRed, rrr);  // Red LED intensity
+  Blynk.virtualWrite(zeRGBa, rrr, ggg, bbb);  // Sync zeRGBa position
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+//===== GREEN slider =====
+BLYNK_WRITE(gSlide) { // START Blynk Function
+  ggg = param.asInt(); // get a GREEN channel value
+  Blynk.virtualWrite(vGreen, ggg);  // Green LED intensity
+  Blynk.virtualWrite(zeRGBa, rrr, ggg, bbb);  // Sync zeRGBa position
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+//===== BLUE slider =====
+BLYNK_WRITE(bSlide) { // START Blynk Function
+  bbb = param.asInt(); // get a BLUE channel value
+  Blynk.virtualWrite(vBlue, bbb);  // Blue LED intensity
+  Blynk.virtualWrite(zeRGBa, rrr, ggg, bbb);  // Sync zeRGBa position
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+
+//===== zeRGBa Widget  =====
+BLYNK_WRITE(zeRGBa) { // START Blynk Function
+  rrr = param[0].asInt(); // get a RED channel value
+  ggg = param[1].asInt(); // get a GREEN channel value
+  bbb = param[2].asInt(); // get a BLUE channel value
+  Blynk.virtualWrite(rSlide, rrr);  // Sync RED Slider position
+  Blynk.virtualWrite(vRed, rrr);  // Red LED intensity
+  Blynk.virtualWrite(gSlide, ggg);  // Sync Green slider position
+  Blynk.virtualWrite(vGreen, ggg);  // Green LED intensity
+  Blynk.virtualWrite(bSlide, bbb);  // Sinc Blue slider position
+  Blynk.virtualWrite(vBlue, bbb);  // Blue LED intensity
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+
+//===== Physical RGB LED Control and HEX conversion =====
+void RGBprocess() {  // START Arduino funtion
+
+  /*----- Comment out unneeded grouping based on device and RGB type ----- */
+  // ESP with Common Anode+ RGB LED (共阳RGB灯)
+//   analogWrite(RedPin, (255 - rrr) * 4 + 4); // Write to RED RGB pin
+//   analogWrite(GrnPin, (255 - ggg) * 4 + 4); // Write to GREEN RGB pin
+//   analogWrite(BluPin, (255 - bbb) * 4 + 4); // Write to BLUE RGB pin
+
+  // ESP with Common Cathode- RGB LED (共阴RGB灯)
+  analogWrite(RedPin, rrr*4+4);  // Write to RED RGB pin
+  analogWrite(GrnPin, ggg*4+4);  // Write to GREEN RGB pin
+  analogWrite(BluPin, bbb*4+4);  // Write to BLUE RGB pin
+
+  // Arduino with Common Anode+ RGB LED
+  //analogWrite(RedPin, 255-rrr);  // Write to RED RGB pin
+  //analogWrite(GrnPin, 255-ggg);  // Write to GREEN RGB pin
+  //analogWrite(BluPin, 255-bbb);  // Write to BLUE RGB pin
+
+  // Arduino with Common Cathode- RGB LED
+  //analogWrite(RedPin, rrr);  // Write to RED RGB pin
+  //analogWrite(GrnPin, ggg);  // Write to GREEN RGB pin
+  //analogWrite(BluPin, bbb);  // Write to BLUE RGB pin
+  /*-----------------------------------------------------------------------*/
+
+  String strRED = String(rrr, HEX);  // Convert RED DEC to HEX
+  if (rrr &lt; 16) {
+    strRED = String(&quot;0&quot; + strRED);  // Buffer with 0 if required
+  }  // END if
+  String strGRN = String(ggg, HEX);  // Convert GREEN DEC to HEX
+  if (ggg &lt; 16)  {
+    strGRN = String(&quot;0&quot; + strGRN);  // Buffer with 0 if required
+  }  // END if
+  String strBLU = String(bbb, HEX);  // Convert BLUE DEC to HEX
+  if (bbb &lt; 16)  {
+    strBLU = String(&quot;0&quot; + strBLU);  // Buffer with 0 if required
+  }  // END if
+  String HEXstring = String(&quot;#&quot; + strRED + strGRN + strBLU);  // Combine HEX fragments
+  HEXstring.toUpperCase();  // Change HEX value to all upper case for ease of visuals
+  Blynk.setProperty(HEXdisplay, &quot;color&quot;, HEXstring);  // Change background colour of HEX Data Label
+  Blynk.virtualWrite(HEXdisplay, HEXstring);  // Display HEX data
+  Blynk.setProperty(vRGB, &quot;color&quot;, HEXstring);  // Send formatted HEX colour to vRGB
+}  // END Arduino Function
+
+//获取温湿度函数
+void getTemp() {
+
+  sensors.requestTemperatures(); // 获取温度
+  Serial.print(&quot;Temperature for the device 1 (index 0) is: &quot;);
+  float val = sensors.getTempCByIndex(0);
+  Serial.println(val); 
+
+ //发送给app
+  Blynk.virtualWrite(V10,val); 
+//  delay(2000);
+}
+</code></pre>
+<p>APP界面如下图<br>
+<img src="https://shmebluk.github.io//post-images/1590985856684.jpg" alt="" loading="lazy"></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Gridea博客无法载入CSS样式的解决办法]]></title>
+        <id>https://shmebluk.github.io/post/gridea-bo-ke-wu-fa-zai-ru-css-yang-shi-de-jie-jue-ban-fa/</id>
+        <link href="https://shmebluk.github.io/post/gridea-bo-ke-wu-fa-zai-ru-css-yang-shi-de-jie-jue-ban-fa/">
+        </link>
+        <updated>2020-05-31T11:06:05.000Z</updated>
+        <summary type="html"><![CDATA[<p>👉今日在使用Gridea客户端更新博客的过程中,推送到远端仓库后内容显示正常,但是无法载入主题样式,就是没有载入CSS样式,折腾了一下午在搞懂问题出在哪里了,下面说一下自己的解决思路.</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>👉今日在使用Gridea客户端更新博客的过程中,推送到远端仓库后内容显示正常,但是无法载入主题样式,就是没有载入CSS样式,折腾了一下午在搞懂问题出在哪里了,下面说一下自己的解决思路.</p>
+<!-- more -->
+<h4 id="问题描述">问题描述</h4>
+<p>😵首先,文章写完后,push到远程仓库,查看网站发现CSS样式没有载入,设置的主题没有生效,然后怀疑是CSS样式文件的问题,又重新push了一遍,问题依旧.</p>
+<h4 id="解决过程">解决过程</h4>
+<p>然后怀疑可能是远程仓库的原因,push操作没有更新CSS文件,然后直接上传了本地的CSS文件,发现问题依旧存在.<br>
+然后又怀疑是本地仓库的问题,将output文件夹文件内容删除后,重新push,然而还是没有解决.<br>
+然后又在官网重新下载了Gridea客户端(发生了一个小插曲,网页上放了GitHub和Gitee的源,发现Gitee的下载速度还不如GitHub的下载速度),重新安装.push,还是没解决.</p>
+<h4 id="解决办法">解决办法</h4>
+<p>😄最后突然想到自己的远程配置页面域名重新配置过,写的是仓库的域名,更换为静态页面的域名后问题顺利解决.</p>
+<h4 id="问题思考">问题思考</h4>
+<p>🙄推测是Gridea生成HTML网页时CSS的link地址是根据域名来的,由于我填的是项目的域名,导致无法找到文件,而且在部署完成的主页内点击任何链接都会跳转到Coding的登录页面,所以导致无法正确载入文件,不只是CSS文件,应该是所有的文件都无法载入.</p>
+<h4 id="配置参考图片">配置参考图片</h4>
+<p><strong>正确配置域名信息</strong> (静态页面域名)<br>
+<img src="https://shmebluk.github.io//post-images/1590924410945.jpg" alt="" loading="lazy"><br>
+<img src="https://shmebluk.github.io//post-images/1590924522127.jpg" alt="" loading="lazy"><br>
+<strong>错误配置域名信息</strong> (项目域名)<br>
+<img src="https://shmebluk.github.io//post-images/1590924493053.jpg" alt="" loading="lazy"><br>
+<img src="https://shmebluk.github.io//post-images/1590924531297.jpg" alt="" loading="lazy"></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[MySQL]]></title>
+        <id>https://shmebluk.github.io/post/mysql/</id>
+        <link href="https://shmebluk.github.io/post/mysql/">
+        </link>
+        <updated>2020-05-31T04:50:54.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="mysql学习记录">MySQL学习记录</h2>
+<p>DDL : 数据库定义语句(Datebase Define Language)<br>
+DML : 数据管理语句(Datebase Manage Language)<br>
+DQL : 数据库查询语言(Datebase Query Language)</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="mysql学习记录">MySQL学习记录</h2>
+<p>DDL : 数据库定义语句(Datebase Define Language)<br>
+DML : 数据管理语句(Datebase Manage Language)<br>
+DQL : 数据库查询语言(Datebase Query Language)</p>
+<!-- more -->
+<h5 id="数据库定义语句datebase-define-language">数据库定义语句(Datebase Define Language)</h5>
+<pre><code class="language-sql">-- DDL语句
+SHOW DATABASES; -- 列出所有数据库
+CREATE DATABASE `dailytext`; -- 创建数据库
+DROP DATABASE `dailyText`; -- 删除数据库
+USE `dailytext`; -- 更换数据库
+SHOW TABLES; -- 列出数据表
+CREATE TABLE IF NOT EXISTS `person` (
+	`id` INT AUTO_INCREMENT,
+	`name` VARCHAR(10) NOT NULL,
+	`age` INT,
+	`gender` ENUM ('man','woman','other'),
+	`bd` DATE,
+	PRIMARY KEY (`id`)
+)ENGINE=INNODB ,CHARSET=utf8 ; -- 创建表
+DESC person; -- 显示表结构
+ALTER TABLE persons RENAME person; -- 重命名表名
+ALTER TABLE person ADD gender VARCHAR(3) DEFAULT '男' COMMENT '性别'; -- 添加字段
+ALTER TABLE `person` ADD `married` ENUM('yes','no') DEFAULT NULL first/after Column_Name; -- 指定位置添加字段
+ALTER TABLE `person` MODIFY `married` VARCHAR(5) DEFAULT NULL; -- 只能修改字段属性以及字段长度
+ALTER TABLE `person` CHANGE `married` `marry` VARCHAR(10) DEFAULT NULL; -- 修改字段名,字段属性以及字段长度
+ALTER TABLE `person` DROP `marryy`; -- 删除字段
+
+
+-- delete，drop，truncate 都有删除表的作用，区别在于：
+/*
+ 1、delete 和 truncate 仅仅删除表数据，drop 连表数据和表结构一起删除，打个比方，delete 是单杀，truncate 是团灭，drop 是把电脑摔了。
+ 2、delete 是 DML 语句，操作完以后如果没有不想提交事务还可以回滚，truncate 和 drop 是 DDL 语句，操作完马上生效，不能回滚，打个比方，delete 是发微信说分手，后悔还可以撤回，truncate 和 drop 是直接扇耳光说滚，不能反悔。
+ 3、执行的速度上，drop&gt;truncate&gt;delete，打个比方，drop 是神舟火箭，truncate 是和谐号动车，delete 是自行车。
+ */
+TRUNCATE TABLE `person`; -- 删除表内容,自增列计数器清空
+DELETE TABLE `person`; -- 删除表内容,自增列计数器不清空
+							-- 若数据表使用InnoDB引擎,重启数据库后自增列会清零,数据保存在内存中
+							-- 若数据表使用MyISAM引擎,重启数据库后自增列也不会清零,数据保存在文件中
+DROP TABLE `person`; -- 删除表内容和结构
+</code></pre>
+<h5 id="数据管理语句datebase-manage-language">数据管理语句(Datebase Manage Language)</h5>
+<pre><code class="language-sql">-- DML语句
+   -- 添加一条数据
+      -- 方式一
+	INSERT INTO person
+	VALUES (NULL,'Mariya',12,'女');
+      -- 方式二
+        INSERT INTO person
+        (`name`,`age`,`gender`,`birthday`)
+        VALUES
+        ('jicka',16,'女',NOW());
+
+   -- 修改一条数据
+	UPDATE person
+	SET `name`='Rick' ,`age`=13 , `gender`=DEFAULT
+	WHERE `name`='Mariya' OR `age`=12; 
+	
+	UPDATE person
+	SET age=50
+	WHERE `name`='Rick';
+	
+	UPDATE person
+	SET `birthday`='1956-02-29' -- 设置时间格式为字符串
+	WHERE `name`='Rick';
+	
+	UPDATE person
+	SET `birthday`=CURRENT_TIME
+	WHERE id&gt;1 AND id &lt;14;
+	
+	
+	-- 删除一条数据(自增列不清除,会继续原来的增加)
+    DELETE FROM `person`
+    WHERE `name`='Gazor';
+</code></pre>
+<h5 id="数据库查询语言datebase-query-language">数据库查询语言(Datebase Query Language)</h5>
+<pre><code class="language-sql">-- DQL语句
+-- 基本查询语句:
+SELECT * FROM cartoon;
+
+-- 连接查询
+/* 
+内连接 :显示两表都有的内容,where和on无区别,应搭配on
+语法:
+	select column_name 
+	from A 
+	inner join B 
+	where/on A.column_name=B.column_name
+*/
+SELECT c.`name` 姓名,c.`married` 已婚,p.`age` 年龄,p.`gender` 性别1,c.`gender` 性别2
+FROM `cartoon` c
+INNER JOIN `person` p
+ON c.`name` = p.`name`
+ORDER BY c.`id`;
+
+
+/* 左连接 :左表为主表(A),结果显示左表中全部信息,右表中不存在的字段名用 NULL 填充
+语法: 
+	select column_name 
+	from A 
+	left join B 
+	on A.column_name=B.column_name
+*/
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM person p LEFT JOIN cartoon c
+ON p.`name`=c.`name`;
+
+
+/* 右连接 :右表为主表(A),结果显示右表中全部信息,左表中不存在的字段内容用 NULL 填充
+语法: 
+	select column_name 
+	from A 
+	right join B 
+	on A.column_name=B.column_name
+*/
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM person p RIGHT JOIN cartoon c
+ON p.`name`=c.`name`;
+
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM cartoon c RIGHT JOIN person p
+ON p.`name`=c.`name`; -- 此结果和上面左连接查询例子一致
+
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM dailytext.`cartoon` c RIGHT JOIN shmebluk.`person` p
+ON p.`name`=c.`name`; -- 可选择不同数据库的表连接,用 datebase.table_name 选择
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Arduino+DS18b20+OLED Display]]></title>
+        <id>https://shmebluk.github.io/post/arduino_ds18b20_oled-display/</id>
+        <link href="https://shmebluk.github.io/post/arduino_ds18b20_oled-display/">
+        </link>
+        <updated>2020-03-28T14:00:57.000Z</updated>
+        <summary type="html"><![CDATA[<p>DS18b20获取到温度数值保存到变量中，然后和天气图标还有滚动字幕一起发送到OLED 屏幕上显示</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>DS18b20获取到温度数值保存到变量中，然后和天气图标还有滚动字幕一起发送到OLED 屏幕上显示</p>
+<!-- more -->
+<p>需要用到的库均可在Arduino库管理器下载。<br>
+电路图：<br>
+<img src="https://shmebluk.github.io//post-images/1585405671072.png" alt="" loading="lazy"><br>
+图中屏幕接线已在代码中写出，温度传感器date口需要接一个4.7k欧的电阻；<br>
+最终效果如下图：<br>
+<img src="https://shmebluk.github.io//post-images/1585404643686.jpg" alt="" loading="lazy"><br>
+代码如下：</p>
+<pre><code class="language-c++">#include &lt;Arduino.h&gt;
+#include &lt;U8g2lib.h&gt;
+
+#include &lt;OneWire.h&gt;
+#include &lt;DallasTemperature.h&gt;
+
+// DS18b20数据输出脚接开发板数字引脚
+#define ONE_WIRE_BUS 8
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&amp;oneWire);
+
+#ifdef U8X8_HAVE_HW_SPI
+#include &lt;SPI.h&gt;
+#endif
+#ifdef U8X8_HAVE_HW_I2C
+#include &lt;Wire.h&gt;
+#endif
+//选择自己的屏幕驱动
+U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, /* clock=*/ 4, /* data=*/ 5, /* cs=*/ 3, /* dc=*/ 7, /* reset=*/ 6);
+
+#define SUN_CLOUD  1
+//绘制天气图标
+void drawWeatherSymbol(u8g2_uint_t x, u8g2_uint_t y, uint8_t symbol)
+{ 
+  switch(symbol)
+  {
+    case SUN_CLOUD:
+      u8g2.setFont(u8g2_font_open_iconic_weather_6x_t);
+      u8g2.drawGlyph(x, y, 65); 
+      break;      
+  }
+}
+//绘制显示界面
+void drawWeather(uint8_t symbol, int val)
+{
+  //绘制天气符号
+  drawWeatherSymbol(0, 48, symbol);
+  //绘制温度
+  u8g2.setFont(u8g2_font_logisoso32_tf);
+  u8g2.setCursor(48+3, 42);
+  u8g2.print(val);
+  u8g2.print(&quot;°C&quot;);   // requires enableUTF8Print()
+}
+//绘制滚动字幕
+void drawScrollString(int16_t offset, const char *s)
+{
+  static char buf[36];  // should for screen with up to 256 pixel width 
+  size_t len;
+  size_t char_offset = 0;
+  u8g2_uint_t dx = 0;
+  size_t visible = 0;
+  
+
+  u8g2.setDrawColor(0);   // clear the scrolling area
+  u8g2.drawBox(0, 49, u8g2.getDisplayWidth()-1, u8g2.getDisplayHeight()-1);
+  u8g2.setDrawColor(1);   // set the color for the text
+    
+  
+  len = strlen(s);
+  if ( offset &lt; 0 )
+  {
+    char_offset = (-offset)/8;
+    dx = offset + char_offset*8;
+    if ( char_offset &gt;= u8g2.getDisplayWidth()/8 )
+      return;
+    visible = u8g2.getDisplayWidth()/8-char_offset+1;
+    strncpy(buf, s, visible);
+    buf[visible] = '\0';
+    u8g2.setFont(u8g2_font_8x13_mf);
+    u8g2.drawStr(char_offset*8-dx, 62, buf);
+  }
+  else
+  {
+    char_offset = offset / 8;
+    if ( char_offset &gt;= len )
+      return; // nothing visible
+    dx = offset - char_offset*8;
+    visible = len - char_offset;
+    if ( visible &gt; u8g2.getDisplayWidth()/8+1 )
+      visible = u8g2.getDisplayWidth()/8+1;
+    strncpy(buf, s+char_offset, visible);
+    buf[visible] = '\0';
+    u8g2.setFont(u8g2_font_8x13_mf);
+    u8g2.drawStr(-dx, 62, buf);
+  }
+  
+}
+
+void draw(const char *s, uint8_t symbol, int val)
+{
+  int16_t offset = -(int16_t)u8g2.getDisplayWidth();
+  int16_t len = strlen(s);
+  
+  u8g2.clearBuffer();         // clear the internal memory
+  drawWeather(symbol, val);    // draw the icon and degree only once
+  for(;;)             // then do the scrolling
+  {
+  
+    drawScrollString(offset, s);        // no clearBuffer required, screen will be partially cleared here
+    u8g2.sendBuffer();        // transfer internal memory to the display
+
+    delay(20);
+    offset+=2;
+    if ( offset &gt; len*8+1 )
+      break;
+  }
+}
+
+
+void setup(void) {
+  Serial.begin(9600);
+  sensors.begin(); //初始化DS18b20
+  u8g2.begin();  //初始化OLED
+  u8g2.enableUTF8Print();//打开UTF8输出
+}
+
+void loop(void) {
+    sensors.requestTemperatures(); // 发送命令获取温度
+    int val = sensors.getTempCByIndex(0);//将获取到的温度数值保存在变量中
+    draw(&quot;What a beautiful day!&quot;, SUN_CLOUD, val);//调用函数绘制最终界面
+}
+</code></pre>
+]]></content>
+    </entry>
+</feed>

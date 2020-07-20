@@ -1,0 +1,3774 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="keywords" content="Gridea静态个人博客">
+<meta name="description" content="记录自己的Java学习过程">
+<meta name="theme-color" content="#074181">
+<title>Juyss&#39;s Blog</title>
+<link rel="shortcut icon" href="/favicon.ico?v=1595243453658">
+<link rel="stylesheet" href="/media/css/gemini.css">
+<link rel="stylesheet" href="/media/fonts/font-awesome.css">
+<link
+  href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Rosario:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext"
+  rel="stylesheet" type="text/css">
+
+<link href="/media/hljs/styles/androidstudio.css"
+  rel="stylesheet">
+
+<link rel="stylesheet" href="/styles/main.css">
+
+<script src="/media/hljs/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.0/velocity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.0/velocity.ui.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
+  integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js"
+  integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js"
+  integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+  onload="renderMathInElement(document.body);"></script>
+
+
+
+
+
+</head>
+
+<body>
+  <div class="head-top-line"></div>
+  <div class="header-box">
+    
+<div class="gemini">
+  <header class="header  ">
+    <div class="blog-header box-shadow-wrapper bg-color " id="header">
+      <div class="nav-toggle" id="nav_toggle">
+        <div class="toggle-box">
+          <div class="line line-top"></div>
+          <div class="line line-center"></div>
+          <div class="line line-bottom"></div>
+        </div>
+      </div>
+      <div class="site-meta">       
+        <div class="site-title">
+          
+            <a href="/" class="brand">
+              <span>Juyss&#39;s Blog</span>
+            </a>  
+          
+        </div>
+        
+          <p class="subtitle">记录自己的Java学习过程</p>
+        
+      </div>
+      <nav class="site-nav" id="site_nav">
+        <ul id="nav_ul">
+          
+            
+            
+              
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/" target="_self">
+                  <i class="fa fa-home"></i> 首页
+                </a>
+              
+            </li>
+          
+            
+            
+              
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/archives/" target="_self">
+                  <i class="fa fa-archive"></i> 归档
+                </a>
+              
+            </li>
+          
+            
+            
+              
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/tags/" target="_self">
+                  <i class="fa fa-tags"></i> 标签
+                </a>
+              
+            </li>
+          
+            
+            
+              
+            
+            <li class="nav-item ">
+              
+              
+                <a href="/post/about/" target="_self">
+                  <i class="fa fa-user"></i> 关于
+                </a>
+              
+            </li>
+          
+          
+            
+              <li class="nav-item ">
+                <a href="/friends/" target="_self">
+                  
+                    <i class="fa fa-address-book"></i> 友情链接
+                  
+                </a>
+              </li>
+            
+          
+          
+            <li id="fa_search" class="nav-item">
+              <a href="javascript:void(0);">
+                <i class="fa fa-search"></i> <span class="language" data-lan="search">搜索</span>
+              </a>
+            </li>
+          
+        </ul>
+      </nav>
+    </div>
+  </header>
+</div>
+
+<script type="text/javascript"> 
+ 
+  let showNav = true;
+
+  let navToggle = document.querySelector('#nav_toggle'),
+  siteNav = document.querySelector('#site_nav');
+  
+  function navClick() {
+    let sideBar = document.querySelector('.sidebar');
+    let navUl = document.querySelector('#nav_ul');
+    navToggle.classList.toggle('nav-toggle-active');
+    siteNav.classList.toggle('nav-menu-active');
+    if (siteNav.classList.contains('nav-menu-active')) {
+      siteNav.style = "height: " + (navUl.children.length * 42) +"px !important";
+    } else {
+      siteNav.style = "";
+    }
+  }
+
+  navToggle.addEventListener('click',navClick);  
+</script>
+  </div>
+  <div class="main-continer">
+    
+    <div
+      class="section-layout  gemini">
+      <div class="section-layout-wrapper">
+        <div id="sidebarMeta" class="sidebar">
+    
+<div class="sidebar-wrapper box-shadow-wrapper bg-color">
+  <div class="sidebar-item">
+    <img class="site-author-image right-motion" src="/images/avatar.png"/>
+    <p class="site-author-name">Shmebluk</p>
+    
+  </div>
+  <div class="sidebar-item side-item-stat right-motion">
+    <div class="sidebar-item-box">
+      <a href="/archives/">
+        
+        <span class="site-item-stat-count">24</span>
+        <span class="site-item-stat-name language" data-lan="article">文章</span>
+      </a>
+    </div>
+    <div class="sidebar-item-box">
+      <a href="">
+        <span class="site-item-stat-count">14</span>
+        <span class="site-item-stat-name language" data-lan="category">分类</span>
+      </a>
+    </div>
+    <div class="sidebar-item-box">
+      <a href="/tags/">
+        <span class="site-item-stat-count">14</span>
+        <span class="site-item-stat-name language" data-lan="tag">标签</span>
+      </a>
+    </div>
+  </div>
+  
+    
+      <div class="sidebar-item">
+        <span class="site-item-rss">
+            <i class="fa fa-rss"></i>
+            <a href="https://shmebluk.github.io//atom.xml" target="_blank">RSS</a>
+        </span>
+      </div>
+    
+  
+  
+
+
+
+  <div style="width: 100%; position: relative;">
+    <canvas id="canvasDiyBlock" style="width:100%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+    <script src="/media/js/magic/clock.js"></script>
+  </div>
+
+</div>
+</div>
+<script>
+  let sidebarMeta = document.querySelector('#sidebarMeta');
+  let scheme = 'gemini';
+  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
+  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
+    document.addEventListener('scroll', function(e) {
+      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
+        sidebarWrapper.classList.add('home-sidebar-fixed')
+      } else {
+        sidebarWrapper.classList.remove('home-sidebar-fixed')
+      }
+    });
+  }
+  </script>
+        <div class="section-box tag-line box-shadow-wrapper">
+          <section class="section tags-section posts-expand bg-color">
+            <div class="padding-wrapper">
+  <div class="tag-timeline-box">
+    <div class="tag-timeline-wrapper">
+      <div class="tag-timeline-title">
+        <h2>
+          事务隔离级别
+          <small class="language" data-lan="tag">标签</small>
+        </h2>
+      </div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <a href="https://shmebluk.github.io/post/shi-wu-ge-chi-ji-bie/">
+        <div class="motion-warpper">
+          <div class="tag-post-node">
+            <h1>
+              06-04
+              <small>事务隔离级别</small>
+            </h1>
+          </div>
+        </div>
+      </a>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </div>
+  </div>
+</div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <div class="footer-box">
+  <footer class="footer">
+    <div class="copyright">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | © 2019-2020 Theme By <a
+        href="https://github.com/hsxyhao/gridea-theme-next" target="_blank">HsxyHao</a>
+    </div>
+    <div class="poweredby">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+    </div>
+  </footer>
+  
+  
+  <div class="gemini back-to-top" id="back_to_top">
+    <i class="fa fa-arrow-up"></i>
+    
+    <span class="scrollpercent">
+      <span id="back_to_top_text">0</span>%
+    </span>
+    
+  </div>
+  
+  
+  
+<link rel="stylesheet" href="/media/live2d/css/live2d.css" />
+<div class="box-scale">
+  <div id="landlord" style="left: 1050px;bottom: 50px;"
+    data-key="">
+    <canvas id="live2d" width="500" height="560" class="live2d"></canvas>
+    
+
+      <div class="message" style="opacity:0"></div>
+      <div class="live_talk_input_body">
+        <div class="live_talk_input_name_body">
+          <input name="name" type="text" class="live_talk_name white_input" id="AIuserName" autocomplete="off"
+            placeholder="你的名字" />
+        </div>
+        <div class="live_talk_input_text_body">
+          <input name="talk" type="text" class="live_talk_talk white_input" id="AIuserText" autocomplete="off"
+            placeholder="要和我聊什么呀？" />
+          <button type="button" class="live_talk_send_btn" id="talk_send">发送</button>
+        </div>
+      </div>
+      <input name="live_talk" id="live_talk" value="1" type="hidden" />
+      <div class="live_ico_box">
+        <div class="live_ico_item type_info" id="showInfoBtn"></div>
+        <div class="live_ico_item type_talk" id="showTalkBtn"></div>
+        
+        <div class="live_ico_item type_youdu" id="youduButton"></div>
+        <div class="live_ico_item type_quit" id="hideButton"></div>
+        <input name="live_statu_val" id="live_statu_val" value="0" type="hidden" />
+        <audio src="" style="display:none;" id="live2d_bgm" data-bgm="0" preload="none"></audio>
+        <input id="duType" value="douqilai" type="hidden">
+        
+      </div>
+    
+  </div>
+</div>
+<div id="open_live2d">召唤看板娘</div>
+<script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script>
+  var message_Path = 'https://cdn.jsdelivr.net/gh/hsxyhao/live2d.github.io@master/';
+  let landlord = document.querySelector('#landlord');
+  var apiKey = landlord.dataset.key;
+</script>
+<script type="text/javascript" src="/media/live2d/js/live2d.js"></script>
+<script>
+	var home_Path = document.location.protocol + '//' + window.document.location.hostname + ":" + window.document.location.port + '/';
+	var userAgent = window.navigator.userAgent.toLowerCase();
+	var norunAI = ["android", "iphone", "ipod", "ipad", "windows phone", "mqqbrowser", "msie", "trident/7.0"];
+	var norunFlag = false;
+
+	for (var i = 0; i < norunAI.length; i++) {
+		if (userAgent.indexOf(norunAI[i]) > -1) {
+			norunFlag = true;
+			break;
+		}
+	}
+
+	if (!window.WebGLRenderingContext) {
+		norunFlag = true;
+	}
+
+	if (!norunFlag) {
+		var hitFlag = false;
+		var AIFadeFlag = false;
+		var liveTlakTimer = null;
+		var sleepTimer_ = null;
+		var AITalkFlag = false;
+		var talkNum = 0;
+		(function () {
+			function renderTip(template, context) {
+				var tokenReg = /(\\)?\{([^\{\}\\]+)(\\)?\}/g;
+				return template.replace(tokenReg, function (word, slash1, token, slash2) {
+					if (slash1 || slash2) {
+						return word.replace('\\', '');
+					}
+					var variables = token.replace(/\s/g, '').split('.');
+					var currentObject = context;
+					var i, length, variable;
+					for (i = 0, length = variables.length; i < length; ++i) {
+						variable = variables[i];
+						currentObject = currentObject[variable];
+						if (currentObject === undefined || currentObject === null) return '';
+					}
+					return currentObject;
+				});
+			}
+
+			String.prototype.renderTip = function (context) {
+				return renderTip(this, context);
+			};
+
+			var re = /x/;
+			re.toString = function () {
+				showMessage('哈哈，你打开了控制台，是想要看看我的秘密吗？', 5000);
+				return '';
+			};
+
+			$(document).on('copy', function () {
+				showMessage('你都复制了些什么呀，转载要记得加上出处哦~~', 5000);
+			});
+
+			function initTips() {
+				$.ajax({
+					cache: true,
+					url: message_Path + 'message.json',
+					dataType: "json",
+					success: function (result) {
+						$.each(result.mouseover, function (index, tips) {
+							$(tips.selector).mouseover(function () {
+								var text = tips.text;
+								if (Array.isArray(tips.text)) text = tips.text[Math.floor(Math.random() * tips.text.length + 1) - 1];
+								text = text.renderTip({ text: $(this).text() });
+								showMessage(text, 3000);
+								talkValTimer();
+								clearInterval(liveTlakTimer);
+								liveTlakTimer = null;
+							});
+							$(tips.selector).mouseout(function () {
+								showHitokoto();
+								if (liveTlakTimer == null) {
+									liveTlakTimer = window.setInterval(function () {
+										showHitokoto();
+									}, 15000);
+								};
+							});
+						});
+						$.each(result.click, function (index, tips) {
+							$(tips.selector).click(function () {
+								if (hitFlag) {
+									return false
+								}
+								hitFlag = true;
+								setTimeout(function () {
+									hitFlag = false;
+								}, 8000);
+								var text = tips.text;
+								if (Array.isArray(tips.text)) text = tips.text[Math.floor(Math.random() * tips.text.length + 1) - 1];
+								text = text.renderTip({ text: $(this).text() });
+								showMessage(text, 3000);
+							});
+							clearInterval(liveTlakTimer);
+							liveTlakTimer = null;
+							if (liveTlakTimer == null) {
+								liveTlakTimer = window.setInterval(function () {
+									showHitokoto();
+								}, 15000);
+							};
+						});
+					}
+				});
+			}
+			initTips();
+
+			var text;
+			if (document.referrer !== '') {
+				var referrer = document.createElement('a');
+				referrer.href = document.referrer;
+				text = '嗨！来自 <span style="color:#0099cc;">' + referrer.hostname + '</span> 的朋友！';
+				var domain = referrer.hostname.split('.')[1];
+				if (domain == 'baidu') {
+					text = '嗨！ 来自 百度搜索 的朋友！<br>欢迎访问<span style="color:#0099cc;">「 ' + document.title.split(' - ')[0] + ' 」</span>';
+				} else if (domain == 'so') {
+					text = '嗨！ 来自 360搜索 的朋友！<br>欢迎访问<span style="color:#0099cc;">「 ' + document.title.split(' - ')[0] + ' 」</span>';
+				} else if (domain == 'google') {
+					text = '嗨！ 来自 谷歌搜索 的朋友！<br>欢迎访问<span style="color:#0099cc;">「 ' + document.title.split(' - ')[0] + ' 」</span>';
+				}
+			} else {
+				if (window.location.href == home_Path) { //主页URL判断，需要斜杠结尾
+					var now = (new Date()).getHours();
+					if (now > 23 || now <= 5) {
+						text = '你是夜猫子呀？这么晚还不睡觉，明天起的来嘛？';
+					} else if (now > 5 && now <= 7) {
+						text = '早上好！一日之计在于晨，美好的一天就要开始了！';
+					} else if (now > 7 && now <= 11) {
+						text = '上午好！工作顺利嘛，不要久坐，多起来走动走动哦！';
+					} else if (now > 11 && now <= 14) {
+						text = '中午了，工作了一个上午，现在是午餐时间！';
+					} else if (now > 14 && now <= 17) {
+						text = '午后很容易犯困呢，今天的运动目标完成了吗？';
+					} else if (now > 17 && now <= 19) {
+						text = '傍晚了！窗外夕阳的景色很美丽呢，最美不过夕阳红~~';
+					} else if (now > 19 && now <= 21) {
+						text = '晚上好，今天过得怎么样？';
+					} else if (now > 21 && now <= 23) {
+						text = '已经这么晚了呀，早点休息吧，晚安~~';
+					} else {
+						text = '嗨~ 快来逗我玩吧！';
+					}
+				} else {
+					text = '欢迎阅读<span style="color:#0099cc;">「 ' + document.title.split(' - ')[0] + ' 」</span>';
+				}
+			}
+			showMessage(text, 12000);
+		})();
+
+		liveTlakTimer = setInterval(function () {
+			showHitokoto();
+		}, 15000);
+
+		function showHitokoto() {
+			if (sessionStorage.getItem("Sleepy") !== "1") {
+				if (!AITalkFlag) {
+					$.getJSON('https://v1.hitokoto.cn/', function (result) {
+						talkValTimer();
+						showMessage(result.hitokoto, 0);
+					});
+				}
+			} else {
+				hideMessage(0);
+				if (sleepTimer_ == null) {
+					sleepTimer_ = setInterval(function () {
+						checkSleep();
+					}, 200);
+				}
+			}
+		}
+
+		function checkSleep() {
+			var sleepStatu = sessionStorage.getItem("Sleepy");
+			if (sleepStatu !== '1') {
+				talkValTimer();
+				showMessage('你回来啦~', 0);
+				clearInterval(sleepTimer_);
+				sleepTimer_ = null;
+			}
+		}
+
+		function showMessage(text, timeout) {
+			if (Array.isArray(text)) text = text[Math.floor(Math.random() * text.length + 1) - 1];
+			$('.message').stop();
+			$('.message').html(text);
+			$('.message').fadeTo(200, 1);
+			//if (timeout === null) timeout = 5000;
+			//hideMessage(timeout);
+		}
+		function talkValTimer() {
+			$('#live_talk').val('1');
+		}
+
+		function hideMessage(timeout) {
+			//$('.message').stop().css('opacity',1);
+			if (timeout === null) timeout = 5000;
+			$('.message').delay(timeout).fadeTo(200, 0);
+		}
+
+		function initLive2d() {
+			$('#hideButton').on('click', function () {
+				if (AIFadeFlag) {
+					return false;
+				} else {
+					AIFadeFlag = true;
+					localStorage.setItem("live2dhidden", "0");
+					$('#landlord').fadeOut(200);
+					$('#open_live2d').delay(200).fadeIn(200);
+					setTimeout(function () {
+						AIFadeFlag = false;
+					}, 300);
+				}
+			});
+			$('#open_live2d').on('click', function () {
+				if (AIFadeFlag) {
+					return false;
+				} else {
+					AIFadeFlag = true;
+					localStorage.setItem("live2dhidden", "1");
+					$('#open_live2d').fadeOut(200);
+					$('#landlord').delay(200).fadeIn(200);
+					setTimeout(function () {
+						AIFadeFlag = false;
+					}, 300);
+				}
+			});
+			$('#youduButton').on('click', function () {
+				if ($('#youduButton').hasClass('doudong')) {
+					var typeIs = $('#youduButton').attr('data-type');
+					$('#youduButton').removeClass('doudong');
+					$('body').removeClass(typeIs);
+					$('#youduButton').attr('data-type', '');
+				} else {
+					var duType = $('#duType').val();
+					var duArr = duType.split(",");
+					var dataType = duArr[Math.floor(Math.random() * duArr.length)];
+
+					$('#youduButton').addClass('doudong');
+					$('#youduButton').attr('data-type', dataType);
+					$('body').addClass(dataType);
+				}
+			});
+			if (apiKey) {
+				$('#showInfoBtn').on('click', function () {
+					var live_statu = $('#live_statu_val').val();
+					if (live_statu == "0") {
+						return
+					} else {
+						$('#live_statu_val').val("0");
+						$('.live_talk_input_body').fadeOut(500);
+						AITalkFlag = false;
+						showHitokoto();
+						$('#showTalkBtn').show();
+						$('#showInfoBtn').hide();
+					}
+				});
+				$('#showTalkBtn').on('click', function () {
+					var live_statu = $('#live_statu_val').val();
+					if (live_statu == "1") {
+						return
+					} else {
+						$('#live_statu_val').val("1");
+						$('.live_talk_input_body').fadeIn(500);
+						AITalkFlag = true;
+						$('#showTalkBtn').hide();
+						$('#showInfoBtn').show();
+
+					}
+				});
+				$('#talk_send').on('click', function () {
+					var info_ = $('#AIuserText').val();
+					var userid_ = $('#AIuserName').val();
+					if (info_ == "") {
+						showMessage('写点什么吧！', 0);
+						return;
+					}
+					if (userid_ == "") {
+						showMessage('聊之前请告诉我你的名字吧！', 0);
+						return;
+					}
+					showMessage('思考中~', 0);
+					let protocol = window.location.protocol.indexOf("s") > 0 ? "https" : "http";
+					$.ajax({
+						type: "get",
+						url: `${protocol}://www.tuling123.com/openapi/api?key=${apiKey}&info=${info_}`,
+						dataType: "json",
+						success: function (res) {
+							talkValTimer();
+							showMessage(res.text, 0);
+							$('#AIuserText').val("");
+							sessionStorage.setItem("live2duser", userid_);
+						},
+						error: function (e) {
+							talkValTimer();
+							showMessage('似乎有什么错误，请和站长联系！', 0);
+						}
+					});
+				});
+			} else {
+				$('#showInfoBtn').hide();
+				$('#showTalkBtn').hide();
+			}
+			//获取音乐信息初始化
+			var bgmListInfo = $('input[name=live2dBGM]');
+			if (bgmListInfo.length == 0) {
+				$('#musicButton').hide();
+			} else {
+				var bgmPlayNow = parseInt($('#live2d_bgm').attr('data-bgm'));
+				var bgmPlayTime = 0;
+				var live2dBGM_Num = sessionStorage.getItem("live2dBGM_Num");
+				var live2dBGM_PlayTime = sessionStorage.getItem("live2dBGM_PlayTime");
+				if (live2dBGM_Num) {
+					if (live2dBGM_Num <= $('input[name=live2dBGM]').length - 1) {
+						bgmPlayNow = parseInt(live2dBGM_Num);
+					}
+				}
+				if (live2dBGM_PlayTime) {
+					bgmPlayTime = parseInt(live2dBGM_PlayTime);
+				}
+				var live2dBGMSrc = bgmListInfo.eq(bgmPlayNow).val();
+				$('#live2d_bgm').attr('data-bgm', bgmPlayNow);
+				$('#live2d_bgm').attr('src', live2dBGMSrc);
+				$('#live2d_bgm')[0].currentTime = bgmPlayTime;
+				$('#live2d_bgm')[0].volume = 0.5;
+				var live2dBGM_IsPlay = sessionStorage.getItem("live2dBGM_IsPlay");
+				var live2dBGM_WindowClose = sessionStorage.getItem("live2dBGM_WindowClose");
+				if (live2dBGM_IsPlay == '0' && live2dBGM_WindowClose == '0') {
+					$('#live2d_bgm')[0].play();
+					$('#musicButton').addClass('play');
+				}
+				sessionStorage.setItem("live2dBGM_WindowClose", '1');
+				$('#musicButton').on('click', function () {
+					if ($('#musicButton').hasClass('play')) {
+						$('#live2d_bgm')[0].pause();
+						$('#musicButton').removeClass('play');
+						sessionStorage.setItem("live2dBGM_IsPlay", '1');
+					} else {
+						$('#live2d_bgm')[0].play();
+						$('#musicButton').addClass('play');
+						sessionStorage.setItem("live2dBGM_IsPlay", '0');
+					}
+				});
+				window.onbeforeunload = function () {
+					sessionStorage.setItem("live2dBGM_WindowClose", '0');
+					if ($('#musicButton').hasClass('play')) {
+						sessionStorage.setItem("live2dBGM_IsPlay", '0');
+					}
+				}
+				document.getElementById('live2d_bgm').addEventListener("timeupdate", function () {
+					var live2dBgmPlayTimeNow = document.getElementById('live2d_bgm').currentTime;
+					sessionStorage.setItem("live2dBGM_PlayTime", live2dBgmPlayTimeNow);
+				});
+				document.getElementById('live2d_bgm').addEventListener("ended", function () {
+					var listNow = parseInt($('#live2d_bgm').attr('data-bgm'));
+					listNow++;
+					if (listNow > $('input[name=live2dBGM]').length - 1) {
+						listNow = 0;
+					}
+					var listNewSrc = $('input[name=live2dBGM]').eq(listNow).val();
+					sessionStorage.setItem("live2dBGM_Num", listNow);
+					$('#live2d_bgm').attr('src', listNewSrc);
+					$('#live2d_bgm')[0].play();
+					$('#live2d_bgm').attr('data-bgm', listNow);
+				});
+				document.getElementById('live2d_bgm').addEventListener("error", function () {
+					$('#live2d_bgm')[0].pause();
+					$('#musicButton').removeClass('play');
+					showMessage('音乐似乎加载不出来了呢！', 0);
+				});
+			}
+			//获取用户名
+			var live2dUser = sessionStorage.getItem("live2duser");
+			if (live2dUser !== null) {
+				$('#AIuserName').val(live2dUser);
+			}
+			//获取位置
+			var landL = sessionStorage.getItem("historywidth");
+			var landB = sessionStorage.getItem("historyheight");
+			if (landL == null || landB == null) {
+				landL = '5px'
+				landB = '0px'
+			}
+			$('#landlord').css('left', landL + 'px');
+			$('#landlord').css('bottom', landB + 'px');
+			//移动
+			function getEvent() {
+				return window.event || arguments.callee.caller.arguments[0];
+			}
+			var smcc = document.getElementById("landlord");
+			var moveX = 0;
+			var moveY = 0;
+			var moveBottom = 0;
+			var moveLeft = 0;
+			var moveable = false;
+			var docMouseMoveEvent = document.onmousemove;
+			var docMouseUpEvent = document.onmouseup;
+			smcc.onmousedown = function () {
+				var ent = getEvent();
+				moveable = true;
+				moveX = ent.clientX;
+				moveY = ent.clientY;
+				var obj = smcc;
+				moveBottom = parseInt(obj.style.bottom);
+				moveLeft = parseInt(obj.style.left);
+				if (isFirefox = navigator.userAgent.indexOf("Firefox") > 0) {
+					window.getSelection().removeAllRanges();
+				}
+				document.onmousemove = function () {
+					if (moveable) {
+						var ent = getEvent();
+						var x = moveLeft + ent.clientX - moveX;
+						var y = moveBottom + (moveY - ent.clientY);
+						obj.style.left = x + "px";
+						obj.style.bottom = y + "px";
+					}
+				};
+				document.onmouseup = function () {
+					if (moveable) {
+						var historywidth = obj.style.left;
+						var historyheight = obj.style.bottom;
+						historywidth = historywidth.replace('px', '');
+						historyheight = historyheight.replace('px', '');
+						sessionStorage.setItem("historywidth", historywidth);
+						sessionStorage.setItem("historyheight", historyheight);
+						document.onmousemove = docMouseMoveEvent;
+						document.onmouseup = docMouseUpEvent;
+						moveable = false;
+						moveX = 0;
+						moveY = 0;
+						moveBottom = 0;
+						moveLeft = 0;
+					}
+				};
+			};
+		}
+		$(document).ready(function () {
+			var AIimgSrc = [];
+			let chooseLive2d = 'aoba'
+			if (chooseLive2d === 'histoire') {
+				AIimgSrc.push(message_Path + "model/histoire/histoire.1024/texture_00.png");
+				AIimgSrc.push(message_Path + "model/histoire/histoire.1024/texture_01.png");
+				AIimgSrc.push(message_Path + "model/histoire/histoire.1024/texture_02.png");
+				AIimgSrc.push(message_Path + "model/histoire/histoire.1024/texture_03.png");
+			} else if (chooseLive2d === 'rem') {
+				AIimgSrc.push(message_Path + "model/rem/remu2048/texture_00.png");
+			} else if (chooseLive2d === 'aoba') {
+				AIimgSrc.push(message_Path + "model/aoba/textures/texture_00.png");
+			} else if (chooseLive2d === 'hijiki') {
+				AIimgSrc.push(message_Path + "model/hijiki/moc/hijiki.2048/texture_00.png");
+			} else if (chooseLive2d === 'tororo') {
+				AIimgSrc.push(message_Path + "model/tororo/moc/tororo.2048/texture_00.png");
+			}
+			var images = [];
+			var imgLength = AIimgSrc.length;
+			var loadingNum = 0;
+			for (var i = 0; i < imgLength; i++) {
+				images[i] = new Image();
+				images[i].src = AIimgSrc[i];
+				images[i].onload = function () {
+					loadingNum++;
+					if (loadingNum === imgLength) {
+						var live2dhidden = localStorage.getItem("live2dhidden");
+						if (live2dhidden === "0") {
+							setTimeout(function () {
+								$('#open_live2d').fadeIn(200);
+							}, 1300);
+						} else {
+							setTimeout(function () {
+								$('#landlord').fadeIn(200);
+							}, 1300);
+						}
+						let model = '';
+						if (chooseLive2d === 'histoire') {
+							model = message_Path + "model/histoire/model.json";
+						} else if (chooseLive2d === 'rem') {
+							model = message_Path + "model/rem/model.json";
+						} else if (chooseLive2d === 'aoba') {
+							model = message_Path + "model/aoba/model.json";
+						} else if (chooseLive2d === 'hijiki') {
+							model = message_Path + "model/hijiki/hijiki.model.json";
+						} else if (chooseLive2d === 'tororo') {
+							model = message_Path + "model/tororo/tororo.model.json";
+						}
+						setTimeout(function () {
+							loadlive2d("live2d", model);
+						}, 1000);
+						initLive2d();
+						images = null;
+					}
+				}
+			}
+		});
+	}
+</script>
+  
+  
+  
+  <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://player.lmih.cn/player/js/player.js" id="myhk" key="demo" m="1"></script>
+
+
+  
+</div>
+<script>
+
+  let sideBarOpen = 'sidebar-open';
+  let body = document.body;
+  let back2Top = document.querySelector('#back_to_top'),
+    back2TopText = document.querySelector('#back_to_top_text'),
+    drawerBox = document.querySelector('#drawer_box'),
+    rightSideBar = document.querySelector('.sidebar'),
+    viewport = document.querySelector('body');
+
+  function scrollAnimation(currentY, targetY) {
+
+    let needScrollTop = targetY - currentY
+    let _currentY = currentY
+    setTimeout(() => {
+      const dist = Math.ceil(needScrollTop / 10)
+      _currentY += dist
+      window.scrollTo(_currentY, currentY)
+      if (needScrollTop > 10 || needScrollTop < -10) {
+        scrollAnimation(_currentY, targetY)
+      } else {
+        window.scrollTo(_currentY, targetY)
+      }
+    }, 1)
+  }
+
+  back2Top.addEventListener("click", function (e) {
+    scrollAnimation(document.scrollingElement.scrollTop, 0);
+    e.stopPropagation();
+    return false;
+  });
+
+  window.addEventListener('scroll', function (e) {
+    let percent = document.scrollingElement.scrollTop / (document.scrollingElement.scrollHeight - document.scrollingElement.clientHeight) * 100;
+    if (percent > 1 && !back2Top.classList.contains('back-top-active')) {
+      back2Top.classList.add('back-top-active');
+    }
+    if (percent == 0) {
+      back2Top.classList.remove('back-top-active');
+    }
+    if (back2TopText) {
+      back2TopText.textContent = Math.floor(percent);
+    }
+  });
+
+
+  let hasCacu = false;
+  window.onresize = function () {
+    calcuHeight();
+  }
+
+  function calcuHeight() {
+    // 动态调整站点概览高度
+    if (!hasCacu && back2Top.classList.contains('pisces') || back2Top.classList.contains('gemini')) {
+      let sideBar = document.querySelector('.sidebar');
+      let navUl = document.querySelector('#site_nav');
+      sideBar.style = 'margin-top:' + (navUl.offsetHeight + navUl.offsetTop + 15) + 'px;';
+      hasCacu = true;
+    }
+  }
+  calcuHeight();
+
+  let open = false, MOTION_TIME = 300, RIGHT_MOVE_DIS = '320px';
+
+  if (drawerBox) {
+    let rightMotions = document.querySelectorAll('.right-motion');
+    let right = drawerBox.classList.contains('right');
+
+    let transitionDir = right ? "transition.slideRightIn" : "transition.slideLeftIn";
+
+    let openProp, closeProp;
+    if (right) {
+      openProp = {
+        paddingRight: RIGHT_MOVE_DIS
+      };
+      closeProp = {
+        paddingRight: '0px'
+      };
+    } else {
+      openProp = {
+        paddingLeft: RIGHT_MOVE_DIS
+      };
+      closeProp = {
+        paddingLeft: '0px'
+      };
+    }
+
+    drawerBox.onclick = function () {
+      open = !open;
+      window.Velocity(rightSideBar, 'stop');
+      window.Velocity(viewport, 'stop');
+      window.Velocity(rightMotions, 'stop');
+      if (open) {
+        window.Velocity(rightSideBar, {
+          width: RIGHT_MOVE_DIS
+        }, {
+          duration: MOTION_TIME,
+          begin: function () {
+            window.Velocity(rightMotions, transitionDir, {});
+          }
+        })
+        window.Velocity(viewport, openProp, {
+          duration: MOTION_TIME
+        });
+      } else {
+        window.Velocity(rightSideBar, {
+          width: '0px'
+        }, {
+          duration: MOTION_TIME,
+          begin: function () {
+            window.Velocity(rightMotions, {
+              opacity: 0
+            });
+          }
+        })
+        window.Velocity(viewport, closeProp, {
+          duration: MOTION_TIME
+        });
+      }
+      for (let i = 0; i < drawerBox.children.length; i++) {
+        drawerBox.children[i].classList.toggle('muse-line');
+      }
+      drawerBox.classList.toggle(sideBarOpen);
+    }
+  }
+
+  // 链接跳转
+  let newWindow = 'true'
+  if (newWindow === 'true') {
+    let links = document.querySelectorAll('.post-body a')
+    links.forEach(item => {
+      if (!item.classList.contains('btn')) {
+        item.setAttribute("target", "_blank");
+      }
+    })
+  }
+
+  let faSearch = document.querySelector('#fa_search');
+  faSearch.addEventListener('click', function () {
+    document.querySelector('#search_mask').style = ''
+  })
+
+  // 代码高亮
+  hljs.initHighlightingOnLoad();
+  
+  // 离开当前页title变化
+  var leaveTitle = '';
+  if (leaveTitle) {
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState == 'hidden') {
+        normal_title = document.title;
+        document.title = leaveTitle;
+      } else {
+        document.title = normal_title;
+      }
+    });
+  }
+
+</script>
+  </div>
+</body>
+
+  <div class="search-mask" id="search_mask" style="display: none;">
+  <div class="search-box">
+    <div class="search-title">
+      <i class="fa fa-search"></i>
+      <div class="input-box">
+        <input id="search" type="text" class="language" data-lan="search" placeholder="搜索">
+      </div>
+      <i id="close" class="fa fa-times-circle"></i>
+    </div>
+    <div class="stat-box">
+      <span id="stat_count">0</span><span class="language" data-lan="stat">条相关条目，使用了</span><span id="stat_times">0</span><span class="language" data-lan="stat-time">毫秒</span>
+      <hr>
+    </div>
+    <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/"" data-c="
+          &lt;p&gt;问题：&lt;/p&gt;
+&lt;p&gt;1、创建maven项目的时候，jdk版本是1.5版本，而自己安装的是1.7或者1.8版本。&lt;/p&gt;
+&lt;p&gt;2、每次右键项目名-maven-&amp;gt;update project 时候，项目jdk版本变了，变回1.5版本或者其他版本&lt;/p&gt;
+&lt;p&gt;解决办法如下:&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;此办法修改maven设置文件,以后所有的项目默认JDK版本都为自己设置的&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;修改settings.xml&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;profile&amp;gt;
+    &amp;lt;id&amp;gt;jdk-1.8&amp;lt;/id&amp;gt;
+     &amp;lt;activation&amp;gt;
+          &amp;lt;activeByDefault&amp;gt;true&amp;lt;/activeByDefault&amp;gt;
+          &amp;lt;jdk&amp;gt;1.8&amp;lt;/jdk&amp;gt;
+      &amp;lt;/activation&amp;gt;
+&amp;lt;properties&amp;gt;
+&amp;lt;maven.compiler.source&amp;gt;1.8&amp;lt;/maven.compiler.source&amp;gt;
+&amp;lt;maven.compiler.target&amp;gt;1.8&amp;lt;/maven.compiler.target&amp;gt;
+&amp;lt;maven.compiler.compilerVersion&amp;gt;1.8&amp;lt;/maven.compiler.compilerVersion&amp;gt;
+&amp;lt;/properties&amp;gt;
+&amp;lt;/profile&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;更改IDEA设置&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1591630435988.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如图所示,确保所指文件路径为你修改过的文件&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;重新加载Maven项目&lt;br&gt;
+点击如图所示地方,重新加载Maven项目即可&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1591630571223.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;完成修改.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+">修改Maven项目默认JDK版本</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/"" data-c="
+          &lt;h2 id=&#34;dao&#34;&gt;DAO&lt;/h2&gt;
+&lt;p&gt;DAO(Database Access Object)数据库访问对象.&lt;br&gt;
+一个面向对象的数据库接口，它显露了 Microsoft Jet 数据库引擎（由 Microsoft Access 所使用），并允许 Visual Basic 开发者通过 ODBC 像直接连接到其他数据库一样，直接连接到 Access 表。DAO 最适用于单系统应用程序或小范围本地分布使用。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;basedaodao&#34;&gt;BaseDAO(DAO)&lt;/h4&gt;
+&lt;p&gt;封装针对于数据表的通用操作&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.DAO;
+
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: BaseDAO
+ * @Desc:  封装针对于数据表的通用操作
+ * @package com.DAO
+ * @project DailyDemo
+ * @date 2020/6/4 11:58
+ */
+public class BaseDAO {
+
+    /**
+     * 更新一条数据
+     * @param conn  Connection
+     * @param sql  String
+     * @param args Object
+     */
+    static int update(Connection conn, String sql,Object ...args) throws SQLException {
+        QueryRunner qr = new QueryRunner();
+        int update = qr.update(conn, sql, args);
+        return update;
+    }
+
+
+    /**
+     * 查询一条数据
+     * @param conn  Connection
+     * @param clazz  Class&amp;lt;T&amp;gt;
+     * @param sql  String
+     * @param args   Object
+     * @param &amp;lt;T&amp;gt; T
+     * @return T
+     */
+    static &amp;lt;T&amp;gt; T select(Connection conn,Class&amp;lt;T&amp;gt; clazz,String sql,Object ...args) throws SQLException {
+
+        BeanHandler&amp;lt;T&amp;gt; bh = new BeanHandler&amp;lt;&amp;gt;(clazz);
+
+        QueryRunner qr = new QueryRunner();
+        T query = qr.query(conn, sql, bh, args);
+
+        return query;
+    }
+
+    /**
+     * 查询多条数据
+     * @param conn  Connection
+     * @param clazz  Class&amp;lt;T&amp;gt;
+     * @param sql  String
+     * @param args   Object
+     * @param &amp;lt;T&amp;gt; T
+     * @return List&amp;lt;T&amp;gt;
+     * @throws SQLException e
+     */
+    static &amp;lt;T&amp;gt; List&amp;lt;T&amp;gt; selectAll(Connection conn, Class&amp;lt;T&amp;gt; clazz, String sql, Object ...args) throws SQLException {
+
+        BeanListHandler&amp;lt;T&amp;gt; bh = new BeanListHandler&amp;lt;&amp;gt;(clazz);
+
+        QueryRunner qr = new QueryRunner();
+        List&amp;lt;T&amp;gt; query = qr.query(conn, sql, bh, args);
+
+        return query;
+    }
+
+    /**
+     * 查询特殊值
+     * @param conn  Connection
+     * @param clazz  Class&amp;lt;T&amp;gt;
+     * @param sql  String
+     * @param args   Object
+     * @param &amp;lt;T&amp;gt; T
+     * @return List&amp;lt;T&amp;gt;
+     * @throws SQLException e
+     */
+    static &amp;lt;T&amp;gt; List&amp;lt;T&amp;gt; getValue(Connection conn,Class&amp;lt;T&amp;gt; clazz,String sql,Object ...args) throws SQLException {
+
+        ScalarHandler&amp;lt;T&amp;gt; sh = new ScalarHandler&amp;lt;&amp;gt;();
+
+        QueryRunner qr = new QueryRunner();
+        List&amp;lt;T&amp;gt; execute = qr.execute(conn, sql, sh, args);
+
+        return execute;
+    }
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;persondao&#34;&gt;PersonDAO&lt;/h4&gt;
+&lt;p&gt;规范针对于Person表的常用操作&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.DAO;
+
+import com.bean.Person;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: PersonDAO
+ * @Desc:  规范针对于Person表的常用操作
+ * @package com.DAO
+ * @project ExampleDemo
+ * @date 2020/6/4 14:53
+ */
+public interface PersonDAO {
+
+    /**
+     * 插入一条记录
+     * @param conn Connection
+     * @param p Person
+     */
+    void insert(Connection conn ,Person p) throws SQLException;
+
+    /**
+     * 更新一条记录
+     * @param conn Connection
+     * @param id int
+     */
+    void updateById(Connection conn, Person p ,int id) throws SQLException;
+
+    /**
+     * 删除一条记录
+     * @param conn Connection
+     * @param id int
+     */
+    void deleteById(Connection conn ,int id) throws SQLException;
+
+    /**
+     * 查询
+     * @param conn Connection
+     * @param id int
+     * @return Person
+     */
+    Person selectById(Connection conn, Person p,int id) throws SQLException;
+
+    /**
+     * 查询所有记录
+     * @param conn Connection
+     * @param aClass  Class&amp;lt;Person&amp;gt;
+     * @return List&amp;lt;Person&amp;gt;
+     */
+    List&amp;lt;Person&amp;gt; selectAll(Connection conn, Class&amp;lt;Person&amp;gt; aClass) throws SQLException;
+
+    /**
+     * 查询特殊值
+     * @param conn Connection
+     * @param &amp;lt;T&amp;gt; T
+     * @return List&amp;lt;T&amp;gt;
+     */
+    &amp;lt;T&amp;gt; List&amp;lt;T&amp;gt; getValues(Connection conn) throws SQLException;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;persondaoimpl&#34;&gt;PersonDAOImpl&lt;/h4&gt;
+&lt;p&gt;作为对Person表的具体操作实现类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.DAO;
+
+import com.bean.Person;
+import com.utils.JdbcUtils;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: PersonDAOImpl
+ * @Desc:  作为对Person表的具体操作实现类
+ * @package com.DAO
+ * @project ExampleDemo
+ * @date 2020/6/4 18:10
+ */
+public class PersonDAOImpl extends BaseDAO implements PersonDAO {
+
+    @Override
+    public void insert(Connection conn, Person p) throws SQLException {
+        String sql = &amp;quot;insert into `person` values (null,?,?,?,?)&amp;quot;;
+        int update = update(conn, sql, null, p.getName(), p.getAge(), p.getGender(), p.getBirthday());
+        System.out.println(update + &amp;quot;条数据被修改&amp;quot;);
+    }
+
+    @Override
+    public void updateById(Connection conn, Person p, int id) throws SQLException {
+        String sql = &amp;quot;update `person` set `name` = ? , `age` = ? , `gender` = ? , `birthday` = ? where `id` = ? &amp;quot;;
+        int update = update(conn, sql, p.getName(), p.getAge(), p.getGender(), p.getBirthday(), id);
+        System.out.println(update + &amp;quot;条数据被修改&amp;quot;);
+    }
+
+    @Override
+    public void deleteById(Connection conn, int id) throws SQLException {
+        String sql = &amp;quot;delete from `person` where `id` = ? &amp;quot;;
+        int update = update(conn, sql, id);
+        System.out.println(update + &amp;quot;条数据被修改&amp;quot;);
+    }
+
+    @Override
+    public Person selectById(Connection conn, Person p, int id) throws SQLException {
+        String sql = &amp;quot;select * from `person` where `id` = ?&amp;quot;;
+        Person person = select(conn, p.getClass(), sql, id);
+        return person;
+    }
+
+    @Override
+    public List&amp;lt;Person&amp;gt; selectAll(Connection conn, Class&amp;lt;Person&amp;gt; aClass) throws SQLException {
+        String sql = &amp;quot;select * from `person`&amp;quot;;
+        List&amp;lt;Person&amp;gt; people = selectAll(conn, Person.class, sql);
+        return people;
+    }
+
+
+    @Override
+    public &amp;lt;T&amp;gt; List&amp;lt;T&amp;gt; getValues(Connection conn) throws SQLException {
+        String sql = &amp;quot;select count(*) from `person`&amp;quot;;
+        List&amp;lt;Long&amp;gt; getValue = getValue(conn, Long.class, sql);
+        return (List&amp;lt;T&amp;gt;) getValue;
+    }
+
+    /**
+     * 测试更新数据
+     */
+    @Test
+    public void Test01() {
+        Connection conn = JdbcUtils.getConnection();
+        Date date = new Date(165456156146L);
+        Person person = new Person(0, &amp;quot;Dell&amp;quot;, 10, &amp;quot;女&amp;quot;, date);
+        try {
+            updateById(conn, person, 21);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            JdbcUtils.closeResource(conn);
+        }
+    }
+
+    /**
+     * 测试查询数据
+     */
+    @Test
+    public void Test02() {
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConnection();
+            List&amp;lt;Person&amp;gt; people = selectAll(conn, Person.class);
+
+            Iterator&amp;lt;Person&amp;gt; iterator = people.iterator();
+            while (iterator.hasNext()) {
+                Person person = iterator.next();
+                System.out.println(person.toString());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            JdbcUtils.closeResource(conn);
+        }
+    }
+
+    /**
+     * 查询特殊值
+     */
+    @Test
+    public void Test03() {
+        Connection conn = null;
+        try {
+            conn = JdbcUtils.getConnection();
+            List&amp;lt;Object&amp;gt; values = getValues(conn);
+            values.forEach(System.out::println);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            JdbcUtils.closeResource(conn);
+        }
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;bean&#34;&gt;Bean&lt;/h2&gt;
+&lt;h4 id=&#34;person&#34;&gt;Person&lt;/h4&gt;
+&lt;p&gt;对应数据库中person表&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.bean;
+
+import java.sql.Date;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: Person
+ * @Desc: 对应数据库中person表
+ * @package com.bean
+ * @project DailyDemo
+ * @date 2020/6/4 11:49
+ */
+public class Person {
+
+    private int id;
+    private String name;
+    private int age;
+    private String gender;
+    private Date birthday;
+
+    public Person() {
+    }
+
+    public Person(int id, String name, int age, String gender, Date birthday) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.birthday = birthday;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    @Override
+    public String toString() {
+        return &amp;quot;Person{&amp;quot; +
+                &amp;quot;id=&amp;quot; + id +
+                &amp;quot;, name=&#39;&amp;quot; + name + &#39;\&#39;&#39; +
+                &amp;quot;, age=&amp;quot; + age +
+                &amp;quot;, gender=&#39;&amp;quot; + gender + &#39;\&#39;&#39; +
+                &amp;quot;, birthday=&amp;quot; + birthday +
+                &#39;}&#39;;
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;utils&#34;&gt;Utils&lt;/h2&gt;
+&lt;h4 id=&#34;dbutils&#34;&gt;DbUtils&lt;/h4&gt;
+&lt;p&gt;JDBC工具类, 使用 &lt;code&gt;druid&lt;/code&gt;用于获取数据库连接和关闭资源&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.utils;
+
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+import org.apache.commons.dbutils.DbUtils;
+import org.junit.Test;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Properties;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: JdbcUtils
+ * @Desc: JDBC工具类, 用于获取数据库连接和关闭资源
+ * @package com.utils
+ * @project DailyDemo
+ * @date 2020/6/4 12:00
+ */
+public class JdbcUtils {
+
+    /**
+     * Druid数据库连接池获取连接
+     *
+     * @return Connection实例
+     */
+    public static Connection getConnection() {
+
+        InputStream is = null;
+        Connection conn;
+        try {
+            is = ClassLoader.getSystemClassLoader().getResourceAsStream(&amp;quot;resource\\druid.properties&amp;quot;);
+
+            Properties prop = new Properties();
+
+            prop.load(is);
+            DataSource ds = DruidDataSourceFactory.createDataSource(prop);
+            conn = ds.getConnection();
+            System.out.println(&amp;quot;获得数据库连接&amp;quot;);
+            return conn;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 关闭资源
+     *
+     * @param conn Connection 对象
+     * @param stmt Statement 对象
+     * @param rs   ResultSet 对象
+     */
+    public static void closeResource(Connection conn, Statement stmt, ResultSet rs) {
+
+        if (rs != null) {
+            DbUtils.closeQuietly(rs);
+            System.out.println(rs.getClass() + &amp;quot;关闭完成&amp;quot;);
+        } else if (stmt != null) {
+            DbUtils.closeQuietly(stmt);
+            System.out.println(stmt.getClass() + &amp;quot;关闭完成&amp;quot;);
+        } else if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &amp;quot;关闭完成&amp;quot;);
+        }
+
+    }
+
+    /**
+     * 重载方法
+     * @param conn  Connection
+     * @param rs ResultSet
+     */
+    public static void closeResource(Connection conn, ResultSet rs) {
+
+        if (rs != null) {
+            DbUtils.closeQuietly(rs);
+            System.out.println(rs.getClass() + &amp;quot;关闭完成&amp;quot;);
+        } else if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &amp;quot;关闭完成&amp;quot;);
+        }
+
+    }
+
+    /**
+     * 重载方法
+     * @param conn  Connection
+     * @param stmt  Statement
+     */
+    public static void closeResource(Connection conn, Statement stmt) {
+
+        if (stmt != null) {
+            DbUtils.closeQuietly(stmt);
+            System.out.println(stmt.getClass() + &amp;quot;关闭完成&amp;quot;);
+        } else if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &amp;quot;关闭完成&amp;quot;);
+        }
+
+    }
+
+    /**
+     * 重载
+     * @param conn Connection
+     */
+    public static void closeResource(Connection conn) {
+
+        if (conn != null) {
+            DbUtils.closeQuietly(conn);
+            System.out.println(conn.getClass() + &amp;quot;关闭完成&amp;quot;);
+        }
+
+    }
+
+    /**
+     * 测试方法 getConnection() 和 closeResource()
+     */
+    @Test
+    public void Test01() {
+        Connection conn = getConnection();
+        System.out.println(conn);
+        closeResource(conn, null, null);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;resource&#34;&gt;resource&lt;/h4&gt;
+&lt;p&gt;druid.properties配置文件&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-properties&#34;&gt;url=jdbc:mysql://localhost:3306/dailytext?serverTimezone=UTC
+username=user1
+password=102850
+driverClassName=com.mysql.cj.jdbc.Driver
+initialSiize=10
+maxActive=10
+&lt;/code&gt;&lt;/pre&gt;
+">数据库访问对象DAO</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/"" data-c="
+          &lt;h4 id=&#34;获取数据库连接的几种方式以及preparedstatement和statement的对比&#34;&gt;获取数据库连接的几种方式以及PreparedStatement和Statement的对比&lt;/h4&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;获取数据库连接的几种方式&#34;&gt;获取数据库连接的几种方式&lt;/h2&gt;
+&lt;p&gt;ps.数据库URL : String url = &amp;quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;amp;serverTimezone=UTC&amp;quot;&lt;/p&gt;
+&lt;p&gt;​	 MySQL5.0--&amp;gt;driverClass=&amp;quot;com.mysql.jdbc.Driver&amp;quot;;&lt;/p&gt;
+&lt;p&gt;​     MySQL8.0--&amp;gt;driverClass=&amp;quot;com.mysql.cj.jdbc.Driver&amp;quot;;&lt;/p&gt;
+&lt;h4 id=&#34;通过driver实例获取&#34;&gt;通过Driver实例获取&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;//创建Driver对象
+Driver driver = new Driver();
+//数据库URL
+String url = &amp;quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;amp;serverTimezone=UTC&amp;quot;;
+//Properties存放用户名和密码
+Properties prop = new Properties();
+prop.setProperty(&amp;quot;user&amp;quot;, &amp;quot;user1&amp;quot;);
+prop.setProperty(&amp;quot;password&amp;quot;, &amp;quot;102850&amp;quot;);
+//调用connect(),传入url和prop
+Connection connect = driver.connect(url, prop);
+//获得连接
+System.out.println(connect);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;通过drivermanager获取&#34;&gt;通过DriverManager获取&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Jdbc8Test01 {
+
+    // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
+    static final String JDBC_DRIVER = &amp;quot;com.mysql.cj.jdbc.Driver&amp;quot;;
+    static final String DB_URL = &amp;quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;amp;serverTimezone=UTC&amp;quot;;
+
+    // 数据库的用户名与密码
+    static final String USER = &amp;quot;root&amp;quot;;
+    static final String PASS = &amp;quot;102850&amp;quot;;
+
+    public static void main(String[] args) {
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            // 注册 JDBC 驱动
+            Class.forName(JDBC_DRIVER);
+
+            // 打开链接
+            System.out.println(&amp;quot;连接数据库...&amp;quot;);
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+            // 执行查询
+            System.out.println(&amp;quot; 实例化Statement对象...&amp;quot;);
+            stmt = conn.createStatement();
+            String sql;
+            sql = &amp;quot;SELECT id, name, url FROM websites&amp;quot;;
+            ResultSet rs = stmt.executeQuery(sql);
+
+            // 展开结果集数据库
+            while (rs.next()) {
+                // 通过字段检索
+                int id = rs.getInt(&amp;quot;id&amp;quot;);
+                String name = rs.getString(&amp;quot;name&amp;quot;);
+                String url = rs.getString(&amp;quot;url&amp;quot;);
+
+                // 输出数据
+                System.out.print(&amp;quot;ID: &amp;quot; + id);
+                System.out.print(&amp;quot;, 站点名称: &amp;quot; + name);
+                System.out.print(&amp;quot;, 站点 URL: &amp;quot; + url);
+                System.out.print(&amp;quot;\n&amp;quot;);
+            }
+            // 完成后关闭
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception se) {
+            // 处理 JDBC 错误
+            se.printStackTrace();
+        }// 处理 Class.forName 错误
+        finally {
+            // 关闭资源
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se2) {
+            }// 什么都不做
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        System.out.println(&amp;quot;Goodbye!&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;从配置文件获取信息&#34;&gt;从配置文件获取信息&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;配置文件内容&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;user=root
+password=102850
+url=jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;amp;serverTimezone=UTC
+#MySQL8.0以上版本 JDBC 驱动名
+driverClass=com.mysql.cj.jdbc.Driver
+#MySQL8.0以下版本 JDBC 驱动名
+#driverClass=com.mysql.jdbc.Driver
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;实例代码&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;//获取输入流(两种方法)
+InputStream is = Jtest01.class.getClassLoader().getResourceAsStream(&amp;quot;jdbc.properties&amp;quot;);
+//main方法中文件路径为Project下
+FileInputStream fis = new FileInputStream(&amp;quot;TEST02\\src\\jdbc.properties&amp;quot;);
+
+Properties prop = new Properties();
+prop.load(fis);
+
+//获取配置信息
+String user = prop.getProperty(&amp;quot;user&amp;quot;);
+String password = prop.getProperty(&amp;quot;password&amp;quot;);
+String url = prop.getProperty(&amp;quot;url&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;String driverClass = prop.getProperty(&amp;quot;driverClass&amp;quot;);&lt;/p&gt;
+&lt;p&gt;//注册驱动&lt;br&gt;
+Class.forName(driverClass);&lt;/p&gt;
+&lt;p&gt;//获得Connection对象,建立与数据库的连接&lt;br&gt;
+Connection connection1 = DriverManager.getConnection(url, user, password);&lt;br&gt;
+Connection connection2 = DriverManager.getConnection(url, prop);&lt;/p&gt;
+&lt;p&gt;System.out.println(connection1);&lt;br&gt;
+System.out.println(connection2);&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;```
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;druid数据库连接池&#34;&gt;druid数据库连接池&lt;/h4&gt;
+&lt;p&gt;配置文件druid.proterties&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-properties&#34;&gt;url=jdbc:mysql://localhost:3306/dailytext?serverTimezone=UTC
+username=user1
+password=102850
+driverClassName=com.mysql.cj.jdbc.Driver
+initialSiize=10
+maxActive=10
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;代码实现&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;
+//从数据库连接池获取连接
+Properties prop = new Properties();
+
+//ClassLoader.getSystemClassLoader().getResourceAsStream(&amp;quot;String pathName&amp;quot;)
+// 此种方式读取文件位置默认为src目录下(在main方法和在@Test方法中路径一样)
+InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&amp;quot;Resource\\druid.properties&amp;quot;);
+
+//FileInputStream(&amp;quot;String pathName&amp;quot;)
+// 在main方法中,此种方式读取文件位置默认为Project目录下
+// 在@Test方法中,此种方式读取文件位置默认为Module目录下
+// FileInputStream is = new FileInputStream(&amp;quot;JDBC\\src\\Resource\\druid.properties&amp;quot;);
+prop.load(is);
+DataSource source = DruidDataSourceFactory.createDataSource(prop);
+Connection conn = source.getConnection();
+System.out.println(conn);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;preparedstatement对比statement的优点&#34;&gt;PreparedStatement对比Statement的优点&lt;/h2&gt;
+&lt;p&gt;(好处是基于PreparedStatement的预编译SQL语句功能)&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;解决SQL语句拼串的问题&lt;/li&gt;
+&lt;li&gt;解决SQL注入问题&lt;/li&gt;
+&lt;li&gt;实现对Blob类型的字段操作&lt;/li&gt;
+&lt;li&gt;提高批量操作时的效率&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;对数据库执行操作&#34;&gt;对数据库执行操作&lt;/h2&gt;
+&lt;h4 id=&#34;步骤&#34;&gt;步骤&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;1.创建文件输入流,从配置文件读取配置信息,
+    ①.文件输入流位于main方法中时文件读取位置在Project目录下
+    ②.文件输入流位于@Test方法中时文件读取位置在Module目录下
+2.传入文件流
+3.读取配置信息
+4.加载JDBC驱动
+5.通过DriverManager创建connection对象,获取数据库连接
+6.编写SQL语句,使用占位符
+7.创建statement(PreparedStatement)对象,传入SQL语句进行预编译
+8.填充占位符
+9.执行SQL操作
+10.关闭资源
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;示例代码&#34;&gt;示例代码&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static void main(String[] args) {
+
+    FileInputStream fis = null;
+    Connection conn = null;
+    PreparedStatement pst = null;
+
+    try {
+        //获取文件输入流(main方法中文件位置在当前Project下)
+        fis = new FileInputStream(&amp;quot;JDBC\\jdbc.properties&amp;quot;);
+
+        //传入文件流
+        Properties prop = new Properties();
+        prop.load(fis);
+
+        //读取配置信息
+        String url = prop.getProperty(&amp;quot;url&amp;quot;);
+        String driverClass = prop.getProperty(&amp;quot;driverClass&amp;quot;);
+        System.out.println(url);
+        System.out.println(driverClass);
+
+        //加载JDBC驱动
+        Class.forName(driverClass);
+
+        //获取数据库连接
+        conn = DriverManager.getConnection(url, prop);
+        System.out.println(conn);
+
+        //预编译SQL语句
+        //String sql = &amp;quot;INSERT INTO person(`name`,`age`,`gender`,`birthday`)VALUES(?,?,?,?)&amp;quot;;
+        String sql = &amp;quot;update person set `name`=? where `name`=?&amp;quot;;
+        pst = conn.prepareStatement(sql);
+
+        //填充占位符
+        pst.setString(1, &amp;quot;Eclipse&amp;quot;);
+        pst.setString(2, &amp;quot;Idea&amp;quot;);
+
+        //执行操作(Insert;Update;Delete)
+        boolean execute = pst.execute();
+        System.out.println(execute);
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        //关闭连接
+        try {
+            if (pst!=null)
+                pst.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        try {
+            if (conn!=null)
+                conn.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        try {
+            if (fis!=null)
+                fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+">JDBC相关配置和操作</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/"" data-c="
+          &lt;h4 id=&#34;获取配置文件的两种方式区别&#34;&gt;获取配置文件的两种方式区别&lt;/h4&gt;
+&lt;!-- more --&gt;
+&lt;h6 id=&#34;classloadergetsystemclassloadergetresourceasstream&#34;&gt;ClassLoader.getSystemClassLoader().getResourceAsStream()&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;//ClassLoader.getSystemClassLoader().getResourceAsStream(&amp;quot;String pathName&amp;quot;) 
+// 此种方式读取文件位置默认为src目录下(在main方法和在@Test方法中路径一样)
+InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&amp;quot;Resource\\druid.properties&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h6 id=&#34;fileinputstream&#34;&gt;FileInputStream()&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;//FileInputStream(&amp;quot;String pathName&amp;quot;) 
+// 在main方法中,此种方式读取文件位置默认为Project目录下
+// 在@Test方法中,此种方式读取文件位置默认为Module目录下
+FileInputStream is = new FileInputStream(&amp;quot;JDBC\\src\\Resource\\druid.properties&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;getresourceasstream的区别&#34;&gt;getResourceAsStream的区别&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;Class.getResourceAsStream(String path)&lt;/code&gt; ： path 不以&lt;code&gt;’/&#39;&lt;/code&gt;开头时默认是从此类所在的包下取资源，以&lt;code&gt;’/&#39;&lt;/code&gt;开头则是从ClassPath根下获取。其只是通过path构造一个绝对路径，最终还是由ClassLoader获取资源。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Class.getClassLoader.getResourceAsStream(String path)&lt;/code&gt; ：默认则是从ClassPath根下获取，path不能以&lt;code&gt;’/&#39;&lt;/code&gt;开头，最终是由ClassLoader获取资源。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ServletContext. getResourceAsStream(String path)&lt;/code&gt;：默认从WebAPP根目录下取资源，Tomcat下path是否以&lt;code&gt;’/&#39;&lt;/code&gt;开头无所谓。&lt;/li&gt;
+&lt;/ol&gt;
+">Java中读取文件的几种路径配置</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/"" data-c="
+          &lt;p&gt;总结两种获取InputStream对象的方法的区别&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;&lt;code&gt;getResourceAsStream(String path)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;默认path路径位于Class所在Module的src目录下 .&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&amp;quot;jdbc.properties&amp;quot;);
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;FileInputStream(&amp;quot;String path&amp;quot;)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在main方法中时, 默认路径为为Project下; 在@Test单元测试方法中路径为当前Class所在Module目录下 .&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;FileInputStream is = new FileInputStream(&amp;quot;jdbc.properties&amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+">两种获取InputStream对象的方法</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/shi-wu-ge-chi-ji-bie/"" data-c="
+          &lt;h3 id=&#34;事务隔离级别学习总结&#34;&gt;事务隔离级别学习总结&lt;/h3&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;事务的四个属性&#34;&gt;事务的四个属性&lt;/h2&gt;
+&lt;h5 id=&#34;原子性&#34;&gt;原子性&lt;/h5&gt;
+&lt;p&gt;每一个事务都是一个不可分割的部分，事务中的操作要么都发生，要么都不发生。&lt;/p&gt;
+&lt;h5 id=&#34;隔离性&#34;&gt;隔离性&lt;/h5&gt;
+&lt;p&gt;一个事务不被其他事物的数据所干扰,多个并发事务互相隔离&lt;/p&gt;
+&lt;h5 id=&#34;一致性&#34;&gt;一致性&lt;/h5&gt;
+&lt;p&gt;一个事务执行会从一种统一的状态,改变为另一种统一的状态.事务前后数据完整性保持一致.&lt;/p&gt;
+&lt;h5 id=&#34;持久性&#34;&gt;持久性&lt;/h5&gt;
+&lt;p&gt;一旦事务被提交就持久化到文件中,不可改变&lt;/p&gt;
+&lt;h2 id=&#34;事务的并发问题&#34;&gt;事务的并发问题&lt;/h2&gt;
+&lt;h5 id=&#34;脏读&#34;&gt;脏读&lt;/h5&gt;
+&lt;p&gt;一个事务读取了另一事物未提交的数据&lt;/p&gt;
+&lt;h5 id=&#34;不可重复读&#34;&gt;不可重复读&lt;/h5&gt;
+&lt;p&gt;一个事务在多次读取某一数据的期间,另一事务对数据进行了&lt;code&gt;update&lt;/code&gt;操作并且&lt;code&gt;commit&lt;/code&gt;,导致的数据多次读取过程中出现不一致的现象,主要针对于 &lt;code&gt;update&lt;/code&gt; 操作 .&lt;/p&gt;
+&lt;h5 id=&#34;幻读&#34;&gt;幻读&lt;/h5&gt;
+&lt;p&gt;一个事务在多次读取某一数据的期间,另一事务对数据进行了&lt;code&gt;insert&lt;/code&gt;并且&lt;code&gt;commit&lt;/code&gt;,导致的数据多次读取过程中出现不一致的现象,主要针对于 &lt;code&gt;insert&lt;/code&gt; 操作 .&lt;/p&gt;
+&lt;h2 id=&#34;事物的隔离级别&#34;&gt;事物的隔离级别&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;事务隔离级别&lt;/th&gt;
+&lt;th&gt;脏读&lt;/th&gt;
+&lt;th&gt;不可重复读&lt;/th&gt;
+&lt;th&gt;幻读&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;读未提交(read-uncommitted)&lt;/td&gt;
+&lt;td&gt;存在&lt;/td&gt;
+&lt;td&gt;存在&lt;/td&gt;
+&lt;td&gt;存在&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;读已提交(read-committed)&lt;/td&gt;
+&lt;td&gt;不存在&lt;/td&gt;
+&lt;td&gt;存在&lt;/td&gt;
+&lt;td&gt;存在&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;可重复读(repeatable-read)&lt;/td&gt;
+&lt;td&gt;不存在&lt;/td&gt;
+&lt;td&gt;不存在&lt;/td&gt;
+&lt;td&gt;存在&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;串行化(serializable)&lt;/td&gt;
+&lt;td&gt;不存在&lt;/td&gt;
+&lt;td&gt;不存在&lt;/td&gt;
+&lt;td&gt;不存在&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;事务并发问题代码演示&#34;&gt;事务并发问题代码演示&lt;/h2&gt;
+&lt;h5 id=&#34;事务相关操作代码&#34;&gt;事务相关操作代码&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;-- 创建表
+CREATE TABLE `bank` (
+	`id` INT NOT NULL AUTO_INCREMENT COMMENT &#39;账号&#39;,
+	`name` VARCHAR(10) NOT NULL,
+	`pwd` VARCHAR(30) NOT NULL,
+	`balance` INT NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`)
+)ENGINE=INNODB CHARSET=utf8;
+
+-- 查看表属性
+DESC `bank`;
+
+-- 修改多个字段名(change)或者字段属性(modify)
+ALTER TABLE `bank` 
+MODIFY `pwd` VARCHAR(50),
+CHANGE `name` `user` VARCHAR(20);
+
+-- 插入数据
+INSERT INTO `bank`
+(`user`,`pwd`,`balance`)
+VALUES
+(&#39;Rick&#39;,MD5(&#39;123456&#39;),2000),
+(&#39;Beth&#39;,MD5(&#39;000000&#39;),3000),
+(&#39;Jerry&#39;,MD5(&#39;102850&#39;),1000),
+(&#39;Summer&#39;,MD5(&#39;123456&#39;),500),
+(&#39;Morty&#39;,MD5(&#39;123456&#39;),500);
+
+-- 查看表
+SELECT * FROM `bank`;
+
+-- 事务隔离级别练习
+
+SHOW VARIABLES LIKE &#39;autocommit&#39;; -- 查看自动提交状态
+SET autocommit=0; -- 关闭自动提交
+-- 查看事务隔离级别
+SHOW VARIABLES LIKE &#39;transaction_isolation&#39;; -- MySQL默认repeatable-read
+SELECT @@transaction_isolation;  -- 全局
+SELECT @@session.transaction_isolation; -- 当前会话
+
+-- 设置事务隔离级别(不加 session 为设置全局)
+SET SESSION TRANSACTION ISOLATION LEVEL
+-- read uncommitted; -- 读未提交
+-- read committed; -- 读已提交(避免脏读)
+-- repeatable read; -- 可重复读(避免脏读和不可重复读)
+-- serializable; -- 串行化
+
+-- 开启事务
+START TRANSACTION; 
+/*
+create
+insert
+update
+drop
+delete
+truncate
+*/
+
+COMMIT; -- 提交
+ROLLBACK; -- 回滚
+-- 结束事务
+
+SET autocommit=1; -- 事务结束后开启自动提交
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;autocommit属性&#34;&gt;autocommit属性&lt;/h5&gt;
+&lt;p&gt;DDL操作一旦执行就会自动提交,不能更改属性(如创建表)&lt;/p&gt;
+&lt;p&gt;DML默认自动提交,可以修改(增删改查)&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;MySQL默认开启自动提交,即autocommit=1;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;默认一条SQL语句就为一个事务,执行完毕后便自动提交,&lt;/p&gt;
+&lt;p&gt;此种情况下开启事务&lt;code&gt;start transaction&lt;/code&gt;;MySQL会把之间的SQL语句作为一个事务执行,直到&lt;code&gt;commit&lt;/code&gt;或者&lt;code&gt;rollback&lt;/code&gt;,才会持久化到数据库中&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;设置autocommit=0后&lt;/p&gt;
+&lt;p&gt;即使没有执行&lt;code&gt;start transaction&lt;/code&gt;,系统也默认开始事务，语句执行完毕后不会持久化到数据库,直到执行&lt;code&gt;commit&lt;/code&gt;或者&lt;code&gt;rollback&lt;/code&gt;才会提交,持久化到数据库&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h5 id=&#34;事务并发问题代码&#34;&gt;事务并发问题代码&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT @@session.tx_isolation;   
+SELECT @@tx_isolation;  
+
+  
+SET SESSION TRANSACTION ISOLATION LEVEL read uncommitted;  
+SET SESSION TRANSACTION ISOLATION LEVEL read committed;  
+SET SESSION TRANSACTION ISOLATION LEVEL repeatable read;  
+SET SESSION TRANSACTION ISOLATION LEVEL serializable;  
+
+start transaction;
+
+--建表
+drop table AMOUNT;
+CREATE TABLE `AMOUNT` (
+`id`  varchar(10) NULL,
+`money`  numeric NULL
+)
+;
+--插入数据
+insert into amount(id,money) values(&#39;A&#39;, 800);
+insert into amount(id,money) values(&#39;B&#39;, 200);
+insert into amount(id,money) values(&#39;C&#39;, 1000);
+--测试可重复读，插入数据
+insert into amount(id,money) values(&#39;D&#39;, 1000);
+
+--设置事务
+SET SESSION TRANSACTION ISOLATION LEVEL read uncommitted;  
+SELECT @@tx_isolation;  
+--开启事务
+start transaction;
+
+--脏读演示，读到其他事务未提交的数据
+--案列1，事务一：A向B转200，事务二：查看B金额变化，事务一回滚事务
+update amount set money = money - 200 where id = &#39;A&#39;;
+update amount set money = money + 200 where id = &#39;B&#39;;
+
+--不可重复读演示，读到了其他事务提交的数据
+--案列2，事务一：B向A转200，事务二：B向C转200转100
+SET SESSION TRANSACTION ISOLATION LEVEL read committed;  
+
+--开启事务
+start transaction;
+--两个事务都查一下数据(转账之前需要，查一下金额是否够满足转账)
+select * from amount;
+--事务一：B向A转200
+update amount set money = money - 200 where id = &#39;B&#39;;
+update amount set money = money + 200 where id = &#39;A&#39;;
+
+commit;
+--事务二：B向C转200转100
+update amount set money = money - 100 where id = &#39;B&#39;;
+update amount set money = money + 100 where id = &#39;C&#39;;
+commit;
+--从事务二的角度来看，读到了事务一提交事务的数据，导致金额出现负数
+
+--幻读演示
+--案列3，事务一：B向A转200，事务二：B向C转200转100
+SET SESSION TRANSACTION ISOLATION LEVEL repeatable read;  
+
+--开启事务
+start transaction;
+--两个事务都查一下数据(转账之前需要，查一下金额是否够满足转账)
+select * from amount;
+--事务一：B向A转200
+update amount set money = money - 200 where id = &#39;B&#39;;
+update amount set money = money + 200 where id = &#39;A&#39;;
+
+commit;
+--事务二：B向C转200转100
+update amount set money = money - 100 where id = &#39;B&#39;;
+update amount set money = money + 100 where id = &#39;C&#39;;
+commit;
+--从事务二的角度来看，读到了事务一提交事务的数据，导致金额出现负数
+
+&lt;/code&gt;&lt;/pre&gt;
+">事务隔离级别</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/using-zergba-and-slider-widgets-to-control-virtual-and-physical-rgb-led/"" data-c="
+          &lt;p&gt;This code will allow zeRGBa or individual Red Blue Green Sliders to control the colour of both a Virtual LED (vRGB LED) and any physical one connected to the device.&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;使用Arduino UNO和W5100网络扩展板,通过Blynk平台,控制RGB灯,LED灯,读取温度信息&lt;br&gt;
+W5100占用&lt;code&gt;pin[10,11,12,13]&lt;/code&gt;,还有一个SD卡复位引脚&lt;br&gt;
+用PWM引脚控制共阴RGB彩灯&lt;code&gt;(R:pin3 G:pin5 B:pin6)&lt;/code&gt;&lt;br&gt;
+IO引脚控制LED灯&lt;code&gt;(pin7)&lt;/code&gt;&lt;br&gt;
+DS18B20温度传感器信号引脚&lt;code&gt;(pin2)&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-C++&#34;&gt;#define BLYNK_PRINT Serial
+
+
+#include &amp;lt;SPI.h&amp;gt;
+#include &amp;lt;Ethernet.h&amp;gt;
+#include &amp;lt;BlynkSimpleEthernet.h&amp;gt;
+#include &amp;lt;OneWire.h&amp;gt;
+#include &amp;lt;DallasTemperature.h&amp;gt;
+
+#define W5100_CS  10
+#define SDCARD_CS 4
+// 数据输出脚接开发板数字引脚2,正极和信号脚之间接一个4.7K欧姆的电阻
+#define ONE_WIRE_BUS 2
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&amp;amp;oneWire);
+
+BlynkTimer timer;
+
+
+// Define your Physical RGB LED pins here
+#define RedPin 3  // Set RED RGB pin   pin3PWM
+#define GrnPin 5  // Set GREEN RGB pin pin5
+#define BluPin 6  // Set BLUE RGB pin  pin6
+
+// Define your Virtual pins here
+#define zeRGBa V0  // Set virtual RGB widget
+#define rSlide V1  // Set virtual RGB widget
+#define gSlide V2  // Set virtual RGB widget
+#define bSlide V3  // Set virtual RGB widget
+#define vRed V4  // Set virtual Red LED widget
+#define vGreen V5  // Set virtual Green LED widget
+#define vBlue V6  // Set virtual Blue LED widget
+#define vRGB V7  // Set virtual RGB widget
+#define HEXdisplay V8  // Set virtual RGB widget
+
+int rrr, ggg, bbb;  // Set RED BLUE GREEN channels
+
+
+// You should get Auth Token in the Blynk App项目秘钥
+char auth[] = &amp;quot;lcO6bY4nLagj_JSluxbPtg8ooH4sKcYX&amp;quot;; //项目名称:W5100_zeRGB
+//char auth[] = &amp;quot;bGflzsrkCC04r0sRuF_s6Vebzo45kTbZ&amp;quot;;//项目名称:共阴RGB控制
+//char ssid[] = &amp;quot;Tenda_A0D9B8&amp;quot;;
+//char pass[] = &amp;quot;yang1314ai&amp;quot;;
+//char server[] = &amp;quot;xxx.xxx.xxx.xxx&amp;quot;;  // IP for your Local Server
+char server[] = &amp;quot;iot.haotech.xyz&amp;quot;;  // URL for Blynk Cloud Server IP地址
+int port = 8080; //端口号
+
+
+
+void setup() {
+  Serial.begin(9600);  // BLYNK_PRINT data
+
+  pinMode(SDCARD_CS, OUTPUT);
+  digitalWrite(SDCARD_CS, HIGH); // Deselect the SD card
+  pinMode(RedPin, OUTPUT);  // Set RED pinMode
+  pinMode(GrnPin, OUTPUT);  // Set GREEN pinMode
+  pinMode(BluPin, OUTPUT);  // Set BLUE pinMode
+
+  Blynk.virtualWrite(vRGB, 255);  // Activate vRGB
+  Blynk.setProperty(vRGB, &amp;quot;color&amp;quot;, &amp;quot;#000000&amp;quot;);  // Set vRGB to Black
+
+//  WiFi.begin(ssid, pass); 
+//  Blynk.config(auth, server, port);
+//  Blynk.connect();
+  Blynk.begin(auth ,server , port);
+  sensors.begin();
+//定时
+  timer.setInterval(5000, getTemp);
+}
+
+
+
+BLYNK_CONNECTED() {
+  Blynk.syncAll();  // Synchronize hardware with App widgets when connected
+}
+
+
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
+
+
+
+//===== RED slider =====
+BLYNK_WRITE(rSlide) { // START Blynk Function
+  rrr = param.asInt(); // get a RED channel value
+  Blynk.virtualWrite(vRed, rrr);  // Red LED intensity
+  Blynk.virtualWrite(zeRGBa, rrr, ggg, bbb);  // Sync zeRGBa position
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+//===== GREEN slider =====
+BLYNK_WRITE(gSlide) { // START Blynk Function
+  ggg = param.asInt(); // get a GREEN channel value
+  Blynk.virtualWrite(vGreen, ggg);  // Green LED intensity
+  Blynk.virtualWrite(zeRGBa, rrr, ggg, bbb);  // Sync zeRGBa position
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+//===== BLUE slider =====
+BLYNK_WRITE(bSlide) { // START Blynk Function
+  bbb = param.asInt(); // get a BLUE channel value
+  Blynk.virtualWrite(vBlue, bbb);  // Blue LED intensity
+  Blynk.virtualWrite(zeRGBa, rrr, ggg, bbb);  // Sync zeRGBa position
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+
+//===== zeRGBa Widget  =====
+BLYNK_WRITE(zeRGBa) { // START Blynk Function
+  rrr = param[0].asInt(); // get a RED channel value
+  ggg = param[1].asInt(); // get a GREEN channel value
+  bbb = param[2].asInt(); // get a BLUE channel value
+  Blynk.virtualWrite(rSlide, rrr);  // Sync RED Slider position
+  Blynk.virtualWrite(vRed, rrr);  // Red LED intensity
+  Blynk.virtualWrite(gSlide, ggg);  // Sync Green slider position
+  Blynk.virtualWrite(vGreen, ggg);  // Green LED intensity
+  Blynk.virtualWrite(bSlide, bbb);  // Sinc Blue slider position
+  Blynk.virtualWrite(vBlue, bbb);  // Blue LED intensity
+  RGBprocess(); // Run Arduino funtion
+}  // END Blynk Function
+
+
+
+//===== Physical RGB LED Control and HEX conversion =====
+void RGBprocess() {  // START Arduino funtion
+
+  /*----- Comment out unneeded grouping based on device and RGB type ----- */
+  // ESP with Common Anode+ RGB LED (共阳RGB灯)
+//   analogWrite(RedPin, (255 - rrr) * 4 + 4); // Write to RED RGB pin
+//   analogWrite(GrnPin, (255 - ggg) * 4 + 4); // Write to GREEN RGB pin
+//   analogWrite(BluPin, (255 - bbb) * 4 + 4); // Write to BLUE RGB pin
+
+  // ESP with Common Cathode- RGB LED (共阴RGB灯)
+  analogWrite(RedPin, rrr*4+4);  // Write to RED RGB pin
+  analogWrite(GrnPin, ggg*4+4);  // Write to GREEN RGB pin
+  analogWrite(BluPin, bbb*4+4);  // Write to BLUE RGB pin
+
+  // Arduino with Common Anode+ RGB LED
+  //analogWrite(RedPin, 255-rrr);  // Write to RED RGB pin
+  //analogWrite(GrnPin, 255-ggg);  // Write to GREEN RGB pin
+  //analogWrite(BluPin, 255-bbb);  // Write to BLUE RGB pin
+
+  // Arduino with Common Cathode- RGB LED
+  //analogWrite(RedPin, rrr);  // Write to RED RGB pin
+  //analogWrite(GrnPin, ggg);  // Write to GREEN RGB pin
+  //analogWrite(BluPin, bbb);  // Write to BLUE RGB pin
+  /*-----------------------------------------------------------------------*/
+
+  String strRED = String(rrr, HEX);  // Convert RED DEC to HEX
+  if (rrr &amp;lt; 16) {
+    strRED = String(&amp;quot;0&amp;quot; + strRED);  // Buffer with 0 if required
+  }  // END if
+  String strGRN = String(ggg, HEX);  // Convert GREEN DEC to HEX
+  if (ggg &amp;lt; 16)  {
+    strGRN = String(&amp;quot;0&amp;quot; + strGRN);  // Buffer with 0 if required
+  }  // END if
+  String strBLU = String(bbb, HEX);  // Convert BLUE DEC to HEX
+  if (bbb &amp;lt; 16)  {
+    strBLU = String(&amp;quot;0&amp;quot; + strBLU);  // Buffer with 0 if required
+  }  // END if
+  String HEXstring = String(&amp;quot;#&amp;quot; + strRED + strGRN + strBLU);  // Combine HEX fragments
+  HEXstring.toUpperCase();  // Change HEX value to all upper case for ease of visuals
+  Blynk.setProperty(HEXdisplay, &amp;quot;color&amp;quot;, HEXstring);  // Change background colour of HEX Data Label
+  Blynk.virtualWrite(HEXdisplay, HEXstring);  // Display HEX data
+  Blynk.setProperty(vRGB, &amp;quot;color&amp;quot;, HEXstring);  // Send formatted HEX colour to vRGB
+}  // END Arduino Function
+
+//获取温湿度函数
+void getTemp() {
+
+  sensors.requestTemperatures(); // 获取温度
+  Serial.print(&amp;quot;Temperature for the device 1 (index 0) is: &amp;quot;);
+  float val = sensors.getTempCByIndex(0);
+  Serial.println(val); 
+
+ //发送给app
+  Blynk.virtualWrite(V10,val); 
+//  delay(2000);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;APP界面如下图&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1590985856684.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+">Using zeRGBa and Slider Widgets to control virtual and physical RGB LED</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/gridea-bo-ke-wu-fa-zai-ru-css-yang-shi-de-jie-jue-ban-fa/"" data-c="
+          &lt;p&gt;👉今日在使用Gridea客户端更新博客的过程中,推送到远端仓库后内容显示正常,但是无法载入主题样式,就是没有载入CSS样式,折腾了一下午在搞懂问题出在哪里了,下面说一下自己的解决思路.&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;问题描述&#34;&gt;问题描述&lt;/h4&gt;
+&lt;p&gt;😵首先,文章写完后,push到远程仓库,查看网站发现CSS样式没有载入,设置的主题没有生效,然后怀疑是CSS样式文件的问题,又重新push了一遍,问题依旧.&lt;/p&gt;
+&lt;h4 id=&#34;解决过程&#34;&gt;解决过程&lt;/h4&gt;
+&lt;p&gt;然后怀疑可能是远程仓库的原因,push操作没有更新CSS文件,然后直接上传了本地的CSS文件,发现问题依旧存在.&lt;br&gt;
+然后又怀疑是本地仓库的问题,将output文件夹文件内容删除后,重新push,然而还是没有解决.&lt;br&gt;
+然后又在官网重新下载了Gridea客户端(发生了一个小插曲,网页上放了GitHub和Gitee的源,发现Gitee的下载速度还不如GitHub的下载速度),重新安装.push,还是没解决.&lt;/p&gt;
+&lt;h4 id=&#34;解决办法&#34;&gt;解决办法&lt;/h4&gt;
+&lt;p&gt;😄最后突然想到自己的远程配置页面域名重新配置过,写的是仓库的域名,更换为静态页面的域名后问题顺利解决.&lt;/p&gt;
+&lt;h4 id=&#34;问题思考&#34;&gt;问题思考&lt;/h4&gt;
+&lt;p&gt;🙄推测是Gridea生成HTML网页时CSS的link地址是根据域名来的,由于我填的是项目的域名,导致无法找到文件,而且在部署完成的主页内点击任何链接都会跳转到Coding的登录页面,所以导致无法正确载入文件,不只是CSS文件,应该是所有的文件都无法载入.&lt;/p&gt;
+&lt;h4 id=&#34;配置参考图片&#34;&gt;配置参考图片&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;正确配置域名信息&lt;/strong&gt; (静态页面域名)&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1590924410945.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1590924522127.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;strong&gt;错误配置域名信息&lt;/strong&gt; (项目域名)&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1590924493053.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1590924531297.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+">Gridea博客无法载入CSS样式的解决办法</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/mysql/"" data-c="
+          &lt;h2 id=&#34;mysql学习记录&#34;&gt;MySQL学习记录&lt;/h2&gt;
+&lt;p&gt;DDL : 数据库定义语句(Datebase Define Language)&lt;br&gt;
+DML : 数据管理语句(Datebase Manage Language)&lt;br&gt;
+DQL : 数据库查询语言(Datebase Query Language)&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h5 id=&#34;数据库定义语句datebase-define-language&#34;&gt;数据库定义语句(Datebase Define Language)&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;-- DDL语句
+SHOW DATABASES; -- 列出所有数据库
+CREATE DATABASE `dailytext`; -- 创建数据库
+DROP DATABASE `dailyText`; -- 删除数据库
+USE `dailytext`; -- 更换数据库
+SHOW TABLES; -- 列出数据表
+CREATE TABLE IF NOT EXISTS `person` (
+	`id` INT AUTO_INCREMENT,
+	`name` VARCHAR(10) NOT NULL,
+	`age` INT,
+	`gender` ENUM (&#39;man&#39;,&#39;woman&#39;,&#39;other&#39;),
+	`bd` DATE,
+	PRIMARY KEY (`id`)
+)ENGINE=INNODB ,CHARSET=utf8 ; -- 创建表
+DESC person; -- 显示表结构
+ALTER TABLE persons RENAME person; -- 重命名表名
+ALTER TABLE person ADD gender VARCHAR(3) DEFAULT &#39;男&#39; COMMENT &#39;性别&#39;; -- 添加字段
+ALTER TABLE `person` ADD `married` ENUM(&#39;yes&#39;,&#39;no&#39;) DEFAULT NULL first/after Column_Name; -- 指定位置添加字段
+ALTER TABLE `person` MODIFY `married` VARCHAR(5) DEFAULT NULL; -- 只能修改字段属性以及字段长度
+ALTER TABLE `person` CHANGE `married` `marry` VARCHAR(10) DEFAULT NULL; -- 修改字段名,字段属性以及字段长度
+ALTER TABLE `person` DROP `marryy`; -- 删除字段
+
+
+-- delete，drop，truncate 都有删除表的作用，区别在于：
+/*
+ 1、delete 和 truncate 仅仅删除表数据，drop 连表数据和表结构一起删除，打个比方，delete 是单杀，truncate 是团灭，drop 是把电脑摔了。
+ 2、delete 是 DML 语句，操作完以后如果没有不想提交事务还可以回滚，truncate 和 drop 是 DDL 语句，操作完马上生效，不能回滚，打个比方，delete 是发微信说分手，后悔还可以撤回，truncate 和 drop 是直接扇耳光说滚，不能反悔。
+ 3、执行的速度上，drop&amp;gt;truncate&amp;gt;delete，打个比方，drop 是神舟火箭，truncate 是和谐号动车，delete 是自行车。
+ */
+TRUNCATE TABLE `person`; -- 删除表内容,自增列计数器清空
+DELETE TABLE `person`; -- 删除表内容,自增列计数器不清空
+							-- 若数据表使用InnoDB引擎,重启数据库后自增列会清零,数据保存在内存中
+							-- 若数据表使用MyISAM引擎,重启数据库后自增列也不会清零,数据保存在文件中
+DROP TABLE `person`; -- 删除表内容和结构
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;数据管理语句datebase-manage-language&#34;&gt;数据管理语句(Datebase Manage Language)&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;-- DML语句
+   -- 添加一条数据
+      -- 方式一
+	INSERT INTO person
+	VALUES (NULL,&#39;Mariya&#39;,12,&#39;女&#39;);
+      -- 方式二
+        INSERT INTO person
+        (`name`,`age`,`gender`,`birthday`)
+        VALUES
+        (&#39;jicka&#39;,16,&#39;女&#39;,NOW());
+
+   -- 修改一条数据
+	UPDATE person
+	SET `name`=&#39;Rick&#39; ,`age`=13 , `gender`=DEFAULT
+	WHERE `name`=&#39;Mariya&#39; OR `age`=12; 
+	
+	UPDATE person
+	SET age=50
+	WHERE `name`=&#39;Rick&#39;;
+	
+	UPDATE person
+	SET `birthday`=&#39;1956-02-29&#39; -- 设置时间格式为字符串
+	WHERE `name`=&#39;Rick&#39;;
+	
+	UPDATE person
+	SET `birthday`=CURRENT_TIME
+	WHERE id&amp;gt;1 AND id &amp;lt;14;
+	
+	
+	-- 删除一条数据(自增列不清除,会继续原来的增加)
+    DELETE FROM `person`
+    WHERE `name`=&#39;Gazor&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;数据库查询语言datebase-query-language&#34;&gt;数据库查询语言(Datebase Query Language)&lt;/h5&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;-- DQL语句
+-- 基本查询语句:
+SELECT * FROM cartoon;
+
+-- 连接查询
+/* 
+内连接 :显示两表都有的内容,where和on无区别,应搭配on
+语法:
+	select column_name 
+	from A 
+	inner join B 
+	where/on A.column_name=B.column_name
+*/
+SELECT c.`name` 姓名,c.`married` 已婚,p.`age` 年龄,p.`gender` 性别1,c.`gender` 性别2
+FROM `cartoon` c
+INNER JOIN `person` p
+ON c.`name` = p.`name`
+ORDER BY c.`id`;
+
+
+/* 左连接 :左表为主表(A),结果显示左表中全部信息,右表中不存在的字段名用 NULL 填充
+语法: 
+	select column_name 
+	from A 
+	left join B 
+	on A.column_name=B.column_name
+*/
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM person p LEFT JOIN cartoon c
+ON p.`name`=c.`name`;
+
+
+/* 右连接 :右表为主表(A),结果显示右表中全部信息,左表中不存在的字段内容用 NULL 填充
+语法: 
+	select column_name 
+	from A 
+	right join B 
+	on A.column_name=B.column_name
+*/
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM person p RIGHT JOIN cartoon c
+ON p.`name`=c.`name`;
+
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM cartoon c RIGHT JOIN person p
+ON p.`name`=c.`name`; -- 此结果和上面左连接查询例子一致
+
+SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
+FROM dailytext.`cartoon` c RIGHT JOIN shmebluk.`person` p
+ON p.`name`=c.`name`; -- 可选择不同数据库的表连接,用 datebase.table_name 选择
+&lt;/code&gt;&lt;/pre&gt;
+">MySQL</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/arduino_ds18b20_oled-display/"" data-c="
+          &lt;p&gt;DS18b20获取到温度数值保存到变量中，然后和天气图标还有滚动字幕一起发送到OLED 屏幕上显示&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;需要用到的库均可在Arduino库管理器下载。&lt;br&gt;
+电路图：&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1585405671072.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+图中屏幕接线已在代码中写出，温度传感器date口需要接一个4.7k欧的电阻；&lt;br&gt;
+最终效果如下图：&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1585404643686.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-c++&#34;&gt;#include &amp;lt;Arduino.h&amp;gt;
+#include &amp;lt;U8g2lib.h&amp;gt;
+
+#include &amp;lt;OneWire.h&amp;gt;
+#include &amp;lt;DallasTemperature.h&amp;gt;
+
+// DS18b20数据输出脚接开发板数字引脚
+#define ONE_WIRE_BUS 8
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&amp;amp;oneWire);
+
+#ifdef U8X8_HAVE_HW_SPI
+#include &amp;lt;SPI.h&amp;gt;
+#endif
+#ifdef U8X8_HAVE_HW_I2C
+#include &amp;lt;Wire.h&amp;gt;
+#endif
+//选择自己的屏幕驱动
+U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, /* clock=*/ 4, /* data=*/ 5, /* cs=*/ 3, /* dc=*/ 7, /* reset=*/ 6);
+
+#define SUN_CLOUD  1
+//绘制天气图标
+void drawWeatherSymbol(u8g2_uint_t x, u8g2_uint_t y, uint8_t symbol)
+{ 
+  switch(symbol)
+  {
+    case SUN_CLOUD:
+      u8g2.setFont(u8g2_font_open_iconic_weather_6x_t);
+      u8g2.drawGlyph(x, y, 65); 
+      break;      
+  }
+}
+//绘制显示界面
+void drawWeather(uint8_t symbol, int val)
+{
+  //绘制天气符号
+  drawWeatherSymbol(0, 48, symbol);
+  //绘制温度
+  u8g2.setFont(u8g2_font_logisoso32_tf);
+  u8g2.setCursor(48+3, 42);
+  u8g2.print(val);
+  u8g2.print(&amp;quot;°C&amp;quot;);   // requires enableUTF8Print()
+}
+//绘制滚动字幕
+void drawScrollString(int16_t offset, const char *s)
+{
+  static char buf[36];  // should for screen with up to 256 pixel width 
+  size_t len;
+  size_t char_offset = 0;
+  u8g2_uint_t dx = 0;
+  size_t visible = 0;
+  
+
+  u8g2.setDrawColor(0);   // clear the scrolling area
+  u8g2.drawBox(0, 49, u8g2.getDisplayWidth()-1, u8g2.getDisplayHeight()-1);
+  u8g2.setDrawColor(1);   // set the color for the text
+    
+  
+  len = strlen(s);
+  if ( offset &amp;lt; 0 )
+  {
+    char_offset = (-offset)/8;
+    dx = offset + char_offset*8;
+    if ( char_offset &amp;gt;= u8g2.getDisplayWidth()/8 )
+      return;
+    visible = u8g2.getDisplayWidth()/8-char_offset+1;
+    strncpy(buf, s, visible);
+    buf[visible] = &#39;\0&#39;;
+    u8g2.setFont(u8g2_font_8x13_mf);
+    u8g2.drawStr(char_offset*8-dx, 62, buf);
+  }
+  else
+  {
+    char_offset = offset / 8;
+    if ( char_offset &amp;gt;= len )
+      return; // nothing visible
+    dx = offset - char_offset*8;
+    visible = len - char_offset;
+    if ( visible &amp;gt; u8g2.getDisplayWidth()/8+1 )
+      visible = u8g2.getDisplayWidth()/8+1;
+    strncpy(buf, s+char_offset, visible);
+    buf[visible] = &#39;\0&#39;;
+    u8g2.setFont(u8g2_font_8x13_mf);
+    u8g2.drawStr(-dx, 62, buf);
+  }
+  
+}
+
+void draw(const char *s, uint8_t symbol, int val)
+{
+  int16_t offset = -(int16_t)u8g2.getDisplayWidth();
+  int16_t len = strlen(s);
+  
+  u8g2.clearBuffer();         // clear the internal memory
+  drawWeather(symbol, val);    // draw the icon and degree only once
+  for(;;)             // then do the scrolling
+  {
+  
+    drawScrollString(offset, s);        // no clearBuffer required, screen will be partially cleared here
+    u8g2.sendBuffer();        // transfer internal memory to the display
+
+    delay(20);
+    offset+=2;
+    if ( offset &amp;gt; len*8+1 )
+      break;
+  }
+}
+
+
+void setup(void) {
+  Serial.begin(9600);
+  sensors.begin(); //初始化DS18b20
+  u8g2.begin();  //初始化OLED
+  u8g2.enableUTF8Print();//打开UTF8输出
+}
+
+void loop(void) {
+    sensors.requestTemperatures(); // 发送命令获取温度
+    int val = sensors.getTempCByIndex(0);//将获取到的温度数值保存在变量中
+    draw(&amp;quot;What a beautiful day!&amp;quot;, SUN_CLOUD, val);//调用函数绘制最终界面
+}
+&lt;/code&gt;&lt;/pre&gt;
+">Arduino+DS18b20+OLED Display</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/solution-of-reverse-arrays/"" data-c="
+          &lt;p&gt;👉A method to reverse an array .&lt;br&gt;
+For example : array a {1,2,3,4,5}&lt;br&gt;
+reversed : array b {5,4,3,2,1}&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;已知一个数组 a 用程序实现把数组中的元素值交换，&lt;br&gt;
+交换后的数组 b 并在控制台输出交换后的数组元素。&lt;br&gt;
+刚开始想法是使用两个for循环，一个递增用来获取a数组索引，一个递减用来获取b数组索引值。后来发现总是只能替换b 数组的最后一位元素，其他的替换不了，后来想到两个索引值相加等于a.length，遂采用单独一个for循环即可获取两个索引值，画蛇添足了。&lt;br&gt;
+🌝Ps. 解决这样的问题总能带给我兴奋感，这可能就是我想学编程的一个原因吧。&lt;br&gt;
+实现代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class test01 {
+    public static void main(String[] args) {
+        int[] a={9,8,7,6,5,4,3,2,1};
+        test01 t = new test01();
+        int[] b = t.reverse(a);
+        System.out.println(Arrays.toString(b));
+    }
+
+    public int[] reverse(int[] a) {
+        int[] b = new int[a.length];
+        for (int i = 0; i &amp;lt; a.length; i++) {
+            b[a.length-1-i]=a[i];
+        }
+        return b;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+">Solution of reverse arrays</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/compare-the-contents-of-two-arrays/"" data-c="
+          &lt;p&gt;✍️Define a methed to compare the contents of two arrays and return the result .&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;定义一个方法，用于比较两个数组的内容是否相同.&lt;br&gt;
+👉思路：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;定义两个数组，分别使用静态初始化完成数组元素的初始化&lt;/li&gt;
+&lt;li&gt;定义一个方法，用于比较两个数组的内容是否相同&lt;/li&gt;
+&lt;li&gt;比较两个数组的内容是否相同，按照下面的步骤实现就可以了&lt;br&gt;
+1.首先比较数组长度，如果长度不相同，数组内容肯定不相同，返回false&lt;br&gt;
+2.其次遍历，比较两个数组中的每一个元素，只要有元素不相同，返回false&lt;br&gt;
+3.最后循环遍历结束后，返回true&lt;br&gt;
+调用方法&lt;br&gt;
+输出结果&lt;br&gt;
+&lt;em&gt;代码如下：&lt;/em&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class test01 {
+    public static void main(String[] args) {
+        //定义两个数组，分别使用静态初始化完成数组元素的初始化
+        int[] a = {1, 2, 3, 4, 5};
+        int[] b = {1, 2, 3, 4, 6};
+        System.out.println();
+        test01 t = new test01();
+        //调用方法，输出结果
+        System.out.println(t.compare(a, b));
+    }
+    //定义一个方法，用于比较两个数组的内容是否相同
+    /*
+        两个明确：
+            返回值类型：boolean
+            参数：int[] arr, int[] arr2
+     */
+    public boolean compare(int[] a, int[] b) {
+        //首先比较数组长度，如果长度不相同，数组内容肯定不相同，返回false
+        if (a.length == b.length) {
+            //其次遍历，比较两个数组中的每一个元素，只要有元素不相同，返回false
+            for (int i = 0; i &amp;lt; a.length; i++) {
+                if (a[i] != b[i]) {
+                    return false;
+                }
+            }
+            // 遍历完成返回ture
+            return true;
+        }
+        return false;
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+">Compare the contents of two arrays</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/the-usage-of-and/"" data-c="
+          &lt;p&gt;It can remove the last digit of a number with &amp;quot;/10&amp;quot;.&lt;br&gt;
+It can get the last digit of a number with &amp;quot;%10&amp;quot;.&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;对10做除法可以去掉一个数的最后一位数。&lt;br&gt;
+对10取余可以得到一个数的最后一位数。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public static void main(String[] args) {
+        int num = 179/10;//除10可以去掉最后一位数字
+        int num1 = 179%10;//对10取余可以获取最后一位数字
+        System.out.println(&amp;quot;179/10得到&amp;quot;+num);
+        System.out.println(&amp;quot;179%10得到&amp;quot;+num1);
+    }&lt;/code&gt;&lt;/pre&gt;
+">The usage of "/" and "%"</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/Method-Overlonding/"" data-c="
+          &lt;p&gt;👉The method overloading is using one single method name with different parameters to created different methods .&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;今天重新学习了方法重载。&lt;br&gt;
+方法重载&lt;br&gt;
+方法重载是在一个类中，创建方法时用同一个方法名，但是有不同的参数的情况。&lt;br&gt;
+方法重载指在同一个类中，允许存在一个以上的同名方法，只要它们的参数列表不同即可，与修饰符和返回值类型无关。&lt;/p&gt;
+&lt;p&gt;多个方法在同一个类中&lt;br&gt;
+多个方法具有相同的方法名&lt;br&gt;
+多个方法的参数不相同，类型不同或者数量不同&lt;br&gt;
+✍️注意事项&lt;br&gt;
+1.参数列表：个数不同，数据类型不同，顺序不同&lt;br&gt;
+2.重载方法调用：JVM通过方法的参数列表，调用不同的方法&lt;br&gt;
+&lt;em&gt;示例如下&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class MethodDemo { 
+    public static void fn(int a) {
+         //方法体 
+    }
+    public static int fn(double a) { 
+        //方法体 
+    } 
+}
+public class MethodDemo { 
+    public static float fn(int a) {
+        //方法体 
+    }
+    public static int fn(int a , int b) {
+                  //方法体 
+    } 
+}&lt;/code&gt;&lt;/pre&gt;
+">Method Overlonding</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/Notebook/"" data-c="
+          &lt;p&gt;✏️Practice the usage of ArrayList all of String with a exampe of NoteBook.&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;📒ArrayList all of String的部分函数用法练习，以记事本的例子进行实现 , 顺便练习了一下成员函数的创建及使用。&lt;br&gt;
+做了一个记事本的程序，可以实现添加、删除、获取指定内容、改变指定内容（增删改查）、获取记事本的内容数量、指定位置插入的功能。&lt;br&gt;
+✂️学习把代码的业务逻辑部分和人机交互部分分离的思想。&lt;br&gt;
+🔘暂时还存在较多的代码重复的地方，还需要优化代码，暂时实现了基本的功能。&lt;br&gt;
+代码如下&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import java.util.ArrayList;
+import java.util.Scanner;
+
+public class NoteBook {
+    ArrayList&amp;lt;String&amp;gt; notes = new ArrayList&amp;lt;&amp;gt;();
+
+    public void add(String s) {
+        notes.add(s);
+    }
+
+    public String in() {
+        Scanner in = new Scanner(System.in);
+        String s = in.nextLine();
+        return s;
+    }
+
+    public String remove(int index) {
+        return (notes.remove(index));
+    }
+
+    public int getSize() {
+        int i = notes.size();
+        return i;
+    }
+
+    public String getNote(int index) {
+        return new String(notes.get(index));
+    }
+
+    public void insert(int index, String s) {
+        notes.add(index, s);
+    }
+
+    public String change(int index, String s) {
+        return (notes.set(index, s));
+    }
+
+    public static void main(String[] args) {
+        NoteBook nb = new NoteBook();
+
+        // 输入记录的内容储储存到notes中
+        System.out.println(&amp;quot;输入记录内容&amp;quot;);
+        String s = &amp;quot;&amp;quot;;
+        while (!s.equals(&amp;quot;结束&amp;quot;)) {
+            s = nb.in();
+            nb.add(s);
+        }
+        nb.remove(nb.getSize()-1);
+        System.out.println(&amp;quot;内容已记录&amp;quot;);
+
+        // 获取notes的总条数
+        int total;
+        total = nb.getSize();
+        System.out.println(&amp;quot;一共有&amp;quot; + total + &amp;quot;条&amp;quot;);
+
+        // 删除内容
+        System.out.println(&amp;quot;请输入要删除第几条记录&amp;quot;);
+        int index;
+        Scanner in = new Scanner(System.in);
+        index = in.nextInt() - 1;
+        s = nb.remove(index);
+        System.out.println(&amp;quot;已删除记录：&amp;quot; + s);
+
+        // 获取指定位置的内容
+        System.out.println(&amp;quot;请输入要查询第几条&amp;quot;);
+        index = in.nextInt()-1;
+        s=nb.getNote(index);
+        System.out.println(&amp;quot;内容是：&amp;quot;+s);
+
+        // 指定位置插入指定内容
+        System.out.println(&amp;quot;请输入要插入的位置&amp;quot;);
+        index = in.nextInt();
+        System.out.println(&amp;quot;请输入要插入的内容&amp;quot;);
+        s=in.nextLine();
+        nb.insert(index,s);
+        System.out.println(&amp;quot;插入成功&amp;quot;);
+
+        // 替换指定位置的内容
+        System.out.println(&amp;quot;请输入要替换的位置&amp;quot;);
+        index = in.nextInt();
+        System.out.println(&amp;quot;请输入要替换扥内容&amp;quot;);
+        s= in.nextLine();
+        nb.change(index,s);
+        System.out.println(&amp;quot;替换成功&amp;quot;);
+    }
+}&lt;/code&gt;&lt;/pre&gt;
+">NoteBook</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/height-inheritance/"" data-c="
+          &lt;p&gt;👨‍🏫When compare the string , &amp;quot;==&amp;quot; and &amp;quot;equals&amp;quot; are different in java . here is I I learned how to use them and when to use them .&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－&lt;br&gt;
+字符串对比方法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;“ == ” 它的应用场景大致分为两大类，第一类是用来比较基本数据类型的（Java中八大基本数据类型：byte,short,int,float,long,double,char,boolean），在基础数据类型之间他们是直接比较值的。第二类是用来比较对象的，它会直接比较两个对象的内存地址，也就是说，除非两个对象指向同一个地址，否则始终是false.&lt;/li&gt;
+&lt;li&gt;equals()方法是Object基类中的方法，所以任何类都会继承这个方法，只是有些类重写了这个方法，就比如String类，我们可以结合String类equals()源码来解释。&lt;br&gt;
+－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－（以上内容摘自网络，侵权删）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;例题&#34;&gt;例题：&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;身高是具有遗传性的，子女的身高和父母的身高有一定的关系。假定，父母和子女的身高遗传关系如下：&lt;/em&gt;&lt;br&gt;
+&lt;em&gt;儿子身高（厘米）＝(父亲身高＋母亲身高) ×1.08÷2&lt;/em&gt;&lt;br&gt;
+&lt;em&gt;女儿身高（厘米）＝(父亲身高×0.923＋母亲身高) ÷2&lt;/em&gt;&lt;br&gt;
+&lt;em&gt;现有父亲身高177CM,母亲身高165CM。求子女身高分别预计为多少?&lt;/em&gt;&lt;/p&gt;
+&lt;h4 id=&#34;我的练习代码&#34;&gt;我的练习代码：&lt;/h4&gt;
+&lt;p&gt;&lt;em&gt;练习了函数重载，成员函数，以及使用equals()方法比较字符串。&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import java.util.Scanner;
+
+public class Height {
+    int a;
+    int b;
+
+    Height(int a, int b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    public double sunHeight(int a, int b) {
+        double height = ((a + b) * 1.08 / 2);
+        return height;
+    }
+
+    public double dugHeight(int a, int b) {
+        double height = ((a * 0.923 + b) / 2);
+        return height;
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        System.out.println(&amp;quot;请输入父亲身高&amp;quot;);
+        int a = in.nextInt();
+        System.out.println(&amp;quot;请输入母亲身高&amp;quot;);
+        int b = in.nextInt();
+        Height height = new Height(a, b);
+        System.out.println(&amp;quot;请输入性别&amp;quot;);
+        String s = in.next();
+        String man = &amp;quot;男&amp;quot;;
+        String woman=&amp;quot;女&amp;quot;;
+        if (s.equals(man)) {
+            System.out.println(height.sunHeight(a, b));
+        } else if (s.equals(woman)) {
+            System.out.println(height.dugHeight(a, b));
+        } else {
+            System.out.println(&amp;quot;格式错误&amp;quot;);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;😂&lt;strong&gt;写在最后：这么简单一道题，让我写了这么长的代码，也不知道好不好&lt;/strong&gt;&lt;/p&gt;
+">Height Inheritance</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/clock/"" data-c="
+          &lt;p&gt;Learning object recognition and object interaction, a class member variables can be other class object, an object can be composed of other classes of objects, this object can be made him realize the interaction between the composition of the object.(From Youdao Dict)&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;学习内容&#34;&gt;学习内容：&lt;/h4&gt;
+&lt;p&gt;学习了对象的交识别和对象的交互，一个类的成员变量可以是其他类的对象，一个对象可以由其他类的对象组成，这个对象可以使他的组成对象之间实现交互。&lt;/p&gt;
+&lt;h4 id=&#34;代码描述&#34;&gt;代码描述：&lt;/h4&gt;
+&lt;p&gt;minute从0开始增加，加到59时然后归零，并与hour交互，每次归零，hour加 1 ，最后格式化输出类型“00:00”&lt;/p&gt;
+&lt;h4 id=&#34;练习代码如下&#34;&gt;练习代码如下：&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class Clock {
+    private Display hour = new Display(24);//创建一个Display的对象hour（带入参数）
+    private Display minute = new Display(60);//创建一个Display的对象minute（带入参数）
+    //开始走时间的函数（Clock的成员函数）
+    public void start() {
+        minute.increase();
+        //如果分钟值变为零，小时值加一
+        if (minute.getValue() == 0) {
+            hour.increase();
+        }
+        //格式化打印输出
+        System.out.printf(&amp;quot;%02d:%02d&amp;quot;, hour.getValue(), minute.getValue());
+        System.out.println();
+    }
+//主函数
+    public static void main(String[] args) {
+        Clock clock = new Clock();//创建对象clock
+        for (; ; ) {
+            clock.start();
+        }
+    }
+    //创建类Display
+    class Display {
+        private int limit = 0;
+        private int value = 0;
+        //函数重载
+        public Display(int limit) {
+            this.limit = limit;
+        }
+        //值增加，达到limit时重置为0
+        public void increase() {
+            value++;
+            if (value == limit) {
+                value = 0;
+            }
+        }
+        //返回value值
+        public int getValue() {
+            return value;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;描述关系如下图&#34;&gt;描述关系如下图&lt;/h3&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;https://shmebluk.github.io//post-images/1581322566712.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;h4 id=&#34;类型名称-display&#34;&gt;类型名称 Display&lt;/h4&gt;
+&lt;h5 id=&#34;接口-value&#34;&gt;接口 value&lt;/h5&gt;
+&lt;h5 id=&#34;接口-limit&#34;&gt;接口 limit&lt;/h5&gt;
+&lt;h5 id=&#34;接口-incraease&#34;&gt;接口 incraease&lt;/h5&gt;
+&lt;h5 id=&#34;接口-getvalue&#34;&gt;接口 getValue&lt;/h5&gt;
+&lt;h4 id=&#34;类型名称-clock&#34;&gt;类型名称 Clock&lt;/h4&gt;
+&lt;h5 id=&#34;接口-hour-display类的对象&#34;&gt;接口 hour （Display类的对象）&lt;/h5&gt;
+&lt;h5 id=&#34;接口-minute-display类的对象&#34;&gt;接口 minute （Display类的对象）&lt;/h5&gt;
+&lt;h4 id=&#34;对于对象clock属于clock类由两个display的对象组成分别是hour-minute&#34;&gt;对于对象clock，属于Clock类，由两个Display的对象组成，分别是hour、minute。&lt;/h4&gt;
+">Clock</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/scoring-system/"" data-c="
+          &lt;p&gt;👨‍💻Build a scoring system , give the score by referee , and entering the score in  system , then take out the max score and the min score , print the final score in the window .&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;👨‍💻做了一个打分系统，用户输入获得的分数，然后去掉一个最高分，去掉一个最低分，然后打印输出最终得分。&lt;br&gt;
+✏️练习数组的使用，定义数组，遍历数组，以及求数组的最值操作。&lt;br&gt;
+✏️练习定义方法和调用方法。&lt;br&gt;
+代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import java.util.Arrays;
+import java.util.Scanner;
+
+
+public class score {
+    public static void main(String[] args) {
+        //定义数组，长度为7
+        int[] arr = new int[7];
+        //用户输入分数，并写进数组内
+        Scanner in = new Scanner(System.in);
+        for (int i = 0; i &amp;lt; arr.length; i++) {
+            System.out.println(&amp;quot;请输入第&amp;quot; + (i + 1) + &amp;quot;个裁判的分数&amp;quot;);
+            arr[i] = in.nextInt();
+        }
+        //通过Arrays.stream().获取值
+        int min = Arrays.stream(arr).min().getAsInt();
+        int max = Arrays.stream(arr).max().getAsInt();
+        int sum = Arrays.stream(arr).sum();
+        System.out.println(max);
+        System.out.println(min);
+        System.out.println(sum);
+        //通过定义的方法获取最值
+        System.out.println(&amp;quot;getMax&amp;quot; + getMax(arr));
+        System.out.println(&amp;quot;getMin&amp;quot; + getMin(arr));
+        //计算最终得分
+        int score = (sum-min-max)/(arr.length-2);
+        System.out.println(&amp;quot;你的最终得分是：&amp;quot;+score+&amp;quot;分！！！&amp;quot;);
+    }
+    //定义getMax的方法（返回值int，参数Arrays）（成员函数）
+    public static int getMax(int[] arr) {
+        int num = arr[0];
+        for (int i = 0; i &amp;lt; arr.length; i++) {
+            if (num &amp;lt; arr[i]) {
+                num = arr[i];
+            }
+        }
+        return num;
+    }
+    //定义getMax的方法（返回值int，参数Arrays）（成员函数）
+    public static int getMin(int[] arr) {
+        int num = arr[0];
+        for (int i = 0; i &amp;lt; arr.length; i++) {
+            if (num &amp;gt; arr[i]) {
+                num = arr[i];
+            }
+        }
+        return num;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+">Scoring System</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/the-member-function/"" data-c="
+          &lt;p&gt;Today I learned the member function 。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;👨‍🎓成员函数就是定义在类的内部，具有参数和返回值（也可以没有）的函数，比如下面这一段程序👨‍💻中的&lt;code&gt;void random&lt;/code&gt;就是一个成员函数，还可以以类的名字定义一个函数，此时这个函数称为构造函数，具有参数的构造函数叫做重载。构造函数内可以通过&lt;code&gt;this ( )&lt;/code&gt; 来调用其他构造函数 但是必须放在函数体第一句，并且只能使用☝️一次。&lt;br&gt;
+还学习了使用 &lt;code&gt;random&lt;/code&gt; 创造一个随机数，使用&lt;code&gt;int + 变量 = 对象名 . nextInt( int )&lt;/code&gt; 把随机数赋值给变量，&lt;code&gt;（int）&lt;/code&gt; 括号内参数为整数类型，表示产生一个&lt;code&gt;（0，int】&lt;/code&gt; 区间内的整数。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import java.util.Random;
+import java.util.Scanner;
+
+public class rad { //rad类
+    int j;//成员变量（可以不进行初始化）
+
+    public static int random() { // 成员函数
+        Random i = new Random();
+        int r = i.nextInt(8);
+//        System.out.println(r);
+        return r;
+    }
+
+    rad() { //构造函数（无参数）
+        this(30);
+        int j = 10;
+        this.j = j;
+    }
+
+    rad(int i) { // 构造函数（有参数）重载
+        //调用其他构造函数，位于首句，且只能使用一次
+        this.j = i;
+    }
+
+    public static void main(String[] args) {
+        int j = 0;
+        int k = 0;
+        int l = 0; //本地变量（必须进行初始化）
+        rad r = new rad();
+        j = r.random();
+        System.out.println(j);
+        rad s = new rad(20);
+        k = s.random();
+        System.out.println(k);
+        rad z = new rad(j);
+        l = z.random();
+        System.out.println(l);
+        rad vm =new vendingMachine();
+        
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+">The Member Function </a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/guess-the-number/"" data-c="
+          &lt;p&gt;🎮 &lt;strong&gt;Let&#39;s play a game !&lt;/strong&gt;&lt;br&gt;
+Guess the number your computer💻 created , compare it with what your entrance ⌨️. And give you some prompts .&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;Once you guessed the number correctly👌 , print the number and how many times you guessed .&lt;br&gt;
+👨‍💻写了一个猜数字的游戏，电脑随机产生一个数字，与用户输入的数字对比，并给予用户一定提示，猜对后&lt;br&gt;
+输出这个数字，并统计用户猜的次数。&lt;br&gt;
+✍️目的：（循环语句以及随机数的使用练习）&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import java.util.Random;
+import java.util.Scanner;
+
+public class random {
+    public static void main(String[] args) {
+        int j = 0; // 用户输入的整数变量
+        int count = 0; // 计数变量
+        int i = 0; // 随机数变量
+        System.out.println(&amp;quot;欢迎来到猜数字游戏&amp;quot;);
+        Random r = new Random();
+        i = r.nextInt(101); // 产生一个随机数,范围是（ 0,101 ] ，并赋值给变量
+        System.out.println(&amp;quot;随机数已生成&amp;quot;);
+        System.out.println(&amp;quot;请输入你猜的数字&amp;quot;);
+        Scanner in = new Scanner(System.in);
+        do {
+            j = in.nextInt(); // 用户输入
+            if (i &amp;gt; j) { //与 i 值进行对比，并输出提示 
+                System.out.println(&amp;quot;你输入的数字小了&amp;quot;);
+            }
+            if (i &amp;lt; j) {
+                System.out.println(&amp;quot;你输入的数字大了&amp;quot;);
+            }
+            count++; // 统计次数
+        }
+        while (i != j); // 检测是否猜对
+        System.out.println(&amp;quot;恭喜你，猜对了！！！&amp;quot;);
+        System.out.println(&amp;quot;数字是&amp;quot; + i); // 输出随机数的值
+        System.out.println(&amp;quot;你猜了&amp;quot;+count+&amp;quot;次&amp;quot;); // 输出统计次数
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;💡运行结果如下：&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1580887876209.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+👉一个思考：&lt;br&gt;
+如果使用二分法进行猜数字，及使用区间的中间数来猜的话，则最大次数应该不会超过七次，因为2的七次方已经大于100，但是考虑到输入数值只能为整数，所以正常情况下10次以内就可以猜中啦！👌&lt;/p&gt;
+">Guess The Number</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/Hexo-blog/"" data-c="
+          &lt;p&gt;After build my blog following the online course step by step , I began to try to write my own blog✏️ , then I find a problem when after inserting pictures in my blog , it can be viewed locally , but I can&#39;t view it correctly after deploying to Github . Here are some solutions for it .&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;在跟着网上教程一步步搭建好自己的博客后，开始尝试自己写博客文章，发现在Hexo博客文章中插入图片后在本地浏览正常，但是部署到GitHub上后边无法查看，在此提出一些供参考的解决方法&lt;br&gt;
+具体情况如下图：&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1580795613268.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;br&gt;
+遂在网上搜索解决方案，参照&lt;code&gt;Ericam_&lt;/code&gt;的博客文章得以解决。&lt;/p&gt;
+&lt;p&gt;教程参考此篇文章https://blog.csdn.net/xjm850552586/article/details/84101345&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;以下为解决步骤：&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;h4 id=&#34;1-安装插件&#34;&gt;1. 安装插件&lt;/h4&gt;
+&lt;p&gt;安装&lt;em&gt;hexo-asset-image&lt;/em&gt;插件，这是一个图片路径转换的插件。&lt;br&gt;
+在Hexo根目录下右键运行git bash，输入以下命令安装插件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ npm install https://github.com/CodeFalling/hexo-asset-image --save
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;或者&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ npm install hexo-asset-image --save
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;若出现错误则先执行：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ npm install -g cnpm --registry=https://registry.npm.taobao.org
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;后执行：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ npm install hexo-asset-image --save
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可能原因是国内网络。&lt;/p&gt;
+&lt;h4 id=&#34;2-配置插件&#34;&gt;2. 配置插件&lt;/h4&gt;
+&lt;p&gt;打开/node_modules/hexo-asset-image/index.js 这个文件，修改其内容，因版权原因，具体的修改内容在此就不放了，请去原文章复制，将index.js的内容全部替换即可。&lt;/p&gt;
+&lt;h4 id=&#34;3-修改-yml文件内容&#34;&gt;3. 修改 .yml文件内容&lt;/h4&gt;
+&lt;p&gt;在Hexo根目录下打开_config.yml文件，修改&lt;code&gt;post_asset_folder:&lt;/code&gt;值为&lt;code&gt;ture&lt;/code&gt;，效果如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ post_asset_folder: true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这时，当你使用&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ hexo new “filename”
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;新建一个 .md文件时，同时会在-post文件夹下将出现一个与新建的 .md文件同名的文件夹，把你需要插入的图片放到这个文件夹中即可。&lt;/p&gt;
+&lt;h4 id=&#34;4-正确的图片插入命令&#34;&gt;4. 正确的图片插入命令&lt;/h4&gt;
+&lt;p&gt;本人使用的是Typora的编辑器编写.md文件，当你使用使用相对路径的常规 Markdown 语法 &lt;code&gt;![](/imgName.jpg)&lt;/code&gt;时，虽然他能在你本地的编辑器上正确显示，但是当你部署到GitHub时会依旧不显示，正确的引用语法为&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ {% asset_img Name.jpg 文章中显示的图片名%}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;jpg 后面空格可以直接写上你想要这张图片在文章中显示的名字,虽然在你本地的编辑器上不会正确显示，但是部署后会在网页文章中正确显示。&lt;/p&gt;
+&lt;h2 id=&#34;效果如下图typora编辑时的显示&#34;&gt;&lt;em&gt;&lt;strong&gt;效果如下图：&lt;/strong&gt;&lt;/em&gt;&lt;br&gt;
+Typora编辑时的显示&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1580795635868.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;chrome浏览器打开时的显示&#34;&gt;Chrome浏览器打开时的显示&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1580795645985.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/h2&gt;
+&lt;p&gt;以上步骤完成以后即可插入本地图片后，再部署到GitHub即可正常显示图片。&lt;/p&gt;
+">Insert Pictures In Hexo Blog</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/MultiplicationTable/"" data-c="
+          &lt;p&gt;This is my 2nd java code (actually, it&#39;s the 2nd code that I upload to my blog😝),and this is what I want to do after I learned java,to write a program for build a multiplication table.( from my own translation )&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;这是我的第二个代码（其实只是上传的第二个），也是我一直以来想做的一件事，编写一段程序输出乘法口诀表。&lt;/br&gt;This is my second code (in fact, just the second uploaded), and one of the things I always wanted to do, write a program to output a multiplication table.( from https://translate.google.cn )&lt;/p&gt;
+&lt;p&gt;输出一个 9X9 乘法口诀表(java语言编写)&lt;br&gt;
+&lt;em&gt;&lt;strong&gt;完整代码如下：&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class multable {
+    public static void main(String[] args) {
+        //生成乘数
+        for (int i = 1; i &amp;lt;= 9; i++) {
+            //生成被乘数
+            for (int j = 1; j &amp;lt;= 9; j++) {
+                if (i &amp;gt;= j) {
+                        //对于3*3和3*4，输出的式子前多加一个空格，和下面的式子对齐
+                    if ((i == 3 &amp;amp;&amp;amp; j == 3) || (i == 4 &amp;amp;&amp;amp; j == 3)) {
+                        System.out.print(&amp;quot; &amp;quot; + j + &amp;quot;*&amp;quot; + i + &amp;quot;=&amp;quot; + (i * j) + &amp;quot; &amp;quot;);
+                    } else {
+                        //输出乘积式
+                        System.out.print(j + &amp;quot;*&amp;quot; + i + &amp;quot;=&amp;quot; + (i * j) + &amp;quot; &amp;quot;);
+                    }
+                } else {
+                    //如果被乘数大于乘数，跳出循环
+                    break;
+                }
+            }
+            //换行输出
+            System.out.println();
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;输出如下图：&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;https://shmebluk.github.io//post-images/1580794999427.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;h2 id=&#34;编写心得&#34;&gt;&lt;em&gt;&lt;strong&gt;编写心得&lt;/strong&gt;&lt;/em&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;1产生乘积式&#34;&gt;1.产生乘积式&lt;/h3&gt;
+&lt;p&gt;先使用两个 for 循环产生被乘数 j 与乘数 i ，在内层循环通过&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;System.out.print(j + &amp;quot;*&amp;quot; + i + &amp;quot;=&amp;quot; + (i * j) + &amp;quot; &amp;quot;);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;输出乘积式。&lt;/p&gt;
+&lt;h3 id=&#34;2换行&#34;&gt;2.换行&lt;/h3&gt;
+&lt;p&gt;内外层循环之间通过&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;System.out.println();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;完成换行操作。&lt;/p&gt;
+&lt;h3 id=&#34;3对齐&#34;&gt;3.对齐&lt;/h3&gt;
+&lt;p&gt;正常情况直接输出乘积式，对于 “3X3” 和 “3X4” 这两个式子，需要在输出的式子前面额外添加一个空格，使之与同一列的式子对齐，通过 if 语句实现 ：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;if ((i == 3 &amp;amp;&amp;amp; j == 3) || (i == 4 &amp;amp;&amp;amp; j == 3)) {
+     System.out.print(&amp;quot; &amp;quot; + j + &amp;quot;*&amp;quot; + i + &amp;quot;=&amp;quot; + (i * j) + &amp;quot; &amp;quot;);
+   } 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其他情况直接输出即可。&lt;/p&gt;
+&lt;h3 id=&#34;4跳出不必要的循环&#34;&gt;4.跳出不必要的循环&lt;/h3&gt;
+&lt;p&gt;当循环中被乘数 j 小于等于乘数 i 时，按顺序输出即可，当循环中被乘数 j 大于乘数 i 时，应跳出内层循环执行 i+1 ，通过 break 语句实现 ：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;if (i &amp;gt;= j) {
+    //此处为输出语句，省略
+  } else {
+      //如果被乘数大于乘数，跳出循环
+      break;
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这样可以避免无效的循环，理论上应该可以减少一半的运行时间。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;以上就是本人在编写这些代码时的一些思考和解决的问题。&lt;/strong&gt;&lt;/p&gt;
+">Multiplication Table</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/VendingMachine/"" data-c="
+          &lt;p&gt;😁Welcome to my first blog.&lt;br&gt;
+⚙️It&#39;s just a test for me to learn how to use the Markdown write my own blog.&lt;br&gt;
+⛽️This is a simple vending machine program.&lt;/p&gt;
+&lt;!-- more --&gt;  
+&lt;p&gt;一个简单的自动售货机程序设计&lt;br&gt;
+实现投币，找零，出货，显示总营业额的功能&lt;br&gt;
+(使用java语言编写)&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-Java&#34;&gt;import java.util.Scanner;
+
+public class VendingMachine {
+    int price = 120; //设置商品价格
+    int balance = 0; //累计投币金额
+    int total = 0; //总营业额
+    int amount = 0; //单次投币金额
+
+    //  欢迎语
+    void showPrompt() {
+        System.out.println(&amp;quot;欢迎使用自动售货机&amp;quot;);
+        System.out.println(&amp;quot;请投币&amp;quot;);
+    }
+
+    //  投币
+    void insetMoney() {
+        Scanner in = new Scanner(System.in);
+        amount = in.nextInt();
+        balance = balance + amount;
+        getFood();
+    }
+
+    //  显示累计投币金额
+    void showBalance() {
+        System.out.println(&amp;quot;已投币：&amp;quot; + balance + &amp;quot;元&amp;quot;);
+    }
+
+    //  出货、继续投币
+    void getFood() {
+        if (balance &amp;gt;= price) {
+            System.out.println(&amp;quot;请取货&amp;quot;);
+            balance = balance - price;
+            System.out.println(&amp;quot;找零：&amp;quot; + (balance) + &amp;quot;元&amp;quot;);
+            balance = 0;
+            total = total + price;
+        } else {
+            System.out.println(&amp;quot;余额不足，请继续投币&amp;quot;);
+            showBalance();
+            insetMoney();
+        }
+    }
+
+    //  营业额
+    void showTurnover() {
+        System.out.println(&amp;quot;总收入：&amp;quot; + total);
+    }
+
+    //  致谢
+    void showTag() {
+        System.out.println(&amp;quot;欢迎下次光临&amp;quot;);
+    }
+
+    public static void main(String[] args) {
+        VendingMachine vm = new VendingMachine();
+        vm.showPrompt();//欢迎
+        vm.insetMoney();//投币
+        vm.showTag();//致谢
+        vm.showTurnover();//营业额
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;关于这段程序的说明&#34;&gt;关于这段程序的说明&lt;/h2&gt;
+&lt;h3 id=&#34;创建类vendingmachine&#34;&gt;&lt;strong&gt;创建类&lt;/strong&gt;vendingMachine&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;具有属性&lt;/strong&gt;&lt;/em&gt;：&lt;/p&gt;
+&lt;p&gt;商品价格 price&lt;/p&gt;
+&lt;p&gt;单次投币金额 amount&lt;/p&gt;
+&lt;p&gt;累计投币金额 balance&lt;/p&gt;
+&lt;p&gt;营业额 total&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;可执行的动作&lt;/strong&gt;&lt;/em&gt;：&lt;/p&gt;
+&lt;p&gt;显示欢迎 showPrompt&lt;/p&gt;
+&lt;p&gt;投币 insetMoney&lt;/p&gt;
+&lt;p&gt;显示累计投币金额 showBalance&lt;/p&gt;
+&lt;p&gt;出货或者执行继续投币 getFood&lt;/p&gt;
+&lt;p&gt;显示营业额 showTurnover&lt;/p&gt;
+&lt;p&gt;致谢 showTag&lt;/p&gt;
+&lt;h3 id=&#34;创建对象vm&#34;&gt;&lt;strong&gt;创建对象&lt;/strong&gt;vm&lt;/h3&gt;
+&lt;p&gt;按步骤执行操作&lt;/p&gt;
+&lt;p&gt;1.展示欢迎语&lt;/p&gt;
+&lt;p&gt;2.请投币&lt;/p&gt;
+&lt;p&gt;2.1 如果投币金额大于等于商品价格，执行出货操作和找零操作。&lt;/p&gt;
+&lt;p&gt;2.2 如果投币金额小于商品价格，将已投币金额累加到累计投币金额中，继续执行投币操作，直到累计投币金额大于等于商品价格时，再执行出货操作和找零操作。&lt;/p&gt;
+&lt;p&gt;3.交易完成&lt;/p&gt;
+&lt;p&gt;4.谢谢惠顾&lt;/p&gt;
+&lt;p&gt;5.展示总营业额&lt;/p&gt;
+">A Simple Vending Machine Program</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/about/"" data-c="
+          &lt;blockquote&gt;
+&lt;p&gt;欢迎来到我的小站呀，很高兴遇见你！🤝&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;关于本站&#34;&gt;🏠 关于本站&lt;/h2&gt;
+&lt;h2 id=&#34;博主是谁&#34;&gt;👨‍💻 博主是谁&lt;/h2&gt;
+&lt;h2 id=&#34;兴趣爱好&#34;&gt;⛹ 兴趣爱好&lt;/h2&gt;
+&lt;h2 id=&#34;联系我呀&#34;&gt;📬 联系我呀&lt;/h2&gt;
+">关于</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/hello-gridea/"" data-c="
+          &lt;p&gt;👏  欢迎使用 &lt;strong&gt;Gridea&lt;/strong&gt; ！&lt;br&gt;
+✍️  &lt;strong&gt;Gridea&lt;/strong&gt; 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/getgridea/gridea&#34;&gt;Github&lt;/a&gt;&lt;br&gt;
+&lt;a href=&#34;https://gridea.dev/&#34;&gt;Gridea 主页&lt;/a&gt;&lt;br&gt;
+&lt;a href=&#34;http://fehey.com/&#34;&gt;示例网站&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;特性&#34;&gt;特性👇&lt;/h2&gt;
+&lt;p&gt;📝  你可以使用最酷的 &lt;strong&gt;Markdown&lt;/strong&gt; 语法，进行快速创作&lt;/p&gt;
+&lt;p&gt;🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片&lt;/p&gt;
+&lt;p&gt;🏷️  你可以对文章进行标签分组&lt;/p&gt;
+&lt;p&gt;📋  你可以自定义菜单，甚至可以创建外部链接菜单&lt;/p&gt;
+&lt;p&gt;💻  你可以在 &lt;strong&gt;Windows&lt;/strong&gt;，&lt;strong&gt;MacOS&lt;/strong&gt; 或 &lt;strong&gt;Linux&lt;/strong&gt; 设备上使用此客户端&lt;/p&gt;
+&lt;p&gt;🌎  你可以使用 &lt;strong&gt;𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌&lt;/strong&gt; 或 &lt;strong&gt;Coding Pages&lt;/strong&gt; 向世界展示，未来将支持更多平台&lt;/p&gt;
+&lt;p&gt;💬  你可以进行简单的配置，接入 &lt;a href=&#34;https://github.com/gitalk/gitalk&#34;&gt;Gitalk&lt;/a&gt; 或 &lt;a href=&#34;https://github.com/SukkaW/DisqusJS&#34;&gt;DisqusJS&lt;/a&gt; 评论系统&lt;/p&gt;
+&lt;p&gt;🇬🇧  你可以使用&lt;strong&gt;中文简体&lt;/strong&gt;或&lt;strong&gt;英语&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力&lt;/p&gt;
+&lt;p&gt;🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步&lt;/p&gt;
+&lt;p&gt;🌱 当然 &lt;strong&gt;Gridea&lt;/strong&gt; 还很年轻，有很多不足，但请相信，它会不停向前 🏃&lt;/p&gt;
+&lt;p&gt;未来，它一定会成为你离不开的伙伴&lt;/p&gt;
+&lt;p&gt;尽情发挥你的才华吧！&lt;/p&gt;
+&lt;p&gt;😘 Enjoy~&lt;/p&gt;
+">Hello Gridea</a>
+      </div>
+      
+    </div>
+    <div class="page">
+      <div id="page_ul"></div>
+    </div>
+  </div>
+</div>
+<script>
+  !function () {
+    let searchMask = document.querySelector('#search_mask');
+    let result = document.querySelector('#result');
+    let items = document.querySelectorAll('.item');
+    let searchBox = document.querySelector('#search');
+    let statCount = document.querySelector('#stat_count');
+    let statTimes = document.querySelector('#stat_times');
+    let pageUl = document.querySelector('#page_ul');
+    let close = document.querySelector('#close');
+    
+    close.addEventListener('click', function() {
+      searchMask.style = 'display: none;'
+    })
+
+    let finds = [];
+    let contents = [];
+    let pageSize = 10;
+    items.forEach(item => {
+      let a = item.querySelector('a');
+      contents.push({
+        title: a.innerText,
+        details: a.dataset.c,
+        link: a.href
+      })
+      item.remove();
+    })
+
+    function insertStr(soure, start, count) {
+      let newStr = soure.substr(start, count);
+      return soure.slice(0, start) + '<em>' + newStr + '</em>' + soure.slice(start + count);
+    }
+
+    pageUl.addEventListener('click', function(event) {
+      let target = event.target;
+      if (target.__proto__ === HTMLSpanElement.prototype) {
+        appendResults(parseInt(target.dataset.i));
+      }
+    })
+
+    function appendResults(index) {
+      let htmlResult = '';
+      let start = index || 0;
+      let end = Math.min(start + pageSize, finds.length);
+      for (let i = start; i < end; i++) {
+        const current = finds[i];
+        let html = current.title;
+        let sum = 0;
+        let positions = current.positions;
+        positions.forEach(position => {
+          html = insertStr(html, position.start + sum, position.count);
+          sum += 9;
+        })
+        htmlResult += `<div class="item"><a class="result-title" href="${current.link}">${html}</a></div>`;
+      }
+      result.innerHTML = htmlResult;
+      pageUl.innerHTML = '';
+      let count = finds.length / pageSize;
+      let lis = '';
+      if (start !== 0) {
+        lis += `<span class="fa fa-angle-left" data-i='${start - 1}'></span>`;
+      }
+      for (let i = 0; i < count; i++) {
+        lis += `<span class='${i === start?'current':''}' data-i='${i}'>${i+1}</span>`;     
+      }
+      if (start+1 < count) {
+        lis += `<span class="fa fa-angle-right" data-i='${start+1}'></span>`;  
+      }
+      pageUl.innerHTML = lis;
+    }
+
+    function search(delay) {
+      let timer = null
+      return function () {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          let start = Date.now();
+          let segments = searchBox.value.split(' ').filter(c => c != '');
+          if (segments.length <= 0) {
+            return;
+          }
+          finds = [];
+          let htmlResult = '';
+          contents.forEach(content => {
+            let title = content.title;
+            let positions = [];
+            let find = false;
+            segments.forEach((segment) => {
+              if (content.title.includes(segment)) {
+                find = true;
+                positions.push({
+                  start: content.title.indexOf(segment),
+                  count: segment.length
+                })
+              } else if (content.details.includes(segment)) {
+                find = true;
+              }
+            });
+            if (find) {
+              finds.push({
+                title: content.title,
+                link: content.link,
+                positions
+              });
+            }
+          })
+          appendResults(0);
+          statCount.textContent = finds.length;
+          statTimes.textContent = Date.now() - start;
+        }, delay)
+      }
+    }
+    searchBox.addEventListener('input', search(200));
+  }()
+</script>
+
+<input hidden id="copy" />
+<script>
+  let language = '';
+  if (language !== '') {
+    let map = new Map();
+    if (language === 'en') {
+      map.set('search', 'Search');
+      map.set('category', 'Categories');
+      map.set('article', 'Articles');
+      map.set('tag', 'Tags');
+      map.set('top', 'Top');
+      map.set('publish', 'published');
+      map.set('minute', ' minutes');
+      map.set('read-more', 'Read More');
+      map.set('view', 'View');
+      map.set('words', ' words');
+      map.set('category-in', 'category in');
+      map.set('preview', 'Meta');
+      map.set('index', 'Toc');
+      map.set('no-archives', "You haven't created yet");
+      map.set('archives', " articles in total");
+      map.set('cloud-tags', " tags in total");
+      map.set('copyright', "Copyright: ");
+      map.set('author', "Author: ");
+      map.set('link', "Link: ");
+      map.set('leave-message', "Leave a message");
+      map.set('format', "Links Format");
+      map.set('site-name', "Name: ");
+      map.set('site-link', "Link: ");
+      map.set('site-desc', "Desc: ");
+      map.set('stat', " related results, taking ");
+      map.set('stat-time', " ms");
+      map.set('site-img', "Image: ");
+    }
+
+    if (map.size > 0) {
+      let lanElems = document.querySelectorAll('.language');
+      lanElems.forEach(elem => {
+        let lan = elem.dataset.lan, text = map.get(lan);
+        if (elem.__proto__ === HTMLInputElement.prototype) {
+          elem.placeholder = text
+        } else {
+          if (elem.dataset.count) {
+            text = elem.dataset.count + text;
+          }
+          elem.textContent = text;
+        }
+      })
+    }
+  }
+  //拿来主义(真香)^_^，Clipboard 实现摘自掘金 https://juejin.im/post/5aefeb6e6fb9a07aa43c20af
+  window.Clipboard = (function (window, document, navigator) {
+    var textArea,
+      copy;
+
+    // 判断是不是ios端
+    function isOS() {
+      return navigator.userAgent.match(/ipad|iphone/i);
+    }
+    //创建文本元素
+    function createTextArea(text) {
+      textArea = document.createElement('textArea');
+      textArea.value = text;
+      textArea.style.width = 0;
+      textArea.style.height = 0;
+      textArea.clientHeight = 0;
+      textArea.clientWidth = 0;
+      document.body.appendChild(textArea);
+    }
+    //选择内容
+    function selectText() {
+      var range,
+        selection;
+
+      if (isOS()) {
+        range = document.createRange();
+        range.selectNodeContents(textArea);
+        selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        textArea.setSelectionRange(0, 999999);
+      } else {
+        textArea.select();
+      }
+    }
+
+    //复制到剪贴板
+    function copyToClipboard() {
+      try {
+        document.execCommand("Copy")
+      } catch (err) {
+        alert("复制错误！请手动复制！")
+      }
+      document.body.removeChild(textArea);
+    }
+
+    copy = function (text) {
+      createTextArea(text);
+      selectText();
+      copyToClipboard();
+    };
+
+    return {
+      copy: copy
+    };
+  })(window, document, navigator);
+
+  function copyCode(e) {
+    if (e.srcElement.tagName === 'SPAN' && e.srcElement.classList.contains('copy-code')) {
+      let code = e.currentTarget.querySelector('code');
+      var text = code.innerText;
+      if (e.srcElement.textContent === '复制成功') {
+        console.log('复制操作频率过高');
+        return;
+      }
+      e.srcElement.textContent = '复制成功';
+      (function (elem) {
+        setTimeout(() => {
+          if (elem.textContent === '复制成功') {
+            elem.textContent = '复制代码'
+          }
+        }, 1000);
+      })(e.srcElement)
+      Clipboard.copy(text);
+    }
+  }
+
+  let pres = document.querySelectorAll('pre');
+  pres.forEach(pre => {
+    let code = pre.querySelector('code');
+    let copyElem = document.createElement('span');
+    copyElem.classList.add('copy-code');
+    copyElem.textContent = '复制代码';
+    pre.appendChild(copyElem);
+    pre.onclick = copyCode
+  })
+
+</script>
+<script src="/media/js/motion.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+<script>
+  var scroll = new SmoothScroll('a[href*="#"]', {
+    speed: 200
+  });
+</script>
+
+
+<script src="/media/js/mouse/love.js"></script>
+
+
+
+</html>
