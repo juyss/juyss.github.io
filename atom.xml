@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://shmebluk.github.io/</id>
     <title>Juyss&apos;s Blog</title>
-    <updated>2020-07-20T11:10:58.231Z</updated>
+    <updated>2020-07-20T12:01:55.749Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://shmebluk.github.io/"/>
     <link rel="self" href="https://shmebluk.github.io/atom.xml"/>
@@ -10,6 +10,313 @@
     <logo>https://shmebluk.github.io/images/avatar.png</logo>
     <icon>https://shmebluk.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Juyss&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[邮件发送功能实现]]></title>
+        <id>https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/</id>
+        <link href="https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/">
+        </link>
+        <updated>2020-07-20T12:00:39.000Z</updated>
+        <summary type="html"><![CDATA[<p>使用Java程序实现邮件发送功能</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>使用Java程序实现邮件发送功能</p>
+<!-- more -->
+<p>实现步骤:</p>
+<h3 id="导包">导包</h3>
+<p>导入<code>javax.mail</code>和<code>javax.activation</code>两个依赖包<br>
+<img src="https://shmebluk.github.io//post-images/1595246472129.jpg" alt="" loading="lazy"></p>
+<h3 id="打开邮箱的pop3smtp服务">打开邮箱的<code>pop3/smtp</code>服务</h3>
+<figure data-type="image" tabindex="1"><img src="https://shmebluk.github.io//post-images/1595246483544.jpg" alt="" loading="lazy"></figure>
+<h3 id="编写java程序">编写java程序</h3>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MailSend
+ * @Desc: 简单邮件发送实现
+ * @package PACKAGE_NAME
+ * @project File_and_Mail
+ * @date 2020/7/18 19:25
+ */
+public class MailSend {
+    public static void main(String[] args) {
+        Transport transport = null;
+        try {
+            Properties prop = new Properties();
+            prop.setProperty(&quot;mail.host&quot;, &quot;smtp.qq.com&quot;); //邮件服务器
+            prop.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); //邮件发送协议
+            prop.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); //需要验证用户名和密码
+
+            //QQ邮箱额外需要的
+            MailSSLSocketFactory mailSSLSocket = new MailSSLSocketFactory();
+            mailSSLSocket.setTrustAllHosts(true);
+            prop.put(&quot;mail.smtp.ssl.enable&quot;, &quot;true&quot;);
+            prop.put(&quot;mail.smtp.ssl.socketFactory&quot;, mailSSLSocket);
+
+            //使用JavaMail发送邮件的5个步骤
+            //1.创建整个程序所需的环境信息的Session对象
+            PasswordAuthentication passwordAuthentication = new PasswordAuthentication(&quot;1028507471@qq.com&quot;, &quot;drjeleykuqavbbgb&quot;);
+            Authenticator authenticator = new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return passwordAuthentication;
+                }
+            };
+            Session session = Session.getDefaultInstance(prop, authenticator);
+
+            session.setDebug(true);//开启session的debug模式
+
+            //2.获取Transport对象
+            transport = session.getTransport();
+
+            //3.连接邮件服务器
+            transport.connect(&quot;smtp.qq.com&quot;, &quot;1028507471@qq.com&quot;, &quot;drjeleykuqavbbgb&quot;);
+
+            //4.创建邮件
+            MimeMessage message = new MimeMessage(session); //创建session对象
+            InternetAddress sender = new InternetAddress(&quot;1028507471@qq.com&quot;);//发件人(需开启smtp服务)
+            InternetAddress receiver = new InternetAddress(&quot;1828433175@qq.com&quot;);//收件人
+
+            message.setFrom(sender);//设置发件人
+            message.setRecipient(Message.RecipientType.TO, receiver);//设置收件人类型和收件人
+            message.setSubject(&quot;SimpleTextMail&quot;);//设置主题
+
+            //两个方法不能同时存在,后面的会覆盖前面的邮件内容
+            message.setText(&quot;第一段&lt;br&gt;第二段&lt;br&gt;第三段&lt;br&gt;&quot;, &quot;UTF-8&quot;);//设置发送内容(普通文本内容)
+            message.setContent(&quot;&lt;h1&gt;一级标题&lt;/h1&gt;&lt;hr&gt;&lt;h2&gt;二级标题&lt;/h2&gt;&quot;, &quot;text/html;charset=UTF-8&quot;);//设置发送内容(HTML格式)
+
+            //5.发送邮件
+            transport.sendMessage(message, message.getAllRecipients());
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } finally {
+            //6.关闭资源
+            try {
+                if (transport != null)
+                    transport.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[网页文件上传功能实现]]></title>
+        <id>https://shmebluk.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/</id>
+        <link href="https://shmebluk.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/">
+        </link>
+        <updated>2020-07-20T11:46:16.000Z</updated>
+        <summary type="html"><![CDATA[<p>通过前端页面操作文件上传到服务器的指定保存路径</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>通过前端页面操作文件上传到服务器的指定保存路径</p>
+<!-- more -->
+<p>项目结构(Maven)<br>
+<img src="https://shmebluk.github.io//post-images/1595245735136.jpg" alt="" loading="lazy"></p>
+<h2 id="文件上传实现思路及步骤">文件上传实现思路及步骤</h2>
+<h3 id="1-导包">1. 导包</h3>
+<p>导入<code>commons-io</code>和<code>commons-fileupload</code>   jar包</p>
+<h3 id="2-前端页面">2. 前端页面</h3>
+<p>action:页面请求,需和<code>web.xml</code>中匹配</p>
+<p>method:设置为<code>post</code>,没有文件大小限制</p>
+<p>enctype:值为<code>multipart/form-data</code>用于识别是否为文件表单还是普通文本表单</p>
+<pre><code class="language-html">&lt;form action=&quot;${pageContext.request.contextPath}/upload.do&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot;&gt;
+    &lt;input type=&quot;file&quot; name=&quot;file1&quot;&gt;
+    &lt;br&gt;
+    &lt;input type=&quot;file&quot; name=&quot;file2&quot;&gt;
+    &lt;br&gt;
+    &lt;input type=&quot;submit&quot;&gt;
+    &lt;br&gt;
+&lt;/form&gt;
+</code></pre>
+<h3 id="3-注册webxml">3. 注册web.xml</h3>
+<pre><code class="language-xml">    &lt;servlet&gt;
+        &lt;servlet-name&gt;FileUploadServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;com.juyss.servlet.FileUploadServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;FileUploadServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/upload.do&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+</code></pre>
+<h3 id="4-编写servlet">4. 编写Servlet</h3>
+<h4 id="实现步骤">实现步骤</h4>
+<ol>
+<li>
+<p>判断表单为普通文本表单还是文件表单</p>
+</li>
+<li>
+<p>创建上传文件的保存根路径</p>
+</li>
+<li>
+<p>创建临时文件的保存根路径</p>
+</li>
+<li>
+<p>获取<code>FileItem</code>对象</p>
+<p>​		需要<code>ServletFileUpload</code>对象</p>
+<p>​				需要用到<code>DiskFileItemFactory</code>对象,用于处理上传路径和限制文件大小</p>
+</li>
+<li>
+<p>通过<code>FileItem</code>对象获取文件名,文件后缀</p>
+</li>
+<li>
+<p>使用UUID创建唯一保存路径</p>
+</li>
+<li>
+<p>使用<code>fileItem.getInputStream()</code>获取文件输入流</p>
+</li>
+<li>
+<p>创建文件输出流<code>FileOutputStream fos = new FileOutputStream(savePath + &quot;/&quot; + fileName)</code></p>
+</li>
+<li>
+<p>关闭流资源,同时删除临时文件<code>fileItem.delete()</code></p>
+</li>
+</ol>
+<pre><code class="language-java">public class FileUploadServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println(&quot;进入了FileUploadServlet.class&quot;);
+
+        //判断表单是否为带有文件的表单
+        if (!ServletFileUpload.isMultipartContent(request)) {
+            return; //终止方法运行
+        }
+
+        //定义文件上传后保存的根路径
+        String rootPath = this.getServletContext().getRealPath(&quot;/WEB-INF/upload&quot;);
+        File rootFile = new File(rootPath);
+        if (!rootFile.exists()) {
+            rootFile.mkdir();
+        }
+
+        //定义文件缓存路径
+        String tempPath = this.getServletContext().getRealPath(&quot;/WEB-INF/temp&quot;);
+        File tempFile = new File(tempPath);
+        if (!tempFile.exists()) {
+            tempFile.mkdir();
+        }
+
+        //创建DiskFileItemFactory对象,处理上传路径和限制文件大小
+        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory(1024 * 1024, tempFile);
+
+        //创建ServletFileUpload对象
+        ServletFileUpload servletFileUpload = new ServletFileUpload(fileItemFactory);
+
+        //获取FileItem对象
+        List&lt;FileItem&gt; fileItems = null;
+        try {
+            fileItems = servletFileUpload.parseRequest(request);
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        }
+        if (fileItems==null){
+            System.out.println(&quot;fileItem空指针&quot;);
+            return;
+        }
+        Iterator&lt;FileItem&gt; iterator = fileItems.iterator();
+
+        //遍历fileItems集合
+        while (iterator.hasNext()) {
+            FileItem fileItem = iterator.next();
+            if (fileItem.isFormField()) {//是普通文本表单
+                continue; //跳出循环
+            } else {//是文件表单
+                //获取文件字段名,标签中name属性的值
+                String fieldName = fileItem.getFieldName();
+                //获取文件上传字段中的文件名,一般来说为为文件名(不包含路径信息),在opera浏览器中可能会包含文件路径信息
+                String name = fileItem.getName();
+                System.out.println(&quot;文件字段名:&quot;+fieldName);
+                System.out.println(&quot;文件名:&quot;+name);
+
+                //判断文件名是否合法
+                if (name.trim().equals(&quot;&quot;) || name == null) {
+                    continue;
+                }
+
+                //获取文件名和文件后缀
+
+                String fileName; //文件名
+                if (name.contains(&quot;/&quot;)){ //判断name是否包含路径信息
+                    fileName = name.substring(name.lastIndexOf(&quot;/&quot;));
+                }else{
+                    fileName = name;
+                }
+
+                String fileExtension = fileName.substring(fileName.indexOf(&quot;.&quot;) + 1);//获取文件后缀
+                System.out.println(&quot;文件名:&quot; + fileName);
+                System.out.println(&quot;文件类型:&quot; + fileExtension);
+                //获取随机UUID
+                String uuid = UUID.randomUUID().toString();
+
+                //使用uuid创建唯一的文件夹作为文件存放路径
+                String savePath = rootPath + &quot;/&quot; + uuid; //文件存放路径
+                File savePathFile = new File(savePath);
+                if (!savePathFile.exists()) { //路径不存在就创建
+                    savePathFile.mkdir();
+                }
+
+                //获取输入流读取上传的文件
+                InputStream is = fileItem.getInputStream();
+
+                //用输出流保存到本地
+                FileOutputStream fos = new FileOutputStream(savePath + &quot;/&quot; + fileName);
+
+                int len;
+                byte[] bytes = new byte[1024 * 1024];
+                while((len = is.read(bytes))!=-1){
+                    fos.write(bytes,0,len);
+                }
+
+                fos.close();
+                is.close();
+                //删除临时文件
+                fileItem.delete();
+            }
+        }
+
+
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doPost(request, response);
+    }
+}
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[MVC架构分析]]></title>
+        <id>https://shmebluk.github.io/post/mvc-jia-gou-fen-xi/</id>
+        <link href="https://shmebluk.github.io/post/mvc-jia-gou-fen-xi/">
+        </link>
+        <updated>2020-07-20T11:17:50.000Z</updated>
+        <summary type="html"><![CDATA[<h2 id="mvc">MVC</h2>
+<p>简要分析一下MVC三层架构中每个部分的组成与功能</p>
+]]></summary>
+        <content type="html"><![CDATA[<h2 id="mvc">MVC</h2>
+<p>简要分析一下MVC三层架构中每个部分的组成与功能</p>
+<!-- more -->
+<h3 id="介绍">介绍</h3>
+<p>MVC：  Model 			模型</p>
+<p>​			  View   			视图</p>
+<p>​			  Controller  	 控制器</p>
+<h3 id="m-model-模型">M    (Model) : 模型</h3>
+<h4 id="功能">功能</h4>
+<p>DAO层 : 对数据库进行操作(CRUD)</p>
+<p>Service层 : 处理业务逻辑 , 调用DAO层获取数据</p>
+<h3 id="v-view-视图">V    (View) : 视图</h3>
+<h4 id="功能-2">功能</h4>
+<p>前端页面 : 展示数据 , 发起 Servlet 请求</p>
+<h3 id="c-controller-控制">C    (Controller) : 控制</h3>
+<h4 id="功能-3">功能</h4>
+<p>接受请求 , 控制页面跳转 , 调用Service层处理数据</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[修改Maven项目默认JDK版本]]></title>
         <id>https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/</id>
@@ -1334,317 +1641,6 @@ void getTemp() {
 </code></pre>
 <p>APP界面如下图<br>
 <img src="https://shmebluk.github.io//post-images/1590985856684.jpg" alt="" loading="lazy"></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Gridea博客无法载入CSS样式的解决办法]]></title>
-        <id>https://shmebluk.github.io/post/gridea-bo-ke-wu-fa-zai-ru-css-yang-shi-de-jie-jue-ban-fa/</id>
-        <link href="https://shmebluk.github.io/post/gridea-bo-ke-wu-fa-zai-ru-css-yang-shi-de-jie-jue-ban-fa/">
-        </link>
-        <updated>2020-05-31T11:06:05.000Z</updated>
-        <summary type="html"><![CDATA[<p>👉今日在使用Gridea客户端更新博客的过程中,推送到远端仓库后内容显示正常,但是无法载入主题样式,就是没有载入CSS样式,折腾了一下午在搞懂问题出在哪里了,下面说一下自己的解决思路.</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>👉今日在使用Gridea客户端更新博客的过程中,推送到远端仓库后内容显示正常,但是无法载入主题样式,就是没有载入CSS样式,折腾了一下午在搞懂问题出在哪里了,下面说一下自己的解决思路.</p>
-<!-- more -->
-<h4 id="问题描述">问题描述</h4>
-<p>😵首先,文章写完后,push到远程仓库,查看网站发现CSS样式没有载入,设置的主题没有生效,然后怀疑是CSS样式文件的问题,又重新push了一遍,问题依旧.</p>
-<h4 id="解决过程">解决过程</h4>
-<p>然后怀疑可能是远程仓库的原因,push操作没有更新CSS文件,然后直接上传了本地的CSS文件,发现问题依旧存在.<br>
-然后又怀疑是本地仓库的问题,将output文件夹文件内容删除后,重新push,然而还是没有解决.<br>
-然后又在官网重新下载了Gridea客户端(发生了一个小插曲,网页上放了GitHub和Gitee的源,发现Gitee的下载速度还不如GitHub的下载速度),重新安装.push,还是没解决.</p>
-<h4 id="解决办法">解决办法</h4>
-<p>😄最后突然想到自己的远程配置页面域名重新配置过,写的是仓库的域名,更换为静态页面的域名后问题顺利解决.</p>
-<h4 id="问题思考">问题思考</h4>
-<p>🙄推测是Gridea生成HTML网页时CSS的link地址是根据域名来的,由于我填的是项目的域名,导致无法找到文件,而且在部署完成的主页内点击任何链接都会跳转到Coding的登录页面,所以导致无法正确载入文件,不只是CSS文件,应该是所有的文件都无法载入.</p>
-<h4 id="配置参考图片">配置参考图片</h4>
-<p><strong>正确配置域名信息</strong> (静态页面域名)<br>
-<img src="https://shmebluk.github.io//post-images/1590924410945.jpg" alt="" loading="lazy"><br>
-<img src="https://shmebluk.github.io//post-images/1590924522127.jpg" alt="" loading="lazy"><br>
-<strong>错误配置域名信息</strong> (项目域名)<br>
-<img src="https://shmebluk.github.io//post-images/1590924493053.jpg" alt="" loading="lazy"><br>
-<img src="https://shmebluk.github.io//post-images/1590924531297.jpg" alt="" loading="lazy"></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[MySQL]]></title>
-        <id>https://shmebluk.github.io/post/mysql/</id>
-        <link href="https://shmebluk.github.io/post/mysql/">
-        </link>
-        <updated>2020-05-31T04:50:54.000Z</updated>
-        <summary type="html"><![CDATA[<h2 id="mysql学习记录">MySQL学习记录</h2>
-<p>DDL : 数据库定义语句(Datebase Define Language)<br>
-DML : 数据管理语句(Datebase Manage Language)<br>
-DQL : 数据库查询语言(Datebase Query Language)</p>
-]]></summary>
-        <content type="html"><![CDATA[<h2 id="mysql学习记录">MySQL学习记录</h2>
-<p>DDL : 数据库定义语句(Datebase Define Language)<br>
-DML : 数据管理语句(Datebase Manage Language)<br>
-DQL : 数据库查询语言(Datebase Query Language)</p>
-<!-- more -->
-<h5 id="数据库定义语句datebase-define-language">数据库定义语句(Datebase Define Language)</h5>
-<pre><code class="language-sql">-- DDL语句
-SHOW DATABASES; -- 列出所有数据库
-CREATE DATABASE `dailytext`; -- 创建数据库
-DROP DATABASE `dailyText`; -- 删除数据库
-USE `dailytext`; -- 更换数据库
-SHOW TABLES; -- 列出数据表
-CREATE TABLE IF NOT EXISTS `person` (
-	`id` INT AUTO_INCREMENT,
-	`name` VARCHAR(10) NOT NULL,
-	`age` INT,
-	`gender` ENUM ('man','woman','other'),
-	`bd` DATE,
-	PRIMARY KEY (`id`)
-)ENGINE=INNODB ,CHARSET=utf8 ; -- 创建表
-DESC person; -- 显示表结构
-ALTER TABLE persons RENAME person; -- 重命名表名
-ALTER TABLE person ADD gender VARCHAR(3) DEFAULT '男' COMMENT '性别'; -- 添加字段
-ALTER TABLE `person` ADD `married` ENUM('yes','no') DEFAULT NULL first/after Column_Name; -- 指定位置添加字段
-ALTER TABLE `person` MODIFY `married` VARCHAR(5) DEFAULT NULL; -- 只能修改字段属性以及字段长度
-ALTER TABLE `person` CHANGE `married` `marry` VARCHAR(10) DEFAULT NULL; -- 修改字段名,字段属性以及字段长度
-ALTER TABLE `person` DROP `marryy`; -- 删除字段
-
-
--- delete，drop，truncate 都有删除表的作用，区别在于：
-/*
- 1、delete 和 truncate 仅仅删除表数据，drop 连表数据和表结构一起删除，打个比方，delete 是单杀，truncate 是团灭，drop 是把电脑摔了。
- 2、delete 是 DML 语句，操作完以后如果没有不想提交事务还可以回滚，truncate 和 drop 是 DDL 语句，操作完马上生效，不能回滚，打个比方，delete 是发微信说分手，后悔还可以撤回，truncate 和 drop 是直接扇耳光说滚，不能反悔。
- 3、执行的速度上，drop&gt;truncate&gt;delete，打个比方，drop 是神舟火箭，truncate 是和谐号动车，delete 是自行车。
- */
-TRUNCATE TABLE `person`; -- 删除表内容,自增列计数器清空
-DELETE TABLE `person`; -- 删除表内容,自增列计数器不清空
-							-- 若数据表使用InnoDB引擎,重启数据库后自增列会清零,数据保存在内存中
-							-- 若数据表使用MyISAM引擎,重启数据库后自增列也不会清零,数据保存在文件中
-DROP TABLE `person`; -- 删除表内容和结构
-</code></pre>
-<h5 id="数据管理语句datebase-manage-language">数据管理语句(Datebase Manage Language)</h5>
-<pre><code class="language-sql">-- DML语句
-   -- 添加一条数据
-      -- 方式一
-	INSERT INTO person
-	VALUES (NULL,'Mariya',12,'女');
-      -- 方式二
-        INSERT INTO person
-        (`name`,`age`,`gender`,`birthday`)
-        VALUES
-        ('jicka',16,'女',NOW());
-
-   -- 修改一条数据
-	UPDATE person
-	SET `name`='Rick' ,`age`=13 , `gender`=DEFAULT
-	WHERE `name`='Mariya' OR `age`=12; 
-	
-	UPDATE person
-	SET age=50
-	WHERE `name`='Rick';
-	
-	UPDATE person
-	SET `birthday`='1956-02-29' -- 设置时间格式为字符串
-	WHERE `name`='Rick';
-	
-	UPDATE person
-	SET `birthday`=CURRENT_TIME
-	WHERE id&gt;1 AND id &lt;14;
-	
-	
-	-- 删除一条数据(自增列不清除,会继续原来的增加)
-    DELETE FROM `person`
-    WHERE `name`='Gazor';
-</code></pre>
-<h5 id="数据库查询语言datebase-query-language">数据库查询语言(Datebase Query Language)</h5>
-<pre><code class="language-sql">-- DQL语句
--- 基本查询语句:
-SELECT * FROM cartoon;
-
--- 连接查询
-/* 
-内连接 :显示两表都有的内容,where和on无区别,应搭配on
-语法:
-	select column_name 
-	from A 
-	inner join B 
-	where/on A.column_name=B.column_name
-*/
-SELECT c.`name` 姓名,c.`married` 已婚,p.`age` 年龄,p.`gender` 性别1,c.`gender` 性别2
-FROM `cartoon` c
-INNER JOIN `person` p
-ON c.`name` = p.`name`
-ORDER BY c.`id`;
-
-
-/* 左连接 :左表为主表(A),结果显示左表中全部信息,右表中不存在的字段名用 NULL 填充
-语法: 
-	select column_name 
-	from A 
-	left join B 
-	on A.column_name=B.column_name
-*/
-SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
-FROM person p LEFT JOIN cartoon c
-ON p.`name`=c.`name`;
-
-
-/* 右连接 :右表为主表(A),结果显示右表中全部信息,左表中不存在的字段内容用 NULL 填充
-语法: 
-	select column_name 
-	from A 
-	right join B 
-	on A.column_name=B.column_name
-*/
-SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
-FROM person p RIGHT JOIN cartoon c
-ON p.`name`=c.`name`;
-
-SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
-FROM cartoon c RIGHT JOIN person p
-ON p.`name`=c.`name`; -- 此结果和上面左连接查询例子一致
-
-SELECT p.`name` 姓名,p.`gender` 性别1,c.`gender` 性别2,c.`married` 已婚
-FROM dailytext.`cartoon` c RIGHT JOIN shmebluk.`person` p
-ON p.`name`=c.`name`; -- 可选择不同数据库的表连接,用 datebase.table_name 选择
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Arduino+DS18b20+OLED Display]]></title>
-        <id>https://shmebluk.github.io/post/arduino_ds18b20_oled-display/</id>
-        <link href="https://shmebluk.github.io/post/arduino_ds18b20_oled-display/">
-        </link>
-        <updated>2020-03-28T14:00:57.000Z</updated>
-        <summary type="html"><![CDATA[<p>DS18b20获取到温度数值保存到变量中，然后和天气图标还有滚动字幕一起发送到OLED 屏幕上显示</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>DS18b20获取到温度数值保存到变量中，然后和天气图标还有滚动字幕一起发送到OLED 屏幕上显示</p>
-<!-- more -->
-<p>需要用到的库均可在Arduino库管理器下载。<br>
-电路图：<br>
-<img src="https://shmebluk.github.io//post-images/1585405671072.png" alt="" loading="lazy"><br>
-图中屏幕接线已在代码中写出，温度传感器date口需要接一个4.7k欧的电阻；<br>
-最终效果如下图：<br>
-<img src="https://shmebluk.github.io//post-images/1585404643686.jpg" alt="" loading="lazy"><br>
-代码如下：</p>
-<pre><code class="language-c++">#include &lt;Arduino.h&gt;
-#include &lt;U8g2lib.h&gt;
-
-#include &lt;OneWire.h&gt;
-#include &lt;DallasTemperature.h&gt;
-
-// DS18b20数据输出脚接开发板数字引脚
-#define ONE_WIRE_BUS 8
-
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&amp;oneWire);
-
-#ifdef U8X8_HAVE_HW_SPI
-#include &lt;SPI.h&gt;
-#endif
-#ifdef U8X8_HAVE_HW_I2C
-#include &lt;Wire.h&gt;
-#endif
-//选择自己的屏幕驱动
-U8G2_SSD1306_128X64_NONAME_F_4W_SW_SPI u8g2(U8G2_R0, /* clock=*/ 4, /* data=*/ 5, /* cs=*/ 3, /* dc=*/ 7, /* reset=*/ 6);
-
-#define SUN_CLOUD  1
-//绘制天气图标
-void drawWeatherSymbol(u8g2_uint_t x, u8g2_uint_t y, uint8_t symbol)
-{ 
-  switch(symbol)
-  {
-    case SUN_CLOUD:
-      u8g2.setFont(u8g2_font_open_iconic_weather_6x_t);
-      u8g2.drawGlyph(x, y, 65); 
-      break;      
-  }
-}
-//绘制显示界面
-void drawWeather(uint8_t symbol, int val)
-{
-  //绘制天气符号
-  drawWeatherSymbol(0, 48, symbol);
-  //绘制温度
-  u8g2.setFont(u8g2_font_logisoso32_tf);
-  u8g2.setCursor(48+3, 42);
-  u8g2.print(val);
-  u8g2.print(&quot;°C&quot;);   // requires enableUTF8Print()
-}
-//绘制滚动字幕
-void drawScrollString(int16_t offset, const char *s)
-{
-  static char buf[36];  // should for screen with up to 256 pixel width 
-  size_t len;
-  size_t char_offset = 0;
-  u8g2_uint_t dx = 0;
-  size_t visible = 0;
-  
-
-  u8g2.setDrawColor(0);   // clear the scrolling area
-  u8g2.drawBox(0, 49, u8g2.getDisplayWidth()-1, u8g2.getDisplayHeight()-1);
-  u8g2.setDrawColor(1);   // set the color for the text
-    
-  
-  len = strlen(s);
-  if ( offset &lt; 0 )
-  {
-    char_offset = (-offset)/8;
-    dx = offset + char_offset*8;
-    if ( char_offset &gt;= u8g2.getDisplayWidth()/8 )
-      return;
-    visible = u8g2.getDisplayWidth()/8-char_offset+1;
-    strncpy(buf, s, visible);
-    buf[visible] = '\0';
-    u8g2.setFont(u8g2_font_8x13_mf);
-    u8g2.drawStr(char_offset*8-dx, 62, buf);
-  }
-  else
-  {
-    char_offset = offset / 8;
-    if ( char_offset &gt;= len )
-      return; // nothing visible
-    dx = offset - char_offset*8;
-    visible = len - char_offset;
-    if ( visible &gt; u8g2.getDisplayWidth()/8+1 )
-      visible = u8g2.getDisplayWidth()/8+1;
-    strncpy(buf, s+char_offset, visible);
-    buf[visible] = '\0';
-    u8g2.setFont(u8g2_font_8x13_mf);
-    u8g2.drawStr(-dx, 62, buf);
-  }
-  
-}
-
-void draw(const char *s, uint8_t symbol, int val)
-{
-  int16_t offset = -(int16_t)u8g2.getDisplayWidth();
-  int16_t len = strlen(s);
-  
-  u8g2.clearBuffer();         // clear the internal memory
-  drawWeather(symbol, val);    // draw the icon and degree only once
-  for(;;)             // then do the scrolling
-  {
-  
-    drawScrollString(offset, s);        // no clearBuffer required, screen will be partially cleared here
-    u8g2.sendBuffer();        // transfer internal memory to the display
-
-    delay(20);
-    offset+=2;
-    if ( offset &gt; len*8+1 )
-      break;
-  }
-}
-
-
-void setup(void) {
-  Serial.begin(9600);
-  sensors.begin(); //初始化DS18b20
-  u8g2.begin();  //初始化OLED
-  u8g2.enableUTF8Print();//打开UTF8输出
-}
-
-void loop(void) {
-    sensors.requestTemperatures(); // 发送命令获取温度
-    int val = sensors.getTempCByIndex(0);//将获取到的温度数值保存在变量中
-    draw(&quot;What a beautiful day!&quot;, SUN_CLOUD, val);//调用函数绘制最终界面
-}
-</code></pre>
 ]]></content>
     </entry>
 </feed>

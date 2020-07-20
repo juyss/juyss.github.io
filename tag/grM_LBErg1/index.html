@@ -9,7 +9,7 @@
 <meta name="description" content="记录自己的Java学习过程">
 <meta name="theme-color" content="#074181">
 <title>Juyss&#39;s Blog</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1595243453658">
+<link rel="shortcut icon" href="/favicon.ico?v=1595246499328">
 <link rel="stylesheet" href="/media/css/gemini.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -184,7 +184,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">24</span>
+        <span class="site-item-stat-count">27</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -247,6 +247,14 @@
           <small class="language" data-lan="tag">标签</small>
         </h2>
       </div>
+      
+      
+      
+      
+      
+      
+      
+      
       
       
       
@@ -1179,6 +1187,297 @@
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/"" data-c="
+          &lt;p&gt;使用Java程序实现邮件发送功能&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;实现步骤:&lt;/p&gt;
+&lt;h3 id=&#34;导包&#34;&gt;导包&lt;/h3&gt;
+&lt;p&gt;导入&lt;code&gt;javax.mail&lt;/code&gt;和&lt;code&gt;javax.activation&lt;/code&gt;两个依赖包&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1595246472129.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;打开邮箱的pop3smtp服务&#34;&gt;打开邮箱的&lt;code&gt;pop3/smtp&lt;/code&gt;服务&lt;/h3&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;https://shmebluk.github.io//post-images/1595246483544.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;h3 id=&#34;编写java程序&#34;&gt;编写java程序&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MailSend
+ * @Desc: 简单邮件发送实现
+ * @package PACKAGE_NAME
+ * @project File_and_Mail
+ * @date 2020/7/18 19:25
+ */
+public class MailSend {
+    public static void main(String[] args) {
+        Transport transport = null;
+        try {
+            Properties prop = new Properties();
+            prop.setProperty(&amp;quot;mail.host&amp;quot;, &amp;quot;smtp.qq.com&amp;quot;); //邮件服务器
+            prop.setProperty(&amp;quot;mail.transport.protocol&amp;quot;, &amp;quot;smtp&amp;quot;); //邮件发送协议
+            prop.setProperty(&amp;quot;mail.smtp.auth&amp;quot;, &amp;quot;true&amp;quot;); //需要验证用户名和密码
+
+            //QQ邮箱额外需要的
+            MailSSLSocketFactory mailSSLSocket = new MailSSLSocketFactory();
+            mailSSLSocket.setTrustAllHosts(true);
+            prop.put(&amp;quot;mail.smtp.ssl.enable&amp;quot;, &amp;quot;true&amp;quot;);
+            prop.put(&amp;quot;mail.smtp.ssl.socketFactory&amp;quot;, mailSSLSocket);
+
+            //使用JavaMail发送邮件的5个步骤
+            //1.创建整个程序所需的环境信息的Session对象
+            PasswordAuthentication passwordAuthentication = new PasswordAuthentication(&amp;quot;1028507471@qq.com&amp;quot;, &amp;quot;drjeleykuqavbbgb&amp;quot;);
+            Authenticator authenticator = new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return passwordAuthentication;
+                }
+            };
+            Session session = Session.getDefaultInstance(prop, authenticator);
+
+            session.setDebug(true);//开启session的debug模式
+
+            //2.获取Transport对象
+            transport = session.getTransport();
+
+            //3.连接邮件服务器
+            transport.connect(&amp;quot;smtp.qq.com&amp;quot;, &amp;quot;1028507471@qq.com&amp;quot;, &amp;quot;drjeleykuqavbbgb&amp;quot;);
+
+            //4.创建邮件
+            MimeMessage message = new MimeMessage(session); //创建session对象
+            InternetAddress sender = new InternetAddress(&amp;quot;1028507471@qq.com&amp;quot;);//发件人(需开启smtp服务)
+            InternetAddress receiver = new InternetAddress(&amp;quot;1828433175@qq.com&amp;quot;);//收件人
+
+            message.setFrom(sender);//设置发件人
+            message.setRecipient(Message.RecipientType.TO, receiver);//设置收件人类型和收件人
+            message.setSubject(&amp;quot;SimpleTextMail&amp;quot;);//设置主题
+
+            //两个方法不能同时存在,后面的会覆盖前面的邮件内容
+            message.setText(&amp;quot;第一段&amp;lt;br&amp;gt;第二段&amp;lt;br&amp;gt;第三段&amp;lt;br&amp;gt;&amp;quot;, &amp;quot;UTF-8&amp;quot;);//设置发送内容(普通文本内容)
+            message.setContent(&amp;quot;&amp;lt;h1&amp;gt;一级标题&amp;lt;/h1&amp;gt;&amp;lt;hr&amp;gt;&amp;lt;h2&amp;gt;二级标题&amp;lt;/h2&amp;gt;&amp;quot;, &amp;quot;text/html;charset=UTF-8&amp;quot;);//设置发送内容(HTML格式)
+
+            //5.发送邮件
+            transport.sendMessage(message, message.getAllRecipients());
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } finally {
+            //6.关闭资源
+            try {
+                if (transport != null)
+                    transport.close();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+">邮件发送功能实现</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/"" data-c="
+          &lt;p&gt;通过前端页面操作文件上传到服务器的指定保存路径&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;项目结构(Maven)&lt;br&gt;
+&lt;img src=&#34;https://shmebluk.github.io//post-images/1595245735136.jpg&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;文件上传实现思路及步骤&#34;&gt;文件上传实现思路及步骤&lt;/h2&gt;
+&lt;h3 id=&#34;1-导包&#34;&gt;1. 导包&lt;/h3&gt;
+&lt;p&gt;导入&lt;code&gt;commons-io&lt;/code&gt;和&lt;code&gt;commons-fileupload&lt;/code&gt;   jar包&lt;/p&gt;
+&lt;h3 id=&#34;2-前端页面&#34;&gt;2. 前端页面&lt;/h3&gt;
+&lt;p&gt;action:页面请求,需和&lt;code&gt;web.xml&lt;/code&gt;中匹配&lt;/p&gt;
+&lt;p&gt;method:设置为&lt;code&gt;post&lt;/code&gt;,没有文件大小限制&lt;/p&gt;
+&lt;p&gt;enctype:值为&lt;code&gt;multipart/form-data&lt;/code&gt;用于识别是否为文件表单还是普通文本表单&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;form action=&amp;quot;${pageContext.request.contextPath}/upload.do&amp;quot; enctype=&amp;quot;multipart/form-data&amp;quot; method=&amp;quot;post&amp;quot;&amp;gt;
+    &amp;lt;input type=&amp;quot;file&amp;quot; name=&amp;quot;file1&amp;quot;&amp;gt;
+    &amp;lt;br&amp;gt;
+    &amp;lt;input type=&amp;quot;file&amp;quot; name=&amp;quot;file2&amp;quot;&amp;gt;
+    &amp;lt;br&amp;gt;
+    &amp;lt;input type=&amp;quot;submit&amp;quot;&amp;gt;
+    &amp;lt;br&amp;gt;
+&amp;lt;/form&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;3-注册webxml&#34;&gt;3. 注册web.xml&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;    &amp;lt;servlet&amp;gt;
+        &amp;lt;servlet-name&amp;gt;FileUploadServlet&amp;lt;/servlet-name&amp;gt;
+        &amp;lt;servlet-class&amp;gt;com.juyss.servlet.FileUploadServlet&amp;lt;/servlet-class&amp;gt;
+    &amp;lt;/servlet&amp;gt;
+    &amp;lt;servlet-mapping&amp;gt;
+        &amp;lt;servlet-name&amp;gt;FileUploadServlet&amp;lt;/servlet-name&amp;gt;
+        &amp;lt;url-pattern&amp;gt;/upload.do&amp;lt;/url-pattern&amp;gt;
+    &amp;lt;/servlet-mapping&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-编写servlet&#34;&gt;4. 编写Servlet&lt;/h3&gt;
+&lt;h4 id=&#34;实现步骤&#34;&gt;实现步骤&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;判断表单为普通文本表单还是文件表单&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;创建上传文件的保存根路径&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;创建临时文件的保存根路径&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;获取&lt;code&gt;FileItem&lt;/code&gt;对象&lt;/p&gt;
+&lt;p&gt;​		需要&lt;code&gt;ServletFileUpload&lt;/code&gt;对象&lt;/p&gt;
+&lt;p&gt;​				需要用到&lt;code&gt;DiskFileItemFactory&lt;/code&gt;对象,用于处理上传路径和限制文件大小&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;通过&lt;code&gt;FileItem&lt;/code&gt;对象获取文件名,文件后缀&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用UUID创建唯一保存路径&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用&lt;code&gt;fileItem.getInputStream()&lt;/code&gt;获取文件输入流&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;创建文件输出流&lt;code&gt;FileOutputStream fos = new FileOutputStream(savePath + &amp;quot;/&amp;quot; + fileName)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;关闭流资源,同时删除临时文件&lt;code&gt;fileItem.delete()&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class FileUploadServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.println(&amp;quot;进入了FileUploadServlet.class&amp;quot;);
+
+        //判断表单是否为带有文件的表单
+        if (!ServletFileUpload.isMultipartContent(request)) {
+            return; //终止方法运行
+        }
+
+        //定义文件上传后保存的根路径
+        String rootPath = this.getServletContext().getRealPath(&amp;quot;/WEB-INF/upload&amp;quot;);
+        File rootFile = new File(rootPath);
+        if (!rootFile.exists()) {
+            rootFile.mkdir();
+        }
+
+        //定义文件缓存路径
+        String tempPath = this.getServletContext().getRealPath(&amp;quot;/WEB-INF/temp&amp;quot;);
+        File tempFile = new File(tempPath);
+        if (!tempFile.exists()) {
+            tempFile.mkdir();
+        }
+
+        //创建DiskFileItemFactory对象,处理上传路径和限制文件大小
+        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory(1024 * 1024, tempFile);
+
+        //创建ServletFileUpload对象
+        ServletFileUpload servletFileUpload = new ServletFileUpload(fileItemFactory);
+
+        //获取FileItem对象
+        List&amp;lt;FileItem&amp;gt; fileItems = null;
+        try {
+            fileItems = servletFileUpload.parseRequest(request);
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        }
+        if (fileItems==null){
+            System.out.println(&amp;quot;fileItem空指针&amp;quot;);
+            return;
+        }
+        Iterator&amp;lt;FileItem&amp;gt; iterator = fileItems.iterator();
+
+        //遍历fileItems集合
+        while (iterator.hasNext()) {
+            FileItem fileItem = iterator.next();
+            if (fileItem.isFormField()) {//是普通文本表单
+                continue; //跳出循环
+            } else {//是文件表单
+                //获取文件字段名,标签中name属性的值
+                String fieldName = fileItem.getFieldName();
+                //获取文件上传字段中的文件名,一般来说为为文件名(不包含路径信息),在opera浏览器中可能会包含文件路径信息
+                String name = fileItem.getName();
+                System.out.println(&amp;quot;文件字段名:&amp;quot;+fieldName);
+                System.out.println(&amp;quot;文件名:&amp;quot;+name);
+
+                //判断文件名是否合法
+                if (name.trim().equals(&amp;quot;&amp;quot;) || name == null) {
+                    continue;
+                }
+
+                //获取文件名和文件后缀
+
+                String fileName; //文件名
+                if (name.contains(&amp;quot;/&amp;quot;)){ //判断name是否包含路径信息
+                    fileName = name.substring(name.lastIndexOf(&amp;quot;/&amp;quot;));
+                }else{
+                    fileName = name;
+                }
+
+                String fileExtension = fileName.substring(fileName.indexOf(&amp;quot;.&amp;quot;) + 1);//获取文件后缀
+                System.out.println(&amp;quot;文件名:&amp;quot; + fileName);
+                System.out.println(&amp;quot;文件类型:&amp;quot; + fileExtension);
+                //获取随机UUID
+                String uuid = UUID.randomUUID().toString();
+
+                //使用uuid创建唯一的文件夹作为文件存放路径
+                String savePath = rootPath + &amp;quot;/&amp;quot; + uuid; //文件存放路径
+                File savePathFile = new File(savePath);
+                if (!savePathFile.exists()) { //路径不存在就创建
+                    savePathFile.mkdir();
+                }
+
+                //获取输入流读取上传的文件
+                InputStream is = fileItem.getInputStream();
+
+                //用输出流保存到本地
+                FileOutputStream fos = new FileOutputStream(savePath + &amp;quot;/&amp;quot; + fileName);
+
+                int len;
+                byte[] bytes = new byte[1024 * 1024];
+                while((len = is.read(bytes))!=-1){
+                    fos.write(bytes,0,len);
+                }
+
+                fos.close();
+                is.close();
+                //删除临时文件
+                fileItem.delete();
+            }
+        }
+
+
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doPost(request, response);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+">网页文件上传功能实现</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/mvc-jia-gou-fen-xi/"" data-c="
+          &lt;h2 id=&#34;mvc&#34;&gt;MVC&lt;/h2&gt;
+&lt;p&gt;简要分析一下MVC三层架构中每个部分的组成与功能&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h3 id=&#34;介绍&#34;&gt;介绍&lt;/h3&gt;
+&lt;p&gt;MVC：  Model 			模型&lt;/p&gt;
+&lt;p&gt;​			  View   			视图&lt;/p&gt;
+&lt;p&gt;​			  Controller  	 控制器&lt;/p&gt;
+&lt;h3 id=&#34;m-model-模型&#34;&gt;M    (Model) : 模型&lt;/h3&gt;
+&lt;h4 id=&#34;功能&#34;&gt;功能&lt;/h4&gt;
+&lt;p&gt;DAO层 : 对数据库进行操作(CRUD)&lt;/p&gt;
+&lt;p&gt;Service层 : 处理业务逻辑 , 调用DAO层获取数据&lt;/p&gt;
+&lt;h3 id=&#34;v-view-视图&#34;&gt;V    (View) : 视图&lt;/h3&gt;
+&lt;h4 id=&#34;功能-2&#34;&gt;功能&lt;/h4&gt;
+&lt;p&gt;前端页面 : 展示数据 , 发起 Servlet 请求&lt;/p&gt;
+&lt;h3 id=&#34;c-controller-控制&#34;&gt;C    (Controller) : 控制&lt;/h3&gt;
+&lt;h4 id=&#34;功能-3&#34;&gt;功能&lt;/h4&gt;
+&lt;p&gt;接受请求 , 控制页面跳转 , 调用Service层处理数据&lt;/p&gt;
+">MVC架构分析</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/"" data-c="
@@ -3497,10 +3796,10 @@ public class VendingMachine {
           &lt;blockquote&gt;
 &lt;p&gt;欢迎来到我的小站呀，很高兴遇见你！🤝&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;关于本站&#34;&gt;🏠 关于本站&lt;/h2&gt;
-&lt;h2 id=&#34;博主是谁&#34;&gt;👨‍💻 博主是谁&lt;/h2&gt;
-&lt;h2 id=&#34;兴趣爱好&#34;&gt;⛹ 兴趣爱好&lt;/h2&gt;
-&lt;h2 id=&#34;联系我呀&#34;&gt;📬 联系我呀&lt;/h2&gt;
+&lt;h2 id=&#34;github&#34;&gt;👨‍💻 &lt;a href=&#34;https://github.com/shmebluk?tab=repositories&#34;&gt;GitHub&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;mail&#34;&gt;📬 &lt;a href=&#34;1028507471@qq.com&#34;&gt;Mail&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;bilibili&#34;&gt;📺&lt;a href=&#34;https://space.bilibili.com/73290361&#34;&gt;Bilibili&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;sina&#34;&gt;🌈&lt;a href=&#34;https://www.weibo.com/5934632940/profile?rightmod=1&amp;amp;wvr=6&amp;amp;mod=personinfo&#34;&gt;Sina&lt;/a&gt;&lt;/h2&gt;
 ">关于</a>
       </div>
       
