@@ -8,7 +8,7 @@
 <meta name="keywords" content="Gridea静态个人博客">
 <meta name="description" content="记录自己的Java学习过程">
 <meta name="theme-color" content="#074181">
-<title>Guess The Number | Juyss&#39;s Blog</title>
+<title>基本数据类型转换原则 | Juyss&#39;s Blog</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1595593223835">
 <link rel="stylesheet" href="/media/css/gemini.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
@@ -38,8 +38,8 @@
 
 
 
-  <meta name="description" content="Guess The Number" />
-  <meta name="keywords" content="Java,学习记录" />
+  <meta name="description" content="基本数据类型转换原则" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -190,7 +190,8 @@
       <div class="sidebar-body gemini" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -238,6 +239,202 @@
   </div>
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-%E8%87%AA%E5%8A%A8%E7%B1%BB%E5%9E%8B%E6%8F%90%E5%8D%87">1. 自动类型提升</a></li>
+<li><a href="#2-%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">2. 强制类型转换</a></li>
+<li><a href="#3-string%E7%B1%BB%E5%9E%8B">3. String类型</a></li>
+<li><a href="#4-%E8%BF%9B%E5%88%B6">4. 进制</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0] && elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -325,8 +522,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://shmebluk.github.io/post/guess-the-number/">
-      Guess The Number
+    <a class="post-title-link" href="https://shmebluk.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/">
+      基本数据类型转换原则
     </a>
   </h1>
   <div class="post-meta">
@@ -334,28 +531,9 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span class="language" data-lan="publish">发布于</span>
-      <span>2020-02-05</span>
+      <span>2020-07-24</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show language" data-lan="category-in">分类于</span>
-      
-      
-      <a href="https://shmebluk.github.io/tag/JKzRu5UM7/">
-        <span>Java</span>
-      </a>、
-      
-      
-      
-      <a href="https://shmebluk.github.io/tag/AMoVmckAAn/">
-        <span>学习记录</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
@@ -364,54 +542,67 @@
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>427<span class="pc-show language" data-lan="words">字数</span></span>
+      <span>401<span class="pc-show language" data-lan="words">字数</span></span>
     </span>
     
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <p>🎮 <strong>Let's play a game !</strong><br>
-Guess the number your computer💻 created , compare it with what your entrance ⌨️. And give you some prompts .</p>
+              <p>Java中七种基本数据类型相互之间的转换原则</p>
 <!-- more -->
-<p>Once you guessed the number correctly👌 , print the number and how many times you guessed .<br>
-👨‍💻写了一个猜数字的游戏，电脑随机产生一个数字，与用户输入的数字对比，并给予用户一定提示，猜对后<br>
-输出这个数字，并统计用户猜的次数。<br>
-✍️目的：（循环语句以及随机数的使用练习）</p>
-<pre><code>import java.util.Random;
-import java.util.Scanner;
-
-public class random {
-    public static void main(String[] args) {
-        int j = 0; // 用户输入的整数变量
-        int count = 0; // 计数变量
-        int i = 0; // 随机数变量
-        System.out.println(&quot;欢迎来到猜数字游戏&quot;);
-        Random r = new Random();
-        i = r.nextInt(101); // 产生一个随机数,范围是（ 0,101 ] ，并赋值给变量
-        System.out.println(&quot;随机数已生成&quot;);
-        System.out.println(&quot;请输入你猜的数字&quot;);
-        Scanner in = new Scanner(System.in);
-        do {
-            j = in.nextInt(); // 用户输入
-            if (i &gt; j) { //与 i 值进行对比，并输出提示 
-                System.out.println(&quot;你输入的数字小了&quot;);
-            }
-            if (i &lt; j) {
-                System.out.println(&quot;你输入的数字大了&quot;);
-            }
-            count++; // 统计次数
-        }
-        while (i != j); // 检测是否猜对
-        System.out.println(&quot;恭喜你，猜对了！！！&quot;);
-        System.out.println(&quot;数字是&quot; + i); // 输出随机数的值
-        System.out.println(&quot;你猜了&quot;+count+&quot;次&quot;); // 输出统计次数
-    }
-}
+<p><em>(只讨论数值型,不包含布尔类型)</em></p>
+<h3 id="1-自动类型提升">1. 自动类型提升</h3>
+<ul>
+<li>正常情况:容量小的数据类型变量和容量大的数据类型变量运算,结果自动提升为容量大的变量的数据类型</li>
+<li>当byte、char、short三种数据类型的变量互相做运算(包括同类型之间),结果自动提升为int<br>
+byte、char、short --&gt; int --&gt; long --&gt; float --&gt; double</li>
+</ul>
+<h3 id="2-强制类型转换">2. 强制类型转换</h3>
+<ul>
+<li>
+<p>使用 	(目标数据类型)变量名	进行操作</p>
+</li>
+<li>
+<p>浮点型转换为整形 : 精度损失(丢失小数点后的数据)</p>
+</li>
+<li>
+<p>变量值超出目标数据类型取值范围 : 精度损失(会被截断)</p>
+</li>
+<li>
+<p>整形常量默认为<code>int</code>型,浮点型常量默认为<code>double</code>型</p>
+</li>
+</ul>
+<h3 id="3-string类型">3. String类型</h3>
+<p><code>String</code>是<strong>引用数据类型</strong></p>
+<pre><code class="language-java">char c = '';//编译不通过
 </code></pre>
-<p>💡运行结果如下：<br>
-<img src="https://shmebluk.github.io//post-images/1580887876209.png" alt="" loading="lazy"><br>
-👉一个思考：<br>
-如果使用二分法进行猜数字，及使用区间的中间数来猜的话，则最大次数应该不会超过七次，因为2的七次方已经大于100，但是考虑到输入数值只能为整数，所以正常情况下10次以内就可以猜中啦！👌</p>
+<pre><code class="language-java">char c = ' ';//放了一个空格,编译通过
+</code></pre>
+<ul>
+<li>
+<p>其他基础数据类型和String类进行运算,进行字符串拼接,结果仍然为String</p>
+</li>
+<li>
+<pre><code class="language-java">System.out.println(&quot;*	*&quot;); //*	* (字符串)
+System.out.println('*'+'\t'+'*'); //93 (char类型运算,结果为int)
+System.out.println('*'+&quot;\t&quot;+'*'); //*	* (char+String+char,结果为String)
+System.out.println('*'+'\t'+&quot;*&quot;); //51* (前两项结果为int,再加上String,结果为String)
+System.out.println('*'+('\t'+&quot;*&quot;)); //*    * (小括号内优先运算,结果为String,再加一个char,结果依然为String)
+</code></pre>
+</li>
+<li>
+<pre><code class="language-java">String s1 = 3.5f + &quot;&quot;;
+System.out.println(); // &quot;3.5&quot;
+</code></pre>
+</li>
+</ul>
+<h3 id="4-进制">4. 进制</h3>
+<ul>
+<li>二进制 : 以0b或0B开头</li>
+<li>十进制 :</li>
+<li>八进制 : 以零开头</li>
+<li>十六进制 : 以0x或0X开头</li>
+</ul>
 
             </div>
             
@@ -424,7 +615,7 @@ public class random {
     </li>
     <li class="post-copyright-link">
       <strong class="language" data-lan="link">本文链接：</strong>
-      <a href="https://shmebluk.github.io/post/guess-the-number/" title="Guess The Number">https://shmebluk.github.io/post/guess-the-number/</a>
+      <a href="https://shmebluk.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/" title="基本数据类型转换原则">https://shmebluk.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/</a>
     </li>
     <li class="post-copyright-license">
       <strong class="language" data-lan="copyright">版权声明： </strong>
@@ -433,23 +624,15 @@ public class random {
   </ul>
   <div class="tags">
     
-      <a href="https://shmebluk.github.io/tag/JKzRu5UM7/"># Java</a>
-    
-      <a href="https://shmebluk.github.io/tag/AMoVmckAAn/"># 学习记录</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="The Member Function " href="https://shmebluk.github.io/post/the-member-function/">The Member Function </a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="The Member Function " href="https://shmebluk.github.io/post/the-member-function/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Insert Pictures In Hexo Blog" href="https://shmebluk.github.io/post/Hexo-blog/">Insert Pictures In Hexo Blog</a>
-        <a class="nav-mobile-next" title="Insert Pictures In Hexo Blog" href="https://shmebluk.github.io/post/Hexo-blog/">下一篇</a>
+        <a class="nav-pc-next" title="邮件发送功能实现" href="https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/">邮件发送功能实现</a>
+        <a class="nav-mobile-next" title="邮件发送功能实现" href="https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

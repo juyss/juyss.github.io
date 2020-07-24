@@ -9,7 +9,7 @@
 <meta name="description" content="记录自己的Java学习过程">
 <meta name="theme-color" content="#074181">
 <title>Juyss&#39;s Blog</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1595246499328">
+<link rel="shortcut icon" href="/favicon.ico?v=1595593223835">
 <link rel="stylesheet" href="/media/css/gemini.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -184,7 +184,7 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">27</span>
+        <span class="site-item-stat-count">28</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
@@ -239,6 +239,66 @@
         <div class="section-box gemini">
           <section class="section  posts-expand slide-down-in">
             
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://shmebluk.github.io/post/height-inheritance/">
+      Height Inheritance
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span class="language" data-lan="publish">发布于</span>
+      <span>2020-02-10</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show language" data-lan="category-in">分类于</span>
+      
+      
+      <a href="https://shmebluk.github.io/tag/AMoVmckAAn/">
+        <span>学习记录</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>3<span class="language" data-lan="minute">分钟</span></span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>533<span class="pc-show language" data-lan="words">字数</span></span>
+    </span>
+    
+  </div>
+</header>
+      <div class="post-body">
+        
+        
+          <p>👨‍🏫When compare the string , &quot;==&quot; and &quot;equals&quot; are different in java . here is I I learned how to use them and when to use them .</p>
+
+        
+        
+        <div class="post-button text-center">
+          <a class="btn language" data-lan="read-more" href="https://shmebluk.github.io/post/height-inheritance/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
+      </div>
+      
+    </div>
+  </article>
+
   <article class="post-list-box  post box-shadow-wrapper">
     <div class="article-wrapper bg-color">
       <header class="post-header">
@@ -1501,6 +1561,66 @@ Guess the number your computer💻 created , compare it with what your entrance 
       <hr>
     </div>
     <div class="result" id="result">
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/"" data-c="
+          &lt;p&gt;Java中七种基本数据类型相互之间的转换原则&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;&lt;em&gt;(只讨论数值型,不包含布尔类型)&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;1-自动类型提升&#34;&gt;1. 自动类型提升&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;正常情况:容量小的数据类型变量和容量大的数据类型变量运算,结果自动提升为容量大的变量的数据类型&lt;/li&gt;
+&lt;li&gt;当byte、char、short三种数据类型的变量互相做运算(包括同类型之间),结果自动提升为int&lt;br&gt;
+byte、char、short --&amp;gt; int --&amp;gt; long --&amp;gt; float --&amp;gt; double&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-强制类型转换&#34;&gt;2. 强制类型转换&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用 	(目标数据类型)变量名	进行操作&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;浮点型转换为整形 : 精度损失(丢失小数点后的数据)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;变量值超出目标数据类型取值范围 : 精度损失(会被截断)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;整形常量默认为&lt;code&gt;int&lt;/code&gt;型,浮点型常量默认为&lt;code&gt;double&lt;/code&gt;型&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;3-string类型&#34;&gt;3. String类型&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;String&lt;/code&gt;是&lt;strong&gt;引用数据类型&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;char c = &#39;&#39;;//编译不通过
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;char c = &#39; &#39;;//放了一个空格,编译通过
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;其他基础数据类型和String类进行运算,进行字符串拼接,结果仍然为String&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;System.out.println(&amp;quot;*	*&amp;quot;); //*	* (字符串)
+System.out.println(&#39;*&#39;+&#39;\t&#39;+&#39;*&#39;); //93 (char类型运算,结果为int)
+System.out.println(&#39;*&#39;+&amp;quot;\t&amp;quot;+&#39;*&#39;); //*	* (char+String+char,结果为String)
+System.out.println(&#39;*&#39;+&#39;\t&#39;+&amp;quot;*&amp;quot;); //51* (前两项结果为int,再加上String,结果为String)
+System.out.println(&#39;*&#39;+(&#39;\t&#39;+&amp;quot;*&amp;quot;)); //*    * (小括号内优先运算,结果为String,再加一个char,结果依然为String)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String s1 = 3.5f + &amp;quot;&amp;quot;;
+System.out.println(); // &amp;quot;3.5&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4-进制&#34;&gt;4. 进制&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;二进制 : 以0b或0B开头&lt;/li&gt;
+&lt;li&gt;十进制 :&lt;/li&gt;
+&lt;li&gt;八进制 : 以零开头&lt;/li&gt;
+&lt;li&gt;十六进制 : 以0x或0X开头&lt;/li&gt;
+&lt;/ul&gt;
+">基本数据类型转换原则</a>
+      </div>
       
       <div class="item">
         <a class="result-title" style="opacity: 0;" href="https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/"" data-c="
