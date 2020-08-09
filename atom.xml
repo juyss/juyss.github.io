@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://shmebluk.github.io/</id>
+    <id>https://juyss.github.io/</id>
     <title>Juyss&apos;s Blog</title>
-    <updated>2020-07-24T12:20:26.056Z</updated>
+    <updated>2020-08-09T15:05:00.209Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://shmebluk.github.io/"/>
-    <link rel="self" href="https://shmebluk.github.io/atom.xml"/>
+    <link rel="alternate" href="https://juyss.github.io/"/>
+    <link rel="self" href="https://juyss.github.io/atom.xml"/>
     <subtitle>记录自己的Java学习过程</subtitle>
-    <logo>https://shmebluk.github.io/images/avatar.png</logo>
-    <icon>https://shmebluk.github.io/favicon.ico</icon>
+    <logo>https://juyss.github.io/images/avatar.png</logo>
+    <icon>https://juyss.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Juyss&apos;s Blog</rights>
     <entry>
         <title type="html"><![CDATA[基本数据类型转换原则]]></title>
-        <id>https://shmebluk.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/</id>
-        <link href="https://shmebluk.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/">
+        <id>https://juyss.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/</id>
+        <link href="https://juyss.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/">
         </link>
         <updated>2020-07-24T12:16:15.000Z</updated>
         <summary type="html"><![CDATA[<p>Java中七种基本数据类型相互之间的转换原则</p>
@@ -77,8 +77,8 @@ System.out.println(); // &quot;3.5&quot;
     </entry>
     <entry>
         <title type="html"><![CDATA[邮件发送功能实现]]></title>
-        <id>https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/</id>
-        <link href="https://shmebluk.github.io/post/you-jian-fa-song-gong-neng-shi-xian/">
+        <id>https://juyss.github.io/post/you-jian-fa-song-gong-neng-shi-xian/</id>
+        <link href="https://juyss.github.io/post/you-jian-fa-song-gong-neng-shi-xian/">
         </link>
         <updated>2020-07-20T12:00:39.000Z</updated>
         <summary type="html"><![CDATA[<p>使用Java程序实现邮件发送功能</p>
@@ -88,9 +88,9 @@ System.out.println(); // &quot;3.5&quot;
 <p>实现步骤:</p>
 <h3 id="导包">导包</h3>
 <p>导入<code>javax.mail</code>和<code>javax.activation</code>两个依赖包<br>
-<img src="https://shmebluk.github.io//post-images/1595246472129.jpg" alt="" loading="lazy"></p>
+<img src="https://juyss.github.io//post-images/1595246472129.jpg" alt="" loading="lazy"></p>
 <h3 id="打开邮箱的pop3smtp服务">打开邮箱的<code>pop3/smtp</code>服务</h3>
-<figure data-type="image" tabindex="1"><img src="https://shmebluk.github.io//post-images/1595246483544.jpg" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="1"><img src="https://juyss.github.io//post-images/1595246483544.jpg" alt="" loading="lazy"></figure>
 <h3 id="编写java程序">编写java程序</h3>
 <pre><code class="language-java">/**
  * @author ShmeBluk
@@ -172,8 +172,8 @@ public class MailSend {
     </entry>
     <entry>
         <title type="html"><![CDATA[网页文件上传功能实现]]></title>
-        <id>https://shmebluk.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/</id>
-        <link href="https://shmebluk.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/">
+        <id>https://juyss.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/</id>
+        <link href="https://juyss.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/">
         </link>
         <updated>2020-07-20T11:46:16.000Z</updated>
         <summary type="html"><![CDATA[<p>通过前端页面操作文件上传到服务器的指定保存路径</p>
@@ -181,7 +181,7 @@ public class MailSend {
         <content type="html"><![CDATA[<p>通过前端页面操作文件上传到服务器的指定保存路径</p>
 <!-- more -->
 <p>项目结构(Maven)<br>
-<img src="https://shmebluk.github.io//post-images/1595245735136.jpg" alt="" loading="lazy"></p>
+<img src="https://juyss.github.io//post-images/1595245735136.jpg" alt="" loading="lazy"></p>
 <h2 id="文件上传实现思路及步骤">文件上传实现思路及步骤</h2>
 <h3 id="1-导包">1. 导包</h3>
 <p>导入<code>commons-io</code>和<code>commons-fileupload</code>   jar包</p>
@@ -356,8 +356,8 @@ public class MailSend {
     </entry>
     <entry>
         <title type="html"><![CDATA[MVC架构分析]]></title>
-        <id>https://shmebluk.github.io/post/mvc-jia-gou-fen-xi/</id>
-        <link href="https://shmebluk.github.io/post/mvc-jia-gou-fen-xi/">
+        <id>https://juyss.github.io/post/mvc-jia-gou-fen-xi/</id>
+        <link href="https://juyss.github.io/post/mvc-jia-gou-fen-xi/">
         </link>
         <updated>2020-07-20T11:17:50.000Z</updated>
         <summary type="html"><![CDATA[<h2 id="mvc">MVC</h2>
@@ -384,8 +384,8 @@ public class MailSend {
     </entry>
     <entry>
         <title type="html"><![CDATA[修改Maven项目默认JDK版本]]></title>
-        <id>https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/</id>
-        <link href="https://shmebluk.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/">
+        <id>https://juyss.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/</id>
+        <link href="https://juyss.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/">
         </link>
         <updated>2020-06-08T15:27:28.000Z</updated>
         <summary type="html"><![CDATA[<p>问题：</p>
@@ -418,13 +418,13 @@ public class MailSend {
 <ol start="2">
 <li>
 <p>更改IDEA设置<br>
-<img src="https://shmebluk.github.io//post-images/1591630435988.jpg" alt="" loading="lazy"></p>
+<img src="https://juyss.github.io//post-images/1591630435988.jpg" alt="" loading="lazy"></p>
 <p>如图所示,确保所指文件路径为你修改过的文件</p>
 </li>
 <li>
 <p>重新加载Maven项目<br>
 点击如图所示地方,重新加载Maven项目即可<br>
-<img src="https://shmebluk.github.io//post-images/1591630571223.jpg" alt="" loading="lazy"></p>
+<img src="https://juyss.github.io//post-images/1591630571223.jpg" alt="" loading="lazy"></p>
 </li>
 <li>
 <p>完成修改.</p>
@@ -434,8 +434,8 @@ public class MailSend {
     </entry>
     <entry>
         <title type="html"><![CDATA[数据库访问对象DAO]]></title>
-        <id>https://shmebluk.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/</id>
-        <link href="https://shmebluk.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/">
+        <id>https://juyss.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/</id>
+        <link href="https://juyss.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/">
         </link>
         <updated>2020-06-04T15:18:52.000Z</updated>
         <summary type="html"><![CDATA[<h2 id="dao">DAO</h2>
@@ -981,8 +981,8 @@ maxActive=10
     </entry>
     <entry>
         <title type="html"><![CDATA[JDBC相关配置和操作]]></title>
-        <id>https://shmebluk.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/</id>
-        <link href="https://shmebluk.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/">
+        <id>https://juyss.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/</id>
+        <link href="https://juyss.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/">
         </link>
         <updated>2020-06-04T14:44:20.000Z</updated>
         <summary type="html"><![CDATA[<h4 id="获取数据库连接的几种方式以及preparedstatement和statement的对比">获取数据库连接的几种方式以及PreparedStatement和Statement的对比</h4>
@@ -1234,8 +1234,8 @@ System.out.println(conn);
     </entry>
     <entry>
         <title type="html"><![CDATA[Java中读取文件的几种路径配置]]></title>
-        <id>https://shmebluk.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/</id>
-        <link href="https://shmebluk.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/">
+        <id>https://juyss.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/</id>
+        <link href="https://juyss.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/">
         </link>
         <updated>2020-06-04T14:42:27.000Z</updated>
         <summary type="html"><![CDATA[<h4 id="获取配置文件的两种方式区别">获取配置文件的两种方式区别</h4>
@@ -1263,8 +1263,8 @@ FileInputStream is = new FileInputStream(&quot;JDBC\\src\\Resource\\druid.proper
     </entry>
     <entry>
         <title type="html"><![CDATA[两种获取InputStream对象的方法]]></title>
-        <id>https://shmebluk.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/</id>
-        <link href="https://shmebluk.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/">
+        <id>https://juyss.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/</id>
+        <link href="https://juyss.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/">
         </link>
         <updated>2020-06-04T14:38:18.000Z</updated>
         <summary type="html"><![CDATA[<p>总结两种获取InputStream对象的方法的区别</p>
@@ -1284,8 +1284,8 @@ FileInputStream is = new FileInputStream(&quot;JDBC\\src\\Resource\\druid.proper
     </entry>
     <entry>
         <title type="html"><![CDATA[事务隔离级别]]></title>
-        <id>https://shmebluk.github.io/post/shi-wu-ge-chi-ji-bie/</id>
-        <link href="https://shmebluk.github.io/post/shi-wu-ge-chi-ji-bie/">
+        <id>https://juyss.github.io/post/shi-wu-ge-chi-ji-bie/</id>
+        <link href="https://juyss.github.io/post/shi-wu-ge-chi-ji-bie/">
         </link>
         <updated>2020-06-04T14:36:13.000Z</updated>
         <summary type="html"><![CDATA[<h3 id="事务隔离级别学习总结">事务隔离级别学习总结</h3>
