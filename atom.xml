@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://juyss.github.io/</id>
     <title>Juyss&apos;s Blog</title>
-    <updated>2020-08-09T15:05:00.209Z</updated>
+    <updated>2020-12-25T09:47:57.100Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://juyss.github.io/"/>
     <link rel="self" href="https://juyss.github.io/atom.xml"/>
@@ -11,1495 +11,1901 @@
     <icon>https://juyss.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Juyss&apos;s Blog</rights>
     <entry>
-        <title type="html"><![CDATA[基本数据类型转换原则]]></title>
-        <id>https://juyss.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/</id>
-        <link href="https://juyss.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/">
+        <title type="html"><![CDATA[RabbitMQ]]></title>
+        <id>https://juyss.github.io/post/rabbitmq/</id>
+        <link href="https://juyss.github.io/post/rabbitmq/">
         </link>
-        <updated>2020-07-24T12:16:15.000Z</updated>
-        <summary type="html"><![CDATA[<p>Java中七种基本数据类型相互之间的转换原则</p>
+        <updated>2020-11-24T07:00:34.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="rabbitmq">RabbitMQ</h1>
+<p>RabbitMQ是基于AMQP的一款消息管理系统。AMQP<code>(Advanced Message Queuing Protocol)</code>，是一个提供消息服务的应用层标准高级消息队列协议，其中RabbitMQ就是基于这种协议的一种实现。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>Java中七种基本数据类型相互之间的转换原则</p>
+        <content type="html"><![CDATA[<h1 id="rabbitmq">RabbitMQ</h1>
+<p>RabbitMQ是基于AMQP的一款消息管理系统。AMQP<code>(Advanced Message Queuing Protocol)</code>，是一个提供消息服务的应用层标准高级消息队列协议，其中RabbitMQ就是基于这种协议的一种实现。</p>
 <!-- more -->
-<p><em>(只讨论数值型,不包含布尔类型)</em></p>
-<h3 id="1-自动类型提升">1. 自动类型提升</h3>
-<ul>
-<li>正常情况:容量小的数据类型变量和容量大的数据类型变量运算,结果自动提升为容量大的变量的数据类型</li>
-<li>当byte、char、short三种数据类型的变量互相做运算(包括同类型之间),结果自动提升为int<br>
-byte、char、short --&gt; int --&gt; long --&gt; float --&gt; double</li>
-</ul>
-<h3 id="2-强制类型转换">2. 强制类型转换</h3>
-<ul>
+<h2 id="rabbitmq五种常见的消息模型">RabbitMQ五种常见的消息模型</h2>
+<p>（基于SpringBoot项目）</p>
+<h3 id="消息生产者">消息生产者</h3>
+<p>包含五种消息类型的发送代码</p>
+<ol>
 <li>
-<p>使用 	(目标数据类型)变量名	进行操作</p>
-</li>
-<li>
-<p>浮点型转换为整形 : 精度损失(丢失小数点后的数据)</p>
-</li>
-<li>
-<p>变量值超出目标数据类型取值范围 : 精度损失(会被截断)</p>
-</li>
-<li>
-<p>整形常量默认为<code>int</code>型,浮点型常量默认为<code>double</code>型</p>
-</li>
-</ul>
-<h3 id="3-string类型">3. String类型</h3>
-<p><code>String</code>是<strong>引用数据类型</strong></p>
-<pre><code class="language-java">char c = '';//编译不通过
-</code></pre>
-<pre><code class="language-java">char c = ' ';//放了一个空格,编译通过
-</code></pre>
-<ul>
-<li>
-<p>其他基础数据类型和String类进行运算,进行字符串拼接,结果仍然为String</p>
-</li>
-<li>
-<pre><code class="language-java">System.out.println(&quot;*	*&quot;); //*	* (字符串)
-System.out.println('*'+'\t'+'*'); //93 (char类型运算,结果为int)
-System.out.println('*'+&quot;\t&quot;+'*'); //*	* (char+String+char,结果为String)
-System.out.println('*'+'\t'+&quot;*&quot;); //51* (前两项结果为int,再加上String,结果为String)
-System.out.println('*'+('\t'+&quot;*&quot;)); //*    * (小括号内优先运算,结果为String,再加一个char,结果依然为String)
+<p>引入依赖pom.xml</p>
+<pre><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-amqp&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
 </code></pre>
 </li>
 <li>
-<pre><code class="language-java">String s1 = 3.5f + &quot;&quot;;
-System.out.println(); // &quot;3.5&quot;
+<p>application.yml</p>
+<pre><code class="language-yml">server:
+  port: 5673 # 服务端口号
+
+spring:
+  application:
+    name: rabbitmq-provider # 服务名
+  # rabbitmq 相关配置
+  rabbitmq:
+    host: 192.168.112.133 
+    port: 5672
+    username: user
+    password: 102850
+    virtual-host: /host-1
 </code></pre>
 </li>
-</ul>
-<h3 id="4-进制">4. 进制</h3>
-<ul>
-<li>二进制 : 以0b或0B开头</li>
-<li>十进制 :</li>
-<li>八进制 : 以零开头</li>
-<li>十六进制 : 以0x或0X开头</li>
-</ul>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[邮件发送功能实现]]></title>
-        <id>https://juyss.github.io/post/you-jian-fa-song-gong-neng-shi-xian/</id>
-        <link href="https://juyss.github.io/post/you-jian-fa-song-gong-neng-shi-xian/">
-        </link>
-        <updated>2020-07-20T12:00:39.000Z</updated>
-        <summary type="html"><![CDATA[<p>使用Java程序实现邮件发送功能</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>使用Java程序实现邮件发送功能</p>
-<!-- more -->
-<p>实现步骤:</p>
-<h3 id="导包">导包</h3>
-<p>导入<code>javax.mail</code>和<code>javax.activation</code>两个依赖包<br>
-<img src="https://juyss.github.io//post-images/1595246472129.jpg" alt="" loading="lazy"></p>
-<h3 id="打开邮箱的pop3smtp服务">打开邮箱的<code>pop3/smtp</code>服务</h3>
-<figure data-type="image" tabindex="1"><img src="https://juyss.github.io//post-images/1595246483544.jpg" alt="" loading="lazy"></figure>
-<h3 id="编写java程序">编写java程序</h3>
+<li>
+<p>代码部分</p>
+<p>service接口</p>
 <pre><code class="language-java">/**
  * @author ShmeBluk
  * @version 1.0
- * @ClassName: MailSend
- * @Desc: 简单邮件发送实现
- * @package PACKAGE_NAME
- * @project File_and_Mail
- * @date 2020/7/18 19:25
+ * @ClassName: MessageSender
+ * @Desc:
+ * @package com.juyss.service
+ * @project RabbitMQ
+ * @date 2020/11/23 14:08
  */
-public class MailSend {
-    public static void main(String[] args) {
-        Transport transport = null;
-        try {
-            Properties prop = new Properties();
-            prop.setProperty(&quot;mail.host&quot;, &quot;smtp.qq.com&quot;); //邮件服务器
-            prop.setProperty(&quot;mail.transport.protocol&quot;, &quot;smtp&quot;); //邮件发送协议
-            prop.setProperty(&quot;mail.smtp.auth&quot;, &quot;true&quot;); //需要验证用户名和密码
+public interface MessageSender {
 
-            //QQ邮箱额外需要的
-            MailSSLSocketFactory mailSSLSocket = new MailSSLSocketFactory();
-            mailSSLSocket.setTrustAllHosts(true);
-            prop.put(&quot;mail.smtp.ssl.enable&quot;, &quot;true&quot;);
-            prop.put(&quot;mail.smtp.ssl.socketFactory&quot;, mailSSLSocket);
+    /**
+     * 发送消息
+     * Direct模式 : 一对一
+     * Work queues模式 : 一对多
+     * @param msg 请求传入的消息
+     */
+    void sendMessage(String msg);
 
-            //使用JavaMail发送邮件的5个步骤
-            //1.创建整个程序所需的环境信息的Session对象
-            PasswordAuthentication passwordAuthentication = new PasswordAuthentication(&quot;1028507471@qq.com&quot;, &quot;drjeleykuqavbbgb&quot;);
-            Authenticator authenticator = new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return passwordAuthentication;
-                }
-            };
-            Session session = Session.getDefaultInstance(prop, authenticator);
+    /**
+     * Publish/Subscribe示例
+     * 交换机类型为fanout
+     * @param msg 消息
+     */
+    void fanout(String msg);
 
-            session.setDebug(true);//开启session的debug模式
+    /**
+     * Routing示例
+     * 交换机类型为direct(默认)
+     * @param msg 消息
+     * @param routeKey 路由key
+     */
+    void routing(String msg,String routeKey);
 
-            //2.获取Transport对象
-            transport = session.getTransport();
-
-            //3.连接邮件服务器
-            transport.connect(&quot;smtp.qq.com&quot;, &quot;1028507471@qq.com&quot;, &quot;drjeleykuqavbbgb&quot;);
-
-            //4.创建邮件
-            MimeMessage message = new MimeMessage(session); //创建session对象
-            InternetAddress sender = new InternetAddress(&quot;1028507471@qq.com&quot;);//发件人(需开启smtp服务)
-            InternetAddress receiver = new InternetAddress(&quot;1828433175@qq.com&quot;);//收件人
-
-            message.setFrom(sender);//设置发件人
-            message.setRecipient(Message.RecipientType.TO, receiver);//设置收件人类型和收件人
-            message.setSubject(&quot;SimpleTextMail&quot;);//设置主题
-
-            //两个方法不能同时存在,后面的会覆盖前面的邮件内容
-            message.setText(&quot;第一段&lt;br&gt;第二段&lt;br&gt;第三段&lt;br&gt;&quot;, &quot;UTF-8&quot;);//设置发送内容(普通文本内容)
-            message.setContent(&quot;&lt;h1&gt;一级标题&lt;/h1&gt;&lt;hr&gt;&lt;h2&gt;二级标题&lt;/h2&gt;&quot;, &quot;text/html;charset=UTF-8&quot;);//设置发送内容(HTML格式)
-
-            //5.发送邮件
-            transport.sendMessage(message, message.getAllRecipients());
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } finally {
-            //6.关闭资源
-            try {
-                if (transport != null)
-                    transport.close();
-            } catch (MessagingException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-    }
+    /**
+     * Topic示例
+     * 按路由key匹配
+     * @param msg 消息
+     * @param routeKey 路由key
+     */
+    void topic(String msg,String routeKey);
 }
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[网页文件上传功能实现]]></title>
-        <id>https://juyss.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/</id>
-        <link href="https://juyss.github.io/post/wang-ye-wen-jian-shang-chuan-gong-neng-shi-xian/">
-        </link>
-        <updated>2020-07-20T11:46:16.000Z</updated>
-        <summary type="html"><![CDATA[<p>通过前端页面操作文件上传到服务器的指定保存路径</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>通过前端页面操作文件上传到服务器的指定保存路径</p>
-<!-- more -->
-<p>项目结构(Maven)<br>
-<img src="https://juyss.github.io//post-images/1595245735136.jpg" alt="" loading="lazy"></p>
-<h2 id="文件上传实现思路及步骤">文件上传实现思路及步骤</h2>
-<h3 id="1-导包">1. 导包</h3>
-<p>导入<code>commons-io</code>和<code>commons-fileupload</code>   jar包</p>
-<h3 id="2-前端页面">2. 前端页面</h3>
-<p>action:页面请求,需和<code>web.xml</code>中匹配</p>
-<p>method:设置为<code>post</code>,没有文件大小限制</p>
-<p>enctype:值为<code>multipart/form-data</code>用于识别是否为文件表单还是普通文本表单</p>
-<pre><code class="language-html">&lt;form action=&quot;${pageContext.request.contextPath}/upload.do&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot;&gt;
-    &lt;input type=&quot;file&quot; name=&quot;file1&quot;&gt;
-    &lt;br&gt;
-    &lt;input type=&quot;file&quot; name=&quot;file2&quot;&gt;
-    &lt;br&gt;
-    &lt;input type=&quot;submit&quot;&gt;
-    &lt;br&gt;
-&lt;/form&gt;
-</code></pre>
-<h3 id="3-注册webxml">3. 注册web.xml</h3>
-<pre><code class="language-xml">    &lt;servlet&gt;
-        &lt;servlet-name&gt;FileUploadServlet&lt;/servlet-name&gt;
-        &lt;servlet-class&gt;com.juyss.servlet.FileUploadServlet&lt;/servlet-class&gt;
-    &lt;/servlet&gt;
-    &lt;servlet-mapping&gt;
-        &lt;servlet-name&gt;FileUploadServlet&lt;/servlet-name&gt;
-        &lt;url-pattern&gt;/upload.do&lt;/url-pattern&gt;
-    &lt;/servlet-mapping&gt;
-</code></pre>
-<h3 id="4-编写servlet">4. 编写Servlet</h3>
-<h4 id="实现步骤">实现步骤</h4>
-<ol>
-<li>
-<p>判断表单为普通文本表单还是文件表单</p>
-</li>
-<li>
-<p>创建上传文件的保存根路径</p>
-</li>
-<li>
-<p>创建临时文件的保存根路径</p>
-</li>
-<li>
-<p>获取<code>FileItem</code>对象</p>
-<p>​		需要<code>ServletFileUpload</code>对象</p>
-<p>​				需要用到<code>DiskFileItemFactory</code>对象,用于处理上传路径和限制文件大小</p>
-</li>
-<li>
-<p>通过<code>FileItem</code>对象获取文件名,文件后缀</p>
-</li>
-<li>
-<p>使用UUID创建唯一保存路径</p>
-</li>
-<li>
-<p>使用<code>fileItem.getInputStream()</code>获取文件输入流</p>
-</li>
-<li>
-<p>创建文件输出流<code>FileOutputStream fos = new FileOutputStream(savePath + &quot;/&quot; + fileName)</code></p>
-</li>
-<li>
-<p>关闭流资源,同时删除临时文件<code>fileItem.delete()</code></p>
-</li>
-</ol>
-<pre><code class="language-java">public class FileUploadServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        System.out.println(&quot;进入了FileUploadServlet.class&quot;);
-
-        //判断表单是否为带有文件的表单
-        if (!ServletFileUpload.isMultipartContent(request)) {
-            return; //终止方法运行
-        }
-
-        //定义文件上传后保存的根路径
-        String rootPath = this.getServletContext().getRealPath(&quot;/WEB-INF/upload&quot;);
-        File rootFile = new File(rootPath);
-        if (!rootFile.exists()) {
-            rootFile.mkdir();
-        }
-
-        //定义文件缓存路径
-        String tempPath = this.getServletContext().getRealPath(&quot;/WEB-INF/temp&quot;);
-        File tempFile = new File(tempPath);
-        if (!tempFile.exists()) {
-            tempFile.mkdir();
-        }
-
-        //创建DiskFileItemFactory对象,处理上传路径和限制文件大小
-        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory(1024 * 1024, tempFile);
-
-        //创建ServletFileUpload对象
-        ServletFileUpload servletFileUpload = new ServletFileUpload(fileItemFactory);
-
-        //获取FileItem对象
-        List&lt;FileItem&gt; fileItems = null;
-        try {
-            fileItems = servletFileUpload.parseRequest(request);
-        } catch (FileUploadException e) {
-            e.printStackTrace();
-        }
-        if (fileItems==null){
-            System.out.println(&quot;fileItem空指针&quot;);
-            return;
-        }
-        Iterator&lt;FileItem&gt; iterator = fileItems.iterator();
-
-        //遍历fileItems集合
-        while (iterator.hasNext()) {
-            FileItem fileItem = iterator.next();
-            if (fileItem.isFormField()) {//是普通文本表单
-                continue; //跳出循环
-            } else {//是文件表单
-                //获取文件字段名,标签中name属性的值
-                String fieldName = fileItem.getFieldName();
-                //获取文件上传字段中的文件名,一般来说为为文件名(不包含路径信息),在opera浏览器中可能会包含文件路径信息
-                String name = fileItem.getName();
-                System.out.println(&quot;文件字段名:&quot;+fieldName);
-                System.out.println(&quot;文件名:&quot;+name);
-
-                //判断文件名是否合法
-                if (name.trim().equals(&quot;&quot;) || name == null) {
-                    continue;
-                }
-
-                //获取文件名和文件后缀
-
-                String fileName; //文件名
-                if (name.contains(&quot;/&quot;)){ //判断name是否包含路径信息
-                    fileName = name.substring(name.lastIndexOf(&quot;/&quot;));
-                }else{
-                    fileName = name;
-                }
-
-                String fileExtension = fileName.substring(fileName.indexOf(&quot;.&quot;) + 1);//获取文件后缀
-                System.out.println(&quot;文件名:&quot; + fileName);
-                System.out.println(&quot;文件类型:&quot; + fileExtension);
-                //获取随机UUID
-                String uuid = UUID.randomUUID().toString();
-
-                //使用uuid创建唯一的文件夹作为文件存放路径
-                String savePath = rootPath + &quot;/&quot; + uuid; //文件存放路径
-                File savePathFile = new File(savePath);
-                if (!savePathFile.exists()) { //路径不存在就创建
-                    savePathFile.mkdir();
-                }
-
-                //获取输入流读取上传的文件
-                InputStream is = fileItem.getInputStream();
-
-                //用输出流保存到本地
-                FileOutputStream fos = new FileOutputStream(savePath + &quot;/&quot; + fileName);
-
-                int len;
-                byte[] bytes = new byte[1024 * 1024];
-                while((len = is.read(bytes))!=-1){
-                    fos.write(bytes,0,len);
-                }
-
-                fos.close();
-                is.close();
-                //删除临时文件
-                fileItem.delete();
-            }
-        }
-
-
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        this.doPost(request, response);
-    }
-}
-
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[MVC架构分析]]></title>
-        <id>https://juyss.github.io/post/mvc-jia-gou-fen-xi/</id>
-        <link href="https://juyss.github.io/post/mvc-jia-gou-fen-xi/">
-        </link>
-        <updated>2020-07-20T11:17:50.000Z</updated>
-        <summary type="html"><![CDATA[<h2 id="mvc">MVC</h2>
-<p>简要分析一下MVC三层架构中每个部分的组成与功能</p>
-]]></summary>
-        <content type="html"><![CDATA[<h2 id="mvc">MVC</h2>
-<p>简要分析一下MVC三层架构中每个部分的组成与功能</p>
-<!-- more -->
-<h3 id="介绍">介绍</h3>
-<p>MVC：  Model 			模型</p>
-<p>​			  View   			视图</p>
-<p>​			  Controller  	 控制器</p>
-<h3 id="m-model-模型">M    (Model) : 模型</h3>
-<h4 id="功能">功能</h4>
-<p>DAO层 : 对数据库进行操作(CRUD)</p>
-<p>Service层 : 处理业务逻辑 , 调用DAO层获取数据</p>
-<h3 id="v-view-视图">V    (View) : 视图</h3>
-<h4 id="功能-2">功能</h4>
-<p>前端页面 : 展示数据 , 发起 Servlet 请求</p>
-<h3 id="c-controller-控制">C    (Controller) : 控制</h3>
-<h4 id="功能-3">功能</h4>
-<p>接受请求 , 控制页面跳转 , 调用Service层处理数据</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[修改Maven项目默认JDK版本]]></title>
-        <id>https://juyss.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/</id>
-        <link href="https://juyss.github.io/post/xiu-gai-maven-xiang-mu-mo-ren-jdk-ban-ben/">
-        </link>
-        <updated>2020-06-08T15:27:28.000Z</updated>
-        <summary type="html"><![CDATA[<p>问题：</p>
-<p>1、创建maven项目的时候，jdk版本是1.5版本，而自己安装的是1.7或者1.8版本。</p>
-<p>2、每次右键项目名-maven-&gt;update project 时候，项目jdk版本变了，变回1.5版本或者其他版本</p>
-<p>解决办法如下:</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>问题：</p>
-<p>1、创建maven项目的时候，jdk版本是1.5版本，而自己安装的是1.7或者1.8版本。</p>
-<p>2、每次右键项目名-maven-&gt;update project 时候，项目jdk版本变了，变回1.5版本或者其他版本</p>
-<p>解决办法如下:</p>
-<!-- more -->
-<p>此办法修改maven设置文件,以后所有的项目默认JDK版本都为自己设置的</p>
-<ol>
-<li>修改settings.xml</li>
-</ol>
-<pre><code class="language-xml">&lt;profile&gt;
-    &lt;id&gt;jdk-1.8&lt;/id&gt;
-     &lt;activation&gt;
-          &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
-          &lt;jdk&gt;1.8&lt;/jdk&gt;
-      &lt;/activation&gt;
-&lt;properties&gt;
-&lt;maven.compiler.source&gt;1.8&lt;/maven.compiler.source&gt;
-&lt;maven.compiler.target&gt;1.8&lt;/maven.compiler.target&gt;
-&lt;maven.compiler.compilerVersion&gt;1.8&lt;/maven.compiler.compilerVersion&gt;
-&lt;/properties&gt;
-&lt;/profile&gt;
-</code></pre>
-<ol start="2">
-<li>
-<p>更改IDEA设置<br>
-<img src="https://juyss.github.io//post-images/1591630435988.jpg" alt="" loading="lazy"></p>
-<p>如图所示,确保所指文件路径为你修改过的文件</p>
-</li>
-<li>
-<p>重新加载Maven项目<br>
-点击如图所示地方,重新加载Maven项目即可<br>
-<img src="https://juyss.github.io//post-images/1591630571223.jpg" alt="" loading="lazy"></p>
-</li>
-<li>
-<p>完成修改.</p>
-</li>
-</ol>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[数据库访问对象DAO]]></title>
-        <id>https://juyss.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/</id>
-        <link href="https://juyss.github.io/post/shu-ju-ku-fang-wen-dui-xiang-dao/">
-        </link>
-        <updated>2020-06-04T15:18:52.000Z</updated>
-        <summary type="html"><![CDATA[<h2 id="dao">DAO</h2>
-<p>DAO(Database Access Object)数据库访问对象.<br>
-一个面向对象的数据库接口，它显露了 Microsoft Jet 数据库引擎（由 Microsoft Access 所使用），并允许 Visual Basic 开发者通过 ODBC 像直接连接到其他数据库一样，直接连接到 Access 表。DAO 最适用于单系统应用程序或小范围本地分布使用。</p>
-]]></summary>
-        <content type="html"><![CDATA[<h2 id="dao">DAO</h2>
-<p>DAO(Database Access Object)数据库访问对象.<br>
-一个面向对象的数据库接口，它显露了 Microsoft Jet 数据库引擎（由 Microsoft Access 所使用），并允许 Visual Basic 开发者通过 ODBC 像直接连接到其他数据库一样，直接连接到 Access 表。DAO 最适用于单系统应用程序或小范围本地分布使用。</p>
-<!-- more -->
-<h4 id="basedaodao">BaseDAO(DAO)</h4>
-<p>封装针对于数据表的通用操作</p>
-<pre><code class="language-java">package com.DAO;
-
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-/**
+<p>service实现类</p>
+<pre><code class="language-java">/**
  * @author ShmeBluk
  * @version 1.0
- * @ClassName: BaseDAO
- * @Desc:  封装针对于数据表的通用操作
- * @package com.DAO
- * @project DailyDemo
- * @date 2020/6/4 11:58
+ * @ClassName: MessageSenderImpl
+ * @Desc:
+ * @package com.juyss.service.impl
+ * @project RabbitMQ
+ * @date 2020/11/23 14:10
  */
-public class BaseDAO {
+@Service
+public class MessageSenderImpl implements MessageSender {
 
-    /**
-     * 更新一条数据
-     * @param conn  Connection
-     * @param sql  String
-     * @param args Object
-     */
-    static int update(Connection conn, String sql,Object ...args) throws SQLException {
-        QueryRunner qr = new QueryRunner();
-        int update = qr.update(conn, sql, args);
-        return update;
-    }
+    private final RabbitTemplate template;
 
-
-    /**
-     * 查询一条数据
-     * @param conn  Connection
-     * @param clazz  Class&lt;T&gt;
-     * @param sql  String
-     * @param args   Object
-     * @param &lt;T&gt; T
-     * @return T
-     */
-    static &lt;T&gt; T select(Connection conn,Class&lt;T&gt; clazz,String sql,Object ...args) throws SQLException {
-
-        BeanHandler&lt;T&gt; bh = new BeanHandler&lt;&gt;(clazz);
-
-        QueryRunner qr = new QueryRunner();
-        T query = qr.query(conn, sql, bh, args);
-
-        return query;
+    @Autowired
+    public MessageSenderImpl(RabbitTemplate template) {
+        this.template = template;
     }
 
     /**
-     * 查询多条数据
-     * @param conn  Connection
-     * @param clazz  Class&lt;T&gt;
-     * @param sql  String
-     * @param args   Object
-     * @param &lt;T&gt; T
-     * @return List&lt;T&gt;
-     * @throws SQLException e
+     * 发送消息
+     * Direct模式 : 一对一
+     * Work queues模式 : 一对多
+     * @param msg 请求传入的消息
      */
-    static &lt;T&gt; List&lt;T&gt; selectAll(Connection conn, Class&lt;T&gt; clazz, String sql, Object ...args) throws SQLException {
-
-        BeanListHandler&lt;T&gt; bh = new BeanListHandler&lt;&gt;(clazz);
-
-        QueryRunner qr = new QueryRunner();
-        List&lt;T&gt; query = qr.query(conn, sql, bh, args);
-
-        return query;
-    }
-
-    /**
-     * 查询特殊值
-     * @param conn  Connection
-     * @param clazz  Class&lt;T&gt;
-     * @param sql  String
-     * @param args   Object
-     * @param &lt;T&gt; T
-     * @return List&lt;T&gt;
-     * @throws SQLException e
-     */
-    static &lt;T&gt; List&lt;T&gt; getValue(Connection conn,Class&lt;T&gt; clazz,String sql,Object ...args) throws SQLException {
-
-        ScalarHandler&lt;T&gt; sh = new ScalarHandler&lt;&gt;();
-
-        QueryRunner qr = new QueryRunner();
-        List&lt;T&gt; execute = qr.execute(conn, sql, sh, args);
-
-        return execute;
-    }
-
-}
-
-</code></pre>
-<h4 id="persondao">PersonDAO</h4>
-<p>规范针对于Person表的常用操作</p>
-<pre><code class="language-java">package com.DAO;
-
-import com.bean.Person;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-/**
- * @author ShmeBluk
- * @version 1.0
- * @ClassName: PersonDAO
- * @Desc:  规范针对于Person表的常用操作
- * @package com.DAO
- * @project ExampleDemo
- * @date 2020/6/4 14:53
- */
-public interface PersonDAO {
-
-    /**
-     * 插入一条记录
-     * @param conn Connection
-     * @param p Person
-     */
-    void insert(Connection conn ,Person p) throws SQLException;
-
-    /**
-     * 更新一条记录
-     * @param conn Connection
-     * @param id int
-     */
-    void updateById(Connection conn, Person p ,int id) throws SQLException;
-
-    /**
-     * 删除一条记录
-     * @param conn Connection
-     * @param id int
-     */
-    void deleteById(Connection conn ,int id) throws SQLException;
-
-    /**
-     * 查询
-     * @param conn Connection
-     * @param id int
-     * @return Person
-     */
-    Person selectById(Connection conn, Person p,int id) throws SQLException;
-
-    /**
-     * 查询所有记录
-     * @param conn Connection
-     * @param aClass  Class&lt;Person&gt;
-     * @return List&lt;Person&gt;
-     */
-    List&lt;Person&gt; selectAll(Connection conn, Class&lt;Person&gt; aClass) throws SQLException;
-
-    /**
-     * 查询特殊值
-     * @param conn Connection
-     * @param &lt;T&gt; T
-     * @return List&lt;T&gt;
-     */
-    &lt;T&gt; List&lt;T&gt; getValues(Connection conn) throws SQLException;
-}
-
-</code></pre>
-<h4 id="persondaoimpl">PersonDAOImpl</h4>
-<p>作为对Person表的具体操作实现类</p>
-<pre><code class="language-java">package com.DAO;
-
-import com.bean.Person;
-import com.utils.JdbcUtils;
-import org.junit.Test;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-
-/**
- * @author ShmeBluk
- * @version 1.0
- * @ClassName: PersonDAOImpl
- * @Desc:  作为对Person表的具体操作实现类
- * @package com.DAO
- * @project ExampleDemo
- * @date 2020/6/4 18:10
- */
-public class PersonDAOImpl extends BaseDAO implements PersonDAO {
-
     @Override
-    public void insert(Connection conn, Person p) throws SQLException {
-        String sql = &quot;insert into `person` values (null,?,?,?,?)&quot;;
-        int update = update(conn, sql, null, p.getName(), p.getAge(), p.getGender(), p.getBirthday());
-        System.out.println(update + &quot;条数据被修改&quot;);
-    }
-
-    @Override
-    public void updateById(Connection conn, Person p, int id) throws SQLException {
-        String sql = &quot;update `person` set `name` = ? , `age` = ? , `gender` = ? , `birthday` = ? where `id` = ? &quot;;
-        int update = update(conn, sql, p.getName(), p.getAge(), p.getGender(), p.getBirthday(), id);
-        System.out.println(update + &quot;条数据被修改&quot;);
-    }
-
-    @Override
-    public void deleteById(Connection conn, int id) throws SQLException {
-        String sql = &quot;delete from `person` where `id` = ? &quot;;
-        int update = update(conn, sql, id);
-        System.out.println(update + &quot;条数据被修改&quot;);
-    }
-
-    @Override
-    public Person selectById(Connection conn, Person p, int id) throws SQLException {
-        String sql = &quot;select * from `person` where `id` = ?&quot;;
-        Person person = select(conn, p.getClass(), sql, id);
-        return person;
-    }
-
-    @Override
-    public List&lt;Person&gt; selectAll(Connection conn, Class&lt;Person&gt; aClass) throws SQLException {
-        String sql = &quot;select * from `person`&quot;;
-        List&lt;Person&gt; people = selectAll(conn, Person.class, sql);
-        return people;
-    }
-
-
-    @Override
-    public &lt;T&gt; List&lt;T&gt; getValues(Connection conn) throws SQLException {
-        String sql = &quot;select count(*) from `person`&quot;;
-        List&lt;Long&gt; getValue = getValue(conn, Long.class, sql);
-        return (List&lt;T&gt;) getValue;
+    public void sendMessage(String msg) {
+        template.convertAndSend(&quot;hello&quot;,&quot;消息提供者发送消息:&quot;+msg);
     }
 
     /**
-     * 测试更新数据
-     */
-    @Test
-    public void Test01() {
-        Connection conn = JdbcUtils.getConnection();
-        Date date = new Date(165456156146L);
-        Person person = new Person(0, &quot;Dell&quot;, 10, &quot;女&quot;, date);
-        try {
-            updateById(conn, person, 21);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            JdbcUtils.closeResource(conn);
-        }
-    }
-
-    /**
-     * 测试查询数据
-     */
-    @Test
-    public void Test02() {
-        Connection conn = null;
-        try {
-            conn = JdbcUtils.getConnection();
-            List&lt;Person&gt; people = selectAll(conn, Person.class);
-
-            Iterator&lt;Person&gt; iterator = people.iterator();
-            while (iterator.hasNext()) {
-                Person person = iterator.next();
-                System.out.println(person.toString());
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            JdbcUtils.closeResource(conn);
-        }
-    }
-
-    /**
-     * 查询特殊值
-     */
-    @Test
-    public void Test03() {
-        Connection conn = null;
-        try {
-            conn = JdbcUtils.getConnection();
-            List&lt;Object&gt; values = getValues(conn);
-            values.forEach(System.out::println);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } finally {
-            JdbcUtils.closeResource(conn);
-        }
-    }
-}
-
-</code></pre>
-<h2 id="bean">Bean</h2>
-<h4 id="person">Person</h4>
-<p>对应数据库中person表</p>
-<pre><code class="language-java">package com.bean;
-
-import java.sql.Date;
-
-/**
- * @author ShmeBluk
- * @version 1.0
- * @ClassName: Person
- * @Desc: 对应数据库中person表
- * @package com.bean
- * @project DailyDemo
- * @date 2020/6/4 11:49
- */
-public class Person {
-
-    private int id;
-    private String name;
-    private int age;
-    private String gender;
-    private Date birthday;
-
-    public Person() {
-    }
-
-    public Person(int id, String name, int age, String gender, Date birthday) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
-        this.birthday = birthday;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
-
-    @Override
-    public String toString() {
-        return &quot;Person{&quot; +
-                &quot;id=&quot; + id +
-                &quot;, name='&quot; + name + '\'' +
-                &quot;, age=&quot; + age +
-                &quot;, gender='&quot; + gender + '\'' +
-                &quot;, birthday=&quot; + birthday +
-                '}';
-    }
-}
-
-</code></pre>
-<h2 id="utils">Utils</h2>
-<h4 id="dbutils">DbUtils</h4>
-<p>JDBC工具类, 使用 <code>druid</code>用于获取数据库连接和关闭资源</p>
-<pre><code class="language-java">package com.utils;
-
-import com.alibaba.druid.pool.DruidDataSourceFactory;
-import org.apache.commons.dbutils.DbUtils;
-import org.junit.Test;
-
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
-
-/**
- * @author ShmeBluk
- * @version 1.0
- * @ClassName: JdbcUtils
- * @Desc: JDBC工具类, 用于获取数据库连接和关闭资源
- * @package com.utils
- * @project DailyDemo
- * @date 2020/6/4 12:00
- */
-public class JdbcUtils {
-
-    /**
-     * Druid数据库连接池获取连接
+     * Publish/Subscribe示例
+     * 交换机类型为fanout
      *
-     * @return Connection实例
+     * @param msg 消息
      */
-    public static Connection getConnection() {
-
-        InputStream is = null;
-        Connection conn;
-        try {
-            is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;resource\\druid.properties&quot;);
-
-            Properties prop = new Properties();
-
-            prop.load(is);
-            DataSource ds = DruidDataSourceFactory.createDataSource(prop);
-            conn = ds.getConnection();
-            System.out.println(&quot;获得数据库连接&quot;);
-            return conn;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (is != null)
-                    is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
+    @Override
+    public void fanout(String msg) {
+        template.convertAndSend(&quot;logs&quot;, &quot;&quot;, &quot;消息提供者发送消息&quot;+msg);
     }
 
     /**
-     * 关闭资源
+     * Routing示例
+     * 交换机类型为direct(默认)
      *
-     * @param conn Connection 对象
-     * @param stmt Statement 对象
-     * @param rs   ResultSet 对象
+     * @param msg      消息
+     * @param routeKey 路由key
      */
-    public static void closeResource(Connection conn, Statement stmt, ResultSet rs) {
-
-        if (rs != null) {
-            DbUtils.closeQuietly(rs);
-            System.out.println(rs.getClass() + &quot;关闭完成&quot;);
-        } else if (stmt != null) {
-            DbUtils.closeQuietly(stmt);
-            System.out.println(stmt.getClass() + &quot;关闭完成&quot;);
-        } else if (conn != null) {
-            DbUtils.closeQuietly(conn);
-            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
-        }
-
+    @Override
+    public void routing(String msg,String routeKey) {
+        template.convertAndSend(&quot;routing&quot;, routeKey, &quot;消息提供者发送消息&quot;+msg);
     }
 
     /**
-     * 重载方法
-     * @param conn  Connection
-     * @param rs ResultSet
+     * Topic示例
+     * 按路由key匹配
+     *
+     * @param msg      消息
+     * @param routeKey 路由key
      */
-    public static void closeResource(Connection conn, ResultSet rs) {
-
-        if (rs != null) {
-            DbUtils.closeQuietly(rs);
-            System.out.println(rs.getClass() + &quot;关闭完成&quot;);
-        } else if (conn != null) {
-            DbUtils.closeQuietly(conn);
-            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
-        }
-
-    }
-
-    /**
-     * 重载方法
-     * @param conn  Connection
-     * @param stmt  Statement
-     */
-    public static void closeResource(Connection conn, Statement stmt) {
-
-        if (stmt != null) {
-            DbUtils.closeQuietly(stmt);
-            System.out.println(stmt.getClass() + &quot;关闭完成&quot;);
-        } else if (conn != null) {
-            DbUtils.closeQuietly(conn);
-            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
-        }
-
-    }
-
-    /**
-     * 重载
-     * @param conn Connection
-     */
-    public static void closeResource(Connection conn) {
-
-        if (conn != null) {
-            DbUtils.closeQuietly(conn);
-            System.out.println(conn.getClass() + &quot;关闭完成&quot;);
-        }
-
-    }
-
-    /**
-     * 测试方法 getConnection() 和 closeResource()
-     */
-    @Test
-    public void Test01() {
-        Connection conn = getConnection();
-        System.out.println(conn);
-        closeResource(conn, null, null);
+    @Override
+    public void topic(String msg, String routeKey) {
+        template.convertAndSend(&quot;topic&quot;,routeKey, &quot;消息提供者发送消息&quot;+msg);
     }
 }
 
 </code></pre>
-<h4 id="resource">resource</h4>
-<p>druid.properties配置文件</p>
-<pre><code class="language-properties">url=jdbc:mysql://localhost:3306/dailytext?serverTimezone=UTC
-username=user1
-password=102850
-driverClassName=com.mysql.cj.jdbc.Driver
-initialSiize=10
-maxActive=10
+<p>controller</p>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MsgController
+ * @Desc:
+ * @package com.juyss.controller
+ * @project RabbitMQ
+ * @date 2020/11/23 14:12
+ */
+@RestController
+public class MsgController {
+
+    @Autowired
+    private MessageSender sender;
+
+    @RequestMapping(&quot;/&quot;)
+    public String Hello(){
+        return &quot;Hello,RabbitMQ&quot;;
+    }
+
+    /**
+     * 提供者向队列发送消息,接受者从队列接收消息
+     * 1. 一对一发送消息 (Hello World示例)
+     * 2. 一对多发送消息,一个消息只能给一个接受者,公平分配 (Work Queues示例)
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&quot;/send/{msg}&quot;)
+    public String sendMsg(@PathVariable(&quot;msg&quot;)String msg){
+        sender.sendMessage(msg);
+        return &quot;消息发送成功&quot;+msg;
+    }
+
+    /**
+     * 提供者向交换机(exchange)发送消息,接收者从指定交换机找到消息队列获取消息
+     * 一对多同时发送,一个消息同时给多个接受者 (Publish/Subscribe示例)
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&quot;/fanout/{msg}&quot;)
+    public String sendFanoutMsg(@PathVariable(&quot;msg&quot;)String msg){
+        sender.fanout(msg);
+        return &quot;消息发送成功&quot;+msg;
+    }
+
+    /**
+     * 提供者向交换机(exchange)发送消息,同时指定路由key,然后接受者寻找指定交换机,判断路由key是否匹配,然后接受对应消息
+     * 一对多同时发送,一个消息可以给多个接受者,但是需要路由key匹配 (Routing示例)
+     * @param key 路由key
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&quot;/route/{key}/{msg}&quot;)
+    public String sendRouting(@PathVariable(&quot;key&quot;)String key,
+                              @PathVariable(&quot;msg&quot;)String msg){
+        sender.routing(msg,key);
+        return &quot;消息发送成功&quot;+msg;
+    }
+
+    /**
+     * 提供者向交换机发送消息,指定路由key,一般由两个以上字段,然后接受者找到交换机,根据自己的路由key匹配规则,获取对应消息.
+     * @param key 路由key
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&quot;/topic/{key}/{msg}&quot;)
+    public String sendTopic(@PathVariable(&quot;key&quot;)String key,
+                            @PathVariable(&quot;msg&quot;)String msg){
+        sender.routing(msg,key);
+        return &quot;消息发送成功&quot;+msg;
+    }
+
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="1-基本消息模型">1. 基本消息模型</h3>
+<figure data-type="image" tabindex="1"><img src="https://juyss.github.io//post-images/1608361309360.png" alt="" loading="lazy"></figure>
+<p><strong>生产者将消息发送到队列，消费者从队列中获取消息，队列是存储消息的缓冲区。</strong></p>
+<h4 id="消息消费者">消息消费者</h4>
+<ol>
+<li>
+<p>pom.xml 与生产者相同</p>
+</li>
+<li>
+<p>application.yml</p>
+</li>
+<li>
+<p>MessageReceiver.java</p>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MessageReceiver
+ * @Desc: 消费者接收消息
+ * @package com.juyss.rabbit
+ * @project RabbitMQ
+ * @date 2020/11/23 15:03
+ */
+@Component
+@RabbitListener(queuesToDeclare = @Queue(value = &quot;hello&quot;))
+public class MessageReceiver {
+
+    @RabbitHandler
+    public void receive(String msg) {
+        System.out.println(&quot;消费者接收消息==============&gt;&quot;+msg);
+    }
+
+}
+
+</code></pre>
+</li>
+</ol>
+<h3 id="2-工作队列模型work-queues">2. 工作队列模型（Work queues）</h3>
+<figure data-type="image" tabindex="2"><img src="https://juyss.github.io//post-images/1608361322140.png" alt="" loading="lazy"></figure>
+<p><strong>一个生产发送消息到队列，允许有多个消费者接收消息，但是一条消息只会被一个消费者获取。</strong></p>
+<p>消息接收者代码部分</p>
+<p>MessageReceive.java</p>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MsgConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 15:33
+ */
+@Component
+public class MsgConsumer {
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &quot;hello&quot;))
+    public void receiver1(String msg){
+        System.out.println(&quot;消费者1接收消息==============&gt;&quot;+msg);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &quot;hello&quot;))
+    public void receiver2(String msg){
+        System.out.println(&quot;消费者2接收消息==============&gt;&quot;+msg);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &quot;hello&quot;))
+    public void receiver3(String msg){
+        System.out.println(&quot;消费者3接收消息==============&gt;&quot;+msg);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &quot;hello&quot;))
+    public void receiver4(String msg){
+        System.out.println(&quot;消费者4接收消息==============&gt;&quot;+msg);
+    }
+
+}
+</code></pre>
+<h3 id="3-订阅模式">3. 订阅模式</h3>
+<h5 id="31-fanout广播">3.1 Fanout（广播）</h5>
+<figure data-type="image" tabindex="3"><img src="https://juyss.github.io//post-images/1608361345771.png" alt="" loading="lazy"></figure>
+<p><em><strong>交换机将消息发送到所有与之绑定的队列中去</strong></em></p>
+<p>消息接收者代码部分</p>
+<p>MessageReceive.java</p>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MsgConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 16:03
+ */
+@Component
+public class MsgConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &quot;logs&quot;,type = &quot;fanout&quot;))
+    })
+    public void receiver1(String msg){
+        System.out.println(&quot;消费者1接收消息=====================&gt;&quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &quot;logs&quot;,type = &quot;fanout&quot;))
+    })
+    public void receiver2(String msg){
+        System.out.println(&quot;消费者2接收消息=====================&gt;&quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &quot;logs&quot;,type = &quot;fanout&quot;))
+    })
+    public void receiver3(String msg){
+        System.out.println(&quot;消费者3接收消息=====================&gt;&quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &quot;logs&quot;,type = &quot;fanout&quot;))
+    })
+    public void receiver4(String msg){
+        System.out.println(&quot;消费者4接收消息=====================&gt;&quot;+msg);
+    }
+
+}
+
+</code></pre>
+<h5 id="32-direct-定向">3.2  Direct （定向）</h5>
+<figure data-type="image" tabindex="4"><img src="https://juyss.github.io//post-images/1608361357882.png" alt="" loading="lazy"></figure>
+<p><strong>交换机按照指定的Routing Key发送到匹配的队列中去</strong></p>
+<p>消息接收者代码部分</p>
+<p>MessageReceive.java</p>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: RoutingConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 16:45
+ */
+@Component
+public class RoutingConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                          exchange = @Exchange(&quot;routing&quot;),
+                          key = {&quot;debug&quot;,&quot;info&quot;,&quot;warning&quot;,&quot;error&quot;})
+    })
+    public void routingReceiver1(String msg){
+        System.out.println(&quot;Routing消费者1接收消息=================&gt;&quot;+msg);
+    }
+
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                          exchange = @Exchange(&quot;routing&quot;),
+                          key = {&quot;error&quot;})
+    })
+    public void routingReceiver2(String msg){
+        System.out.println(&quot;Routing消费者2接收消息=================&gt;&quot;+msg);
+    }
+
+}
+
+</code></pre>
+<h5 id="33-topic-通配符">3.3 Topic （通配符）</h5>
+<figure data-type="image" tabindex="5"><img src="https://juyss.github.io//post-images/1608361367342.png" alt="" loading="lazy"></figure>
+<p><strong>与Direct大致相同，不同在于Routing Key可以根据通配符进行匹配</strong></p>
+<p>消息接收者代码部分</p>
+<p>MessageReceive.java</p>
+<pre><code class="language-java">/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: TopicConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 17:09
+ */
+@Component
+public class TopicConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                    exchange = @Exchange(value = &quot;topic&quot;,type = &quot;topic&quot;),
+                    key = {&quot;user.*&quot;,&quot;admin.#&quot;})
+    })
+    public void topicReceiver1(String msg){
+        System.out.println(&quot;Topic消费者1接收消息====================&gt;&quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                    exchange = @Exchange(value = &quot;topic&quot;,type = &quot;topic&quot;),
+                    key = {&quot;user.#&quot;,&quot;admin.*&quot;})
+    })
+    public void topicReceiver2(String msg){
+        System.out.println(&quot;Topic消费者2接收消息====================&gt;&quot;+msg);
+    }
+}
+
 </code></pre>
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[JDBC相关配置和操作]]></title>
-        <id>https://juyss.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/</id>
-        <link href="https://juyss.github.io/post/jdbc-xiang-guan-pei-zhi-he-cao-zuo/">
+        <title type="html"><![CDATA[Sentinel]]></title>
+        <id>https://juyss.github.io/post/sentinel/</id>
+        <link href="https://juyss.github.io/post/sentinel/">
         </link>
-        <updated>2020-06-04T14:44:20.000Z</updated>
-        <summary type="html"><![CDATA[<h4 id="获取数据库连接的几种方式以及preparedstatement和statement的对比">获取数据库连接的几种方式以及PreparedStatement和Statement的对比</h4>
+        <updated>2020-11-05T09:02:29.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="sentinel">Sentinel</h1>
+<p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从流量控制、熔断降级、系统自适应保护等多个维度来帮助您保障微服务的稳定性。</p>
 ]]></summary>
-        <content type="html"><![CDATA[<h4 id="获取数据库连接的几种方式以及preparedstatement和statement的对比">获取数据库连接的几种方式以及PreparedStatement和Statement的对比</h4>
+        <content type="html"><![CDATA[<h1 id="sentinel">Sentinel</h1>
+<p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从流量控制、熔断降级、系统自适应保护等多个维度来帮助您保障微服务的稳定性。</p>
 <!-- more -->
-<h2 id="获取数据库连接的几种方式">获取数据库连接的几种方式</h2>
-<p>ps.数据库URL : String url = &quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC&quot;</p>
-<p>​	 MySQL5.0--&gt;driverClass=&quot;com.mysql.jdbc.Driver&quot;;</p>
-<p>​     MySQL8.0--&gt;driverClass=&quot;com.mysql.cj.jdbc.Driver&quot;;</p>
-<h4 id="通过driver实例获取">通过Driver实例获取</h4>
-<pre><code class="language-java">//创建Driver对象
-Driver driver = new Driver();
-//数据库URL
-String url = &quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC&quot;;
-//Properties存放用户名和密码
-Properties prop = new Properties();
-prop.setProperty(&quot;user&quot;, &quot;user1&quot;);
-prop.setProperty(&quot;password&quot;, &quot;102850&quot;);
-//调用connect(),传入url和prop
-Connection connect = driver.connect(url, prop);
-//获得连接
-System.out.println(connect);
+<h4 id="使用总结">使用总结:</h4>
+<ol>
+<li>
+<p>提前启动Nacos注册中心<code>端口号:8848</code>和Sentinel Dashboard服务<code>端口号: 8080</code></p>
+</li>
+<li>
+<p>构建微服务项目,注册进入注册中心.</p>
+</li>
+<li>
+<p>配置Sentinel,微服务与DashBoard通过<code>端口:8719</code>进行通讯,对微服务进行监控</p>
+</li>
+<li>
+<p><code>@SentinelResource</code>表明某个方法为资源方法.可以指定属性</p>
+<p><code>value</code>:定义一个资源名称</p>
+<p><code>fallback</code>:定义一个回调方法,针对所有异常</p>
+<p><code>fallbackClass</code>:定义回调方法所在类,对应方法必须为<code>static</code>,若不指定则为本类</p>
+<p><code>blockHandler</code>:定义处理 <code>BlockException</code> 的函数名称,,会在原方法被限流/降级/系统保护的时候调用,</p>
+</li>
+<li>
+<p>被标记的方法,正常执行时,不影响.当服务调用时抛出异常,则会调用<code>fallback</code>定义的回调方法,当方法被降级限流或者熔断时,调用方法会抛出<code>BlockException</code>,进而调用<code>blockHandler</code>指定的方法.</p>
+</li>
+</ol>
+<h2 id="需要被流控的微服务">需要被流控的微服务</h2>
+<ol>
+<li>
+<p>导入依赖</p>
+<p>pom.xml</p>
+<pre><code class="language-xml">        &lt;!--SpringCloud alibaba nacos --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+		&lt;!--SpringCloud alibaba sentinel-datasource-nacos 后续做持久化用到--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba.csp&lt;/groupId&gt;
+            &lt;artifactId&gt;sentinel-datasource-nacos&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;!--SpringCloud alibaba sentinel --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-alibaba-sentinel&lt;/artifactId&gt;
+        &lt;/dependency&gt;
 </code></pre>
-<h4 id="通过drivermanager获取">通过DriverManager获取</h4>
-<pre><code class="language-java">public class Jdbc8Test01 {
+</li>
+<li>
+<p>application.yml</p>
+<pre><code class="language-yml">server:
+  port: 8401 # 当前服务端口
 
-    // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
-    static final String JDBC_DRIVER = &quot;com.mysql.cj.jdbc.Driver&quot;;
-    static final String DB_URL = &quot;jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC&quot;;
+spring:
+  application:
+    name: cloudalibaba-sentinel-service
+  cloud:
+    # 注册中心配置
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #Nacos服务注册中心地址
+    # 流控配置
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #配置Sentinel dashboard地址
+        port: 8719 # 微服务和Sentinel dashboard通讯端口
+      datasource:
+        ds1: # 流控规则持久化数据源
+          nacos:
+            server-addr: localhost:8848
+            dataId: cloudalibaba-sentinel-service
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
 
-    // 数据库的用户名与密码
-    static final String USER = &quot;root&quot;;
-    static final String PASS = &quot;102850&quot;;
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
-    public static void main(String[] args) {
+feign:
+  sentinel:
+    enabled: true # 激活Sentinel对Feign的支持
+</code></pre>
+</li>
+<li>
+<p>根据业务逻辑添加</p>
+<pre><code class="language-java">    // 资源方法
+	@GetMapping(&quot;/byResource&quot;)
+    @SentinelResource(value = &quot;byResource&quot;, blockHandler = &quot;handleException&quot;)
+    public CommonResult byResource() {
+        return new CommonResult(200, &quot;按资源名称限流测试OK&quot;, new Payment(2020L, &quot;serial001&quot;));
+    }
 
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            // 注册 JDBC 驱动
-            Class.forName(JDBC_DRIVER);
+	// 降级回调方法
+    public CommonResult handleException(BlockException exception) {
+        return new CommonResult(444, exception.getClass().getCanonicalName() + &quot;\t 服务不可用&quot;);
+    }
 
-            // 打开链接
-            System.out.println(&quot;连接数据库...&quot;);
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	// 资源方法
+    @GetMapping(&quot;/rateLimit/byUrl&quot;)
+    @SentinelResource(value = &quot;byUrl&quot;)
+    public CommonResult byUrl() {
+        return new CommonResult(200, &quot;按url限流测试OK&quot;, new Payment(2020L, &quot;serial002&quot;));
+    }
 
-            // 执行查询
-            System.out.println(&quot; 实例化Statement对象...&quot;);
-            stmt = conn.createStatement();
-            String sql;
-            sql = &quot;SELECT id, name, url FROM websites&quot;;
-            ResultSet rs = stmt.executeQuery(sql);
+ 	//资源方法,指定了降级回调方法为另一个类
+    @GetMapping(&quot;/rateLimit/customerBlockHandler&quot;)
+    @SentinelResource(value = &quot;customerBlockHandler&quot;,
+            blockHandlerClass = CustomerBlockHandler.class,
+            blockHandler = &quot;handlerException2&quot;)
+    public CommonResult customerBlockHandler() {
+        return new CommonResult(200, &quot;按客戶自定义&quot;, new Payment(2020L, &quot;serial003&quot;));
+    }
+</code></pre>
+<p>CustomerBlockHandler.class</p>
+<pre><code class="language-java">public class CustomerBlockHandler {
+    public static CommonResult handlerException(BlockException exception) {
+        return new CommonResult(4444, &quot;按客戶自定义,global handlerException----1&quot;);
+    }
 
-            // 展开结果集数据库
-            while (rs.next()) {
-                // 通过字段检索
-                int id = rs.getInt(&quot;id&quot;);
-                String name = rs.getString(&quot;name&quot;);
-                String url = rs.getString(&quot;url&quot;);
-
-                // 输出数据
-                System.out.print(&quot;ID: &quot; + id);
-                System.out.print(&quot;, 站点名称: &quot; + name);
-                System.out.print(&quot;, 站点 URL: &quot; + url);
-                System.out.print(&quot;\n&quot;);
-            }
-            // 完成后关闭
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception se) {
-            // 处理 JDBC 错误
-            se.printStackTrace();
-        }// 处理 Class.forName 错误
-        finally {
-            // 关闭资源
-            try {
-                if (stmt != null) stmt.close();
-            } catch (SQLException se2) {
-            }// 什么都不做
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
-        System.out.println(&quot;Goodbye!&quot;);
+    public static CommonResult handlerException2(BlockException exception) {
+        return new CommonResult(4444, &quot;按客戶自定义,global handlerException----2&quot;);
     }
 }
 </code></pre>
-<h4 id="从配置文件获取信息">从配置文件获取信息</h4>
+</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Ribbon]]></title>
+        <id>https://juyss.github.io/post/ribbon/</id>
+        <link href="https://juyss.github.io/post/ribbon/">
+        </link>
+        <updated>2020-11-05T07:12:39.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="ribbon">Ribbon</h1>
+<h2 id="核心组件irule">核心组件IRule</h2>
+<h4 id="默认-轮询">默认 : 轮询</h4>
+<p>根据特定算法从服务列表选取一个要访问的服务</p>
+<p>共有7种算法</p>
+<h4 id="替换方法">替换方法</h4>
 <ol>
 <li>
-<p>配置文件内容</p>
-<pre><code class="language-xml">user=root
-password=102850
-url=jdbc:mysql://localhost:3306/dailytext?useSSL=false&amp;serverTimezone=UTC
-#MySQL8.0以上版本 JDBC 驱动名
-driverClass=com.mysql.cj.jdbc.Driver
-#MySQL8.0以下版本 JDBC 驱动名
-#driverClass=com.mysql.jdbc.Driver
+<p>创建自定义配置类<code>@Configuration</code>,注意不能放在<code>@ComponentScan</code>所扫描的包下.即不能与<code>SpringBoot启动类</code>同一个包</p>
+<pre><code class="language-java">package com.atguigu.myrule;
+
+import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.RandomRule;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MySelfRule {
+
+    @Bean
+    public IRule myRule(){
+        return new RandomRule();//定义为随机
+    }
+}
 </code></pre>
-<ol start="2">
-<li>实例代码</li>
-</ol>
-<pre><code class="language-java">//获取输入流(两种方法)
-InputStream is = Jtest01.class.getClassLoader().getResourceAsStream(&quot;jdbc.properties&quot;);
-//main方法中文件路径为Project下
-FileInputStream fis = new FileInputStream(&quot;TEST02\\src\\jdbc.properties&quot;);
-
-Properties prop = new Properties();
-prop.load(fis);
-
-//获取配置信息
-String user = prop.getProperty(&quot;user&quot;);
-String password = prop.getProperty(&quot;password&quot;);
-String url = prop.getProperty(&quot;url&quot;);
+</li>
+<li>
+<p>主启动类添加注解<code>@RibbanClient</code></p>
+<pre><code class="language-java">@SpringBootApplication
+@EnableEurekaClient
+@RibbonClient(name = &quot;CLOUD-PAYMENT-SERVICE&quot;, configuration = MySelfRule.class)
+public class OrderMain80 {
+       
+    public static void main(String[] args) {
+        SpringApplication.run(OrderMain80.class, args);
+    }
+       
+}
 </code></pre>
 </li>
 </ol>
-<p>String driverClass = prop.getProperty(&quot;driverClass&quot;);</p>
-<p>//注册驱动<br>
-Class.forName(driverClass);</p>
-<p>//获得Connection对象,建立与数据库的连接<br>
-Connection connection1 = DriverManager.getConnection(url, user, password);<br>
-Connection connection2 = DriverManager.getConnection(url, prop);</p>
-<p>System.out.println(connection1);<br>
-System.out.println(connection2);</p>
-<pre><code>```
-</code></pre>
-<h4 id="druid数据库连接池">druid数据库连接池</h4>
-<p>配置文件druid.proterties</p>
-<pre><code class="language-properties">url=jdbc:mysql://localhost:3306/dailytext?serverTimezone=UTC
-username=user1
-password=102850
-driverClassName=com.mysql.cj.jdbc.Driver
-initialSiize=10
-maxActive=10
-</code></pre>
-<p>代码实现</p>
-<pre><code class="language-java">
-//从数据库连接池获取连接
-Properties prop = new Properties();
-
-//ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;String pathName&quot;)
-// 此种方式读取文件位置默认为src目录下(在main方法和在@Test方法中路径一样)
-InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;Resource\\druid.properties&quot;);
-
-//FileInputStream(&quot;String pathName&quot;)
-// 在main方法中,此种方式读取文件位置默认为Project目录下
-// 在@Test方法中,此种方式读取文件位置默认为Module目录下
-// FileInputStream is = new FileInputStream(&quot;JDBC\\src\\Resource\\druid.properties&quot;);
-prop.load(is);
-DataSource source = DruidDataSourceFactory.createDataSource(prop);
-Connection conn = source.getConnection();
-System.out.println(conn);
-</code></pre>
-<h2 id="preparedstatement对比statement的优点">PreparedStatement对比Statement的优点</h2>
-<p>(好处是基于PreparedStatement的预编译SQL语句功能)</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[OpenFegin]]></title>
+        <id>https://juyss.github.io/post/openfegin/</id>
+        <link href="https://juyss.github.io/post/openfegin/">
+        </link>
+        <updated>2020-11-05T07:11:23.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="openfeign">OpenFeign</h1>
+<p>（主要用在服务消费端）</p>
+<h2 id="service-consumer服务消费者">Service-Consumer服务消费者</h2>
 <ol>
-<li>解决SQL语句拼串的问题</li>
-<li>解决SQL注入问题</li>
-<li>实现对Blob类型的字段操作</li>
-<li>提高批量操作时的效率</li>
-</ol>
-<h2 id="对数据库执行操作">对数据库执行操作</h2>
-<h4 id="步骤">步骤</h4>
-<pre><code>1.创建文件输入流,从配置文件读取配置信息,
-    ①.文件输入流位于main方法中时文件读取位置在Project目录下
-    ②.文件输入流位于@Test方法中时文件读取位置在Module目录下
-2.传入文件流
-3.读取配置信息
-4.加载JDBC驱动
-5.通过DriverManager创建connection对象,获取数据库连接
-6.编写SQL语句,使用占位符
-7.创建statement(PreparedStatement)对象,传入SQL语句进行预编译
-8.填充占位符
-9.执行SQL操作
-10.关闭资源
+<li>
+<p>引入pom依赖</p>
+<p><code>Eurkea</code>作为注册中心,引入<code>OpenFeign</code></p>
+<pre><code class="language-xml">        &lt;!--openfeign--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;!--eureka client--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+        &lt;/dependency&gt;
 </code></pre>
-<h4 id="示例代码">示例代码</h4>
-<pre><code class="language-java">public static void main(String[] args) {
+</li>
+<li>
+<p>配置application.yml , 和<code>OpenFeign</code>关系不大,主要是配置注册服务和负载均衡、日志监控</p>
+<pre><code class="language-yml">eureka:
+  client:
+    register-with-eureka: false
+    service-url:
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/
+#设置feign客户端超时时间(OpenFeign默认支持ribbon)
+ribbon:
+#指的是建立连接所用的时间，适用于网络状况正常的情况下,两端连接所用的时间
+  ReadTimeout: 5000
+#指的是建立连接后从服务器读取到可用资源所用的时间
+  ConnectTimeout: 5000
 
-    FileInputStream fis = null;
-    Connection conn = null;
-    PreparedStatement pst = null;
+logging:
+  level:
+    # feign日志以什么级别监控哪个接口
+    com.atguigu.springcloud.service.PaymentFeignService: debug
+</code></pre>
+</li>
+<li>
+<p>主启动类添加注解<code>@EnableDiscoveryClient</code>和<code>@EnableFeignClients</code></p>
+</li>
+<li>
+<p>编写消费端接口,用于调取远程服务,方法声明</p>
+<pre><code class="language-java">@Component
+@FeignClient(value = &quot;CLOUD-PAYMENT-SERVICE&quot;) //表明调用远程服务的名称
+public interface PaymentFeignService {
+    
+    @GetMapping(value = &quot;/payment/get/{id}&quot;) //对应远程服务的请求路径
+    CommonResult&lt;Payment&gt; getPaymentById(@PathVariable(&quot;id&quot;) Long id);
 
-    try {
-        //获取文件输入流(main方法中文件位置在当前Project下)
-        fis = new FileInputStream(&quot;JDBC\\jdbc.properties&quot;);
+}
+</code></pre>
+<p>当程序调用此接口的方法时,Feign会自动去调用注册中心对应服务名称的对应请求路径的方法.并获得返回值作为此接口方法的返回值.</p>
+</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Nacos]]></title>
+        <id>https://juyss.github.io/post/nacos/</id>
+        <link href="https://juyss.github.io/post/nacos/">
+        </link>
+        <updated>2020-11-05T07:10:36.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="naocs">Naocs</h1>
+<h2 id="服务治理">服务治理</h2>
+<h3 id="服务注册">服务注册</h3>
+<h4 id="前提">前提</h4>
+<p>启动NacosServer服务注册中心</p>
+<p>父工程引入依赖</p>
+<pre><code class="language-xml">&lt;dependencyManagement&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-alibaba-dependencies&lt;/artifactId&gt;
+            &lt;version&gt;2.2.3.RELEASE&lt;/version&gt;
+            &lt;type&gt;pom&lt;/type&gt;
+            &lt;scope&gt;import&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;
+</code></pre>
+<h4 id="服务提供者provider">服务提供者（Provider）</h4>
+<ol>
+<li>
+<p>pom.xml</p>
+<pre><code class="language-xml">        &lt;!--SpringCloud ailibaba nacos --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>application.yml</p>
+<pre><code class="language-yml">spring:
+  application:
+    name: nacos-payment-provider # 服务名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 # 配置Nacos地址,注册中心地址
 
-        //传入文件流
-        Properties prop = new Properties();
-        prop.load(fis);
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+</code></pre>
+</li>
+<li>
+<p>主启动类</p>
+<pre><code class="language-java">@EnableDiscoveryClient //开启服务发现功能
+@SpringBootApplication
+public class PaymentMain9001 {
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentMain9001.class, args);
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>业务类</p>
+<pre><code class="language-java">@RestController
+public class PaymentController {
+    @Value(&quot;${server.port}&quot;)
+    private String serverPort;
 
-        //读取配置信息
-        String url = prop.getProperty(&quot;url&quot;);
-        String driverClass = prop.getProperty(&quot;driverClass&quot;);
-        System.out.println(url);
-        System.out.println(driverClass);
+    @GetMapping(value = &quot;/payment/nacos/{id}&quot;)
+    public String getPayment(@PathVariable(&quot;id&quot;) Integer id) {
+        return &quot;nacos registry, serverPort: &quot; + serverPort + &quot;\t id&quot; + id;
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h4 id="服务消费者consumer">服务消费者（Consumer）</h4>
+<ol>
+<li>
+<p>pom.xml</p>
+<pre><code class="language-xml">        &lt;!--SpringCloud ailibaba nacos --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>application.yml</p>
+<pre><code class="language-yml">spring:
+  application:
+    name: nacos-order-consumer # 服务名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 # 注册中心地址
 
-        //加载JDBC驱动
-        Class.forName(driverClass);
 
-        //获取数据库连接
-        conn = DriverManager.getConnection(url, prop);
-        System.out.println(conn);
+#消费者将要去访问的微服务名称(注册成功进nacos的微服务提供者)
+service-url:
+  nacos-user-service: http://nacos-payment-provider
+</code></pre>
+</li>
+<li>
+<p>容器内注入RestTemplate,通过RestTemplate方式进行远程服务调用</p>
+<pre><code class="language-java">@Configuration
+public class RestTemplateConfig
+{
+    @Bean
+    @LoadBalanced // 启用负载均衡
+    public RestTemplate getRestTemplate()
+    {
+        return new RestTemplate();
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>主启动类</p>
+<pre><code class="language-java">@EnableDiscoveryClient //开启服务发现
+@SpringBootApplication
+public class OrderNacosMain83 {
+    public static void main(String[] args) {
+        SpringApplication.run(OrderNacosMain83.class, args);
+    }
+}
 
-        //预编译SQL语句
-        //String sql = &quot;INSERT INTO person(`name`,`age`,`gender`,`birthday`)VALUES(?,?,?,?)&quot;;
-        String sql = &quot;update person set `name`=? where `name`=?&quot;;
-        pst = conn.prepareStatement(sql);
+</code></pre>
+</li>
+<li>
+<p>业务类</p>
+<pre><code class="language-java">@RestController
+@Slf4j
+public class OrderNacosController
+{
+    @Resource
+    private RestTemplate restTemplate;
 
-        //填充占位符
-        pst.setString(1, &quot;Eclipse&quot;);
-        pst.setString(2, &quot;Idea&quot;);
+    @Value(&quot;${service-url.nacos-user-service}&quot;)
+    private String serverURL;
 
-        //执行操作(Insert;Update;Delete)
-        boolean execute = pst.execute();
-        System.out.println(execute);
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        //关闭连接
+    @GetMapping(value = &quot;/consumer/payment/nacos/{id}&quot;)
+    public String paymentInfo(@PathVariable(&quot;id&quot;) Long id)
+    {
+        return restTemplate.getForObject(serverURL+&quot;/payment/nacos/&quot;+id,String.class);
+    }
+
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="配置中心">配置中心</h3>
+<h4 id="微服务配置">微服务配置</h4>
+<ol>
+<li>
+<p>pom.xml</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-config&lt;/artifactId&gt;
+    &lt;version&gt;${latest.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>bootstrap.yml</p>
+<pre><code class="language-yml">spring:
+  application:
+    name: nacos-config-client
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #Nacos服务注册中心地址
+      config:
+        server-addr: localhost:8848 #Nacos作为配置中心地址
+        file-extension: yaml #指定yaml格式的配置
+        group: DEFAULT_GROUP # 默认为`default group`
+        namespace: public # 默认为`public`
+</code></pre>
+</li>
+<li>
+<p>application.yml</p>
+<pre><code class="language-yml">spring:
+  profiles: 
+    active: prod
+</code></pre>
+</li>
+<li>
+<p>业务类,添加<code>@RefreshScope</code></p>
+<pre><code class="language-java">@RestController
+@RefreshScope //支持Nacos的动态刷新功能。
+public class ConfigClientController {
+    
+    @Value(&quot;${config.info}&quot;)
+    private String configInfo;
+
+    @GetMapping(&quot;/config/info&quot;)
+    public String getConfigInfo() {
+        return configInfo;
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h4 id="nacos控制台配置">Nacos控制台配置</h4>
+<p>Nacos配置管理页面添加文件</p>
+<p>dataId完整格式 :</p>
+<p><code>${prefix}-${spring.profiles.active}.${file-extension}</code></p>
+<ol>
+<li><code>prefix</code> 默认为 <code>spring.application.name</code> 的值，也可以通过配置项 <code>spring.cloud.nacos.config.prefix</code> 来配置</li>
+<li><code>spring.profiles.active</code> 即为当前环境对应的 <code>profile</code>。 注意：当 <code>spring.profiles.active</code> 为空时，对应的连接符 - 也将不存在，<code>dataId</code> 的拼接格式变成 <code>${prefix}.${file-extension}</code></li>
+<li><code>file-exetension</code> 为配置内容的数据格式，可以通过配置项 <code>spring.cloud.nacos.config.file-extension</code> 来配置。目前只支持 <code>properties</code> 和 <code>yaml</code> 类型</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Hystrix]]></title>
+        <id>https://juyss.github.io/post/hystrix/</id>
+        <link href="https://juyss.github.io/post/hystrix/">
+        </link>
+        <updated>2020-11-04T07:09:10.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="hystrix">Hystrix</h1>
+<h2 id="重要概念">重要概念</h2>
+<h3 id="服务降级fallback">服务降级（fallback）</h3>
+<p>某些服务不可用时<code>（服务超时、服务出现异常、服务熔断触发服务降级、线程池或信号量打满）</code>，执行备用逻辑从故障服务中快速失败或快速返回，以保障主体业务不受影响</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="hystrix">Hystrix</h1>
+<h2 id="重要概念">重要概念</h2>
+<h3 id="服务降级fallback">服务降级（fallback）</h3>
+<p>某些服务不可用时<code>（服务超时、服务出现异常、服务熔断触发服务降级、线程池或信号量打满）</code>，执行备用逻辑从故障服务中快速失败或快速返回，以保障主体业务不受影响</p>
+<!-- more -->
+<h3 id="服务熔断circuit-breaker">服务熔断（circuit breaker）</h3>
+<p>应对雪崩效应的一种微服务链路保护机制.当某个微服务出现报错或者响应超时,会进行服务降级,进而熔断该服务的调用,快速返回错误响应.在一定时间后进行尝试调用,如果调用相应恢复正常,则恢复该服务的的调用链路</p>
+<h3 id="总结">总结</h3>
+<p>在配置了熔断器后,微服务调用过程中,微服务执行业务逻辑过程中响应超时或者程序错误,触发服务降级,执行降级方法.在一定时间内出现一定比率的服务调用错误后,熔断器打开,之后再发送的请求不执行业务逻辑,直接执行降级方法,返回错误响应.熔断器打开过程中,尽管微服务恢复正常,仍会直接调用降级方法.熔断持续时间过后,熔断器处于半开状态,尝试执行一次请求,调用正常的业务逻辑,若出错,则继续保持打开状态,如果调用成功,则关闭熔断,恢复调用链路,让请求执行正确的业务逻辑</p>
+<h2 id="微服务使用hystrix">微服务使用Hystrix</h2>
+<p>（Provider端或Consumer端都可配置）</p>
+<ol>
+<li>
+<p>引入依赖</p>
+<pre><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>配置application.yml （无特殊配置）</p>
+<pre><code class="language-yml">feign:
+  hystrix:
+    enabled: true # 和OpenFegin一起使用需要配置此选项
+</code></pre>
+</li>
+<li>
+<p>主启动类添加<code>@EnableHystrix</code>,启用<code>Hystrix</code></p>
+</li>
+</ol>
+<h3 id="服务降级配置">服务降级配置</h3>
+<h4 id="针对方法的服务降级">针对方法的服务降级</h4>
+<ol>
+<li>添加<code>@HystrixCommand</code>注解,配置注解属性<code>fallbackMethod</code>,指定服务降级后执行的方法</li>
+<li>配置注解属性<code>commandProperties</code>,指定超时时间<code>@HystrixProperty(name = &quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value = &quot;3000&quot;)</code></li>
+</ol>
+<pre><code class="language-java">    @HystrixCommand(fallbackMethod = &quot;paymentInfo_TimeOutHandler&quot;, commandProperties = {
+            @HystrixProperty(name = &quot;execution.isolation.thread.timeoutInMilliseconds&quot;, value = &quot;3000&quot;)
+    })
+    public String paymentInfo_TimeOut(Integer id) {
+        int age = 10/0; //程序异常,触发降级
         try {
-            if (pst!=null)
-                pst.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        try {
-            if (conn!=null)
-                conn.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        try {
-            if (fis!=null)
-                fis.close();
-        } catch (IOException e) {
+            TimeUnit.MILLISECONDS.sleep(5000); //响应超时,触发降级
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return &quot;线程池:  &quot; + Thread.currentThread().getName() + &quot; id:  &quot; + id + &quot;\t&quot; + &quot;O(∩_∩)O哈哈~&quot; + &quot;  耗时(秒): &quot;;
+    }
+
+    public String paymentInfo_TimeOutHandler(Integer id) {
+        return &quot;线程池:  &quot; + Thread.currentThread().getName() + &quot;  8001系统繁忙或者运行报错，请稍后再试,id:  &quot; + id + &quot;\t&quot; + &quot;o(╥﹏╥)o&quot;;
+    }
+</code></pre>
+<ol start="3">
+<li>当服务响应时间超过设定值,便会执行降级方法</li>
+</ol>
+<h4 id="针对全局的服务降级">针对全局的服务降级</h4>
+<ol>
+<li>在类上添加注解<code>@DefaultProperties(defaultFallback = &quot;payment_Global_FallbackMethod&quot;)</code>,指定全局降级方法</li>
+<li>在需要降级的方法上添加注解<code>@HystrixCommand</code>即可</li>
+</ol>
+<pre><code class="language-java">@RestController
+@Slf4j
+@DefaultProperties(defaultFallback = &quot;payment_Global_FallbackMethod&quot;)
+public class OrderHystirxController {
+    @Resource
+    private PaymentHystrixService paymentHystrixService;
+
+    @GetMapping(&quot;/consumer/payment/hystrix/ok/{id}&quot;)
+    public String paymentInfo_OK(@PathVariable(&quot;id&quot;) Integer id) {
+        return paymentHystrixService.paymentInfo_OK(id);
+    }
+
+    @GetMapping(&quot;/consumer/payment/hystrix/timeout/{id}&quot;)
+    @HystrixCommand
+    public String paymentInfo_TimeOut(@PathVariable(&quot;id&quot;) Integer id) {
+        int age = 10 / 0;
+        return paymentHystrixService.paymentInfo_TimeOut(id);
+    }
+
+    // 下面是全局fallback方法
+    public String payment_Global_FallbackMethod() {
+        return &quot;Global异常处理信息，请稍后再试，/(ㄒoㄒ)/~~&quot;;
+    }
+}
+</code></pre>
+<h4 id="降级方法与业务逻辑解耦">降级方法与业务逻辑解耦</h4>
+<ol>
+<li>
+<p>服务消费者端远程调用接口的<code>@FeignClient</code>注解,添加属性<code>fallback</code>指向一个实现此接口的类</p>
+</li>
+<li>
+<p>此实现类是实现接口的所有方法,作为服务降级的调用方法</p>
+</li>
+</ol>
+<p>调用远程服务的接口</p>
+<pre><code class="language-java">@Component
+@FeignClient(value = &quot;CLOUD-PROVIDER-HYSTRIX-PAYMENT&quot;, fallback = PaymentFallbackService.class)
+public interface PaymentHystrixService {
+
+    @GetMapping(&quot;/payment/hystrix/ok/{id}&quot;)
+    String paymentInfo_OK(@PathVariable(&quot;id&quot;) Integer id);
+
+    @GetMapping(&quot;/payment/hystrix/timeout/{id}&quot;)
+    String paymentInfo_TimeOut(@PathVariable(&quot;id&quot;) Integer id);
+
+}
+</code></pre>
+<p>接口实现类,实现方法作为服务降级方法,实现业务逻辑和服务降级的解耦</p>
+<pre><code class="language-java">@Component
+public class PaymentFallbackService implements PaymentHystrixService {
+
+    @Override
+    public String paymentInfo_OK(Integer id) {
+        return &quot;-----PaymentFallbackService fall back-paymentInfo_OK ,o(╥﹏╥)o&quot;;
+    }
+
+    @Override
+    public String paymentInfo_TimeOut(Integer id) {
+        return &quot;-----PaymentFallbackService fall back-paymentInfo_TimeOut ,o(╥﹏╥)o&quot;;
     }
 
 }
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Java中读取文件的几种路径配置]]></title>
-        <id>https://juyss.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/</id>
-        <link href="https://juyss.github.io/post/java-zhong-du-qu-wen-jian-de-ji-chong-lu-jing-pei-zhi/">
-        </link>
-        <updated>2020-06-04T14:42:27.000Z</updated>
-        <summary type="html"><![CDATA[<h4 id="获取配置文件的两种方式区别">获取配置文件的两种方式区别</h4>
-]]></summary>
-        <content type="html"><![CDATA[<h4 id="获取配置文件的两种方式区别">获取配置文件的两种方式区别</h4>
-<!-- more -->
-<h6 id="classloadergetsystemclassloadergetresourceasstream">ClassLoader.getSystemClassLoader().getResourceAsStream()</h6>
-<pre><code class="language-java">//ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;String pathName&quot;) 
-// 此种方式读取文件位置默认为src目录下(在main方法和在@Test方法中路径一样)
-InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;Resource\\druid.properties&quot;);
+<h3 id="服务熔断配置">服务熔断配置</h3>
+<p>配置服务熔断需在<code>@HystrixCommand</code>添加属性<code>commandProperty</code>的值,开启服务熔断</p>
+<pre><code class="language-java">//=====服务熔断
+    @HystrixCommand(fallbackMethod = &quot;paymentCircuitBreaker_fallback&quot;, commandProperties = {
+            @HystrixProperty(name = &quot;circuitBreaker.enabled&quot;, value = &quot;true&quot;),// 是否开启断路器
+            @HystrixProperty(name = &quot;circuitBreaker.requestVolumeThreshold&quot;, value = &quot;10&quot;),// 请求次数
+            @HystrixProperty(name = &quot;circuitBreaker.sleepWindowInMilliseconds&quot;, value = &quot;10000&quot;), // 时间窗口期
+            @HystrixProperty(name = &quot;circuitBreaker.errorThresholdPercentage&quot;, value = &quot;60&quot;),// 失败率达到多少后跳闸
+    })
 </code></pre>
-<h6 id="fileinputstream">FileInputStream()</h6>
-<pre><code class="language-java">//FileInputStream(&quot;String pathName&quot;) 
-// 在main方法中,此种方式读取文件位置默认为Project目录下
-// 在@Test方法中,此种方式读取文件位置默认为Module目录下
-FileInputStream is = new FileInputStream(&quot;JDBC\\src\\Resource\\druid.properties&quot;);
-</code></pre>
-<h4 id="getresourceasstream的区别">getResourceAsStream的区别</h4>
 <ol>
-<li><code>Class.getResourceAsStream(String path)</code> ： path 不以<code>’/'</code>开头时默认是从此类所在的包下取资源，以<code>’/'</code>开头则是从ClassPath根下获取。其只是通过path构造一个绝对路径，最终还是由ClassLoader获取资源。</li>
-<li><code>Class.getClassLoader.getResourceAsStream(String path)</code> ：默认则是从ClassPath根下获取，path不能以<code>’/'</code>开头，最终是由ClassLoader获取资源。</li>
-<li><code>ServletContext. getResourceAsStream(String path)</code>：默认从WebAPP根目录下取资源，Tomcat下path是否以<code>’/'</code>开头无所谓。</li>
-</ol>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[两种获取InputStream对象的方法]]></title>
-        <id>https://juyss.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/</id>
-        <link href="https://juyss.github.io/post/liang-chong-huo-qu-inputstream-dui-xiang-de-fang-fa/">
-        </link>
-        <updated>2020-06-04T14:38:18.000Z</updated>
-        <summary type="html"><![CDATA[<p>总结两种获取InputStream对象的方法的区别</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>总结两种获取InputStream对象的方法的区别</p>
-<!-- more -->
-<p><code>getResourceAsStream(String path)</code></p>
-<p>默认path路径位于Class所在Module的src目录下 .</p>
-<pre><code class="language-java">InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(&quot;jdbc.properties&quot;);
-
-</code></pre>
-<p><code>FileInputStream(&quot;String path&quot;)</code></p>
-<p>在main方法中时, 默认路径为为Project下; 在@Test单元测试方法中路径为当前Class所在Module目录下 .</p>
-<pre><code class="language-java">FileInputStream is = new FileInputStream(&quot;jdbc.properties&quot;);
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[事务隔离级别]]></title>
-        <id>https://juyss.github.io/post/shi-wu-ge-chi-ji-bie/</id>
-        <link href="https://juyss.github.io/post/shi-wu-ge-chi-ji-bie/">
-        </link>
-        <updated>2020-06-04T14:36:13.000Z</updated>
-        <summary type="html"><![CDATA[<h3 id="事务隔离级别学习总结">事务隔离级别学习总结</h3>
-]]></summary>
-        <content type="html"><![CDATA[<h3 id="事务隔离级别学习总结">事务隔离级别学习总结</h3>
-<!-- more -->
-<h2 id="事务的四个属性">事务的四个属性</h2>
-<h5 id="原子性">原子性</h5>
-<p>每一个事务都是一个不可分割的部分，事务中的操作要么都发生，要么都不发生。</p>
-<h5 id="隔离性">隔离性</h5>
-<p>一个事务不被其他事物的数据所干扰,多个并发事务互相隔离</p>
-<h5 id="一致性">一致性</h5>
-<p>一个事务执行会从一种统一的状态,改变为另一种统一的状态.事务前后数据完整性保持一致.</p>
-<h5 id="持久性">持久性</h5>
-<p>一旦事务被提交就持久化到文件中,不可改变</p>
-<h2 id="事务的并发问题">事务的并发问题</h2>
-<h5 id="脏读">脏读</h5>
-<p>一个事务读取了另一事物未提交的数据</p>
-<h5 id="不可重复读">不可重复读</h5>
-<p>一个事务在多次读取某一数据的期间,另一事务对数据进行了<code>update</code>操作并且<code>commit</code>,导致的数据多次读取过程中出现不一致的现象,主要针对于 <code>update</code> 操作 .</p>
-<h5 id="幻读">幻读</h5>
-<p>一个事务在多次读取某一数据的期间,另一事务对数据进行了<code>insert</code>并且<code>commit</code>,导致的数据多次读取过程中出现不一致的现象,主要针对于 <code>insert</code> 操作 .</p>
-<h2 id="事物的隔离级别">事物的隔离级别</h2>
-<table>
-<thead>
-<tr>
-<th>事务隔离级别</th>
-<th>脏读</th>
-<th>不可重复读</th>
-<th>幻读</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>读未提交(read-uncommitted)</td>
-<td>存在</td>
-<td>存在</td>
-<td>存在</td>
-</tr>
-<tr>
-<td>读已提交(read-committed)</td>
-<td>不存在</td>
-<td>存在</td>
-<td>存在</td>
-</tr>
-<tr>
-<td>可重复读(repeatable-read)</td>
-<td>不存在</td>
-<td>不存在</td>
-<td>存在</td>
-</tr>
-<tr>
-<td>串行化(serializable)</td>
-<td>不存在</td>
-<td>不存在</td>
-<td>不存在</td>
-</tr>
-</tbody>
-</table>
-<h2 id="事务并发问题代码演示">事务并发问题代码演示</h2>
-<h5 id="事务相关操作代码">事务相关操作代码</h5>
-<pre><code class="language-sql">-- 创建表
-CREATE TABLE `bank` (
-	`id` INT NOT NULL AUTO_INCREMENT COMMENT '账号',
-	`name` VARCHAR(10) NOT NULL,
-	`pwd` VARCHAR(30) NOT NULL,
-	`balance` INT NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`)
-)ENGINE=INNODB CHARSET=utf8;
-
--- 查看表属性
-DESC `bank`;
-
--- 修改多个字段名(change)或者字段属性(modify)
-ALTER TABLE `bank` 
-MODIFY `pwd` VARCHAR(50),
-CHANGE `name` `user` VARCHAR(20);
-
--- 插入数据
-INSERT INTO `bank`
-(`user`,`pwd`,`balance`)
-VALUES
-('Rick',MD5('123456'),2000),
-('Beth',MD5('000000'),3000),
-('Jerry',MD5('102850'),1000),
-('Summer',MD5('123456'),500),
-('Morty',MD5('123456'),500);
-
--- 查看表
-SELECT * FROM `bank`;
-
--- 事务隔离级别练习
-
-SHOW VARIABLES LIKE 'autocommit'; -- 查看自动提交状态
-SET autocommit=0; -- 关闭自动提交
--- 查看事务隔离级别
-SHOW VARIABLES LIKE 'transaction_isolation'; -- MySQL默认repeatable-read
-SELECT @@transaction_isolation;  -- 全局
-SELECT @@session.transaction_isolation; -- 当前会话
-
--- 设置事务隔离级别(不加 session 为设置全局)
-SET SESSION TRANSACTION ISOLATION LEVEL
--- read uncommitted; -- 读未提交
--- read committed; -- 读已提交(避免脏读)
--- repeatable read; -- 可重复读(避免脏读和不可重复读)
--- serializable; -- 串行化
-
--- 开启事务
-START TRANSACTION; 
-/*
-create
-insert
-update
-drop
-delete
-truncate
-*/
-
-COMMIT; -- 提交
-ROLLBACK; -- 回滚
--- 结束事务
-
-SET autocommit=1; -- 事务结束后开启自动提交
-</code></pre>
-<h5 id="autocommit属性">autocommit属性</h5>
-<p>DDL操作一旦执行就会自动提交,不能更改属性(如创建表)</p>
-<p>DML默认自动提交,可以修改(增删改查)</p>
-<ol>
-<li>MySQL默认开启自动提交,即autocommit=1;</li>
-</ol>
-<p>默认一条SQL语句就为一个事务,执行完毕后便自动提交,</p>
-<p>此种情况下开启事务<code>start transaction</code>;MySQL会把之间的SQL语句作为一个事务执行,直到<code>commit</code>或者<code>rollback</code>,才会持久化到数据库中</p>
-<ol start="2">
 <li>
-<p>设置autocommit=0后</p>
-<p>即使没有执行<code>start transaction</code>,系统也默认开始事务，语句执行完毕后不会持久化到数据库,直到执行<code>commit</code>或者<code>rollback</code>才会提交,持久化到数据库</p>
+<p>配置断路器开关</p>
+<pre><code>@HystrixProperty(name = &quot;circuitBreaker.enabled&quot;, value = &quot;true&quot;)
+</code></pre>
+</li>
+<li>
+<p>请求总数阈值</p>
+<pre><code>@HystrixProperty(name = &quot;circuitBreaker.requestVolumeThreshold&quot;, value = &quot;10&quot;)
+</code></pre>
+</li>
+<li>
+<p>快照时间窗</p>
+<pre><code>@HystrixProperty(name = &quot;circuitBreaker.sleepWindowInMilliseconds&quot;, value = &quot;10000&quot;)
+</code></pre>
+</li>
+<li>
+<p>错误百分比阈值</p>
+<pre><code>@HystrixProperty(name = &quot;circuitBreaker.errorThresholdPercentage&quot;, value = &quot;60&quot;)
+</code></pre>
 </li>
 </ol>
-<h5 id="事务并发问题代码">事务并发问题代码</h5>
-<pre><code class="language-sql">SELECT @@session.tx_isolation;   
-SELECT @@tx_isolation;  
+<h4 id="断路器开启条件">断路器开启条件</h4>
+<ol>
+<li>
+<p>请求达到设定阈值数（默认10秒内超过20个请求次数）</p>
+</li>
+<li>
+<p>失败请求百分比达到设定值（默认10秒内超过50%请求失败）</p>
+</li>
+<li>
+<p>达到以上任意一种情况,断路器打开,并持续快照时间窗设定的时间,所有请求直接返回服务降级方法</p>
+</li>
+<li>
+<p>快照时间窗过后（默认是5秒）,会尝试恢复请求,此时熔断器处于半开状态,如果响应错误,则重复1-3步骤,如果响应成功则关闭断路器,恢复服务调用链路.</p>
+</li>
+</ol>
+<h2 id="hystrixdashboard">HystrixDashBoard</h2>
+<ol>
+<li>新建项目作为监控服务</li>
+<li>引入依赖</li>
+</ol>
+<pre><code class="language-xml">&lt;!--Hystrix服务监控Dashboard依赖--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-hystrix&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-hystrix-dashboard&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<ol start="3">
+<li>启动类添加注解<code>@EnableHystrixDashBoard</code></li>
+<li>被监听的服务提供者，都需要添加<code>spring-boot-starter-actuator</code>依赖</li>
+<li>启动访问本服务的<code>/hystrix</code></li>
+<li>页面输入被监控的服务<code>/hystrix.stream</code></li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Eureka]]></title>
+        <id>https://juyss.github.io/post/eureka/</id>
+        <link href="https://juyss.github.io/post/eureka/">
+        </link>
+        <updated>2020-11-03T07:08:10.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="eureka">Eureka</h1>
+<h2 id="registry-center-注册中心">Registry-Center 注册中心</h2>
+<h3 id="单机版">单机版</h3>
+<ol>
+<li>
+<p>导入依赖<code>reueka-server</code></p>
+<pre><code class="language-xml">&lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p><code>application.yml</code>配置文件</p>
+<pre><code class="language-yml">spring:
+  application:
+    name: eureka-registry-center # 注册中心服务名称
 
+server:
+  port: 8080 #微服务端口
+
+eureka:
+  instance:
+    hostname: 118.31.244.185 # 表明注册中心的IP地址
+    instance-id: provider8080 # 注册中心自定义显示服务名称
+    prefer-ip-address: true # 服务名称链接显示ip
+  server:
+  	# 确保注册中心中不可用的实例被及时的剔除,开发时设为false,上线应该为true
+    enableSelfPreservation: false 
+  client:
+    register-with-eureka: false # 不在注册中心注册自己
+    fetch-registry: false # 表示自己就是注册中心，职责是维护服务实例，并不需要去检索服务
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ # 注册中心url
+</code></pre>
+</li>
+<li>
+<p>主启动类配置</p>
+<p>添加<code>@EnableEurekaServer</code>注解启动<code>Eureka</code> 注册中心服务</p>
+</li>
+</ol>
+<h3 id="集群版">集群版</h3>
+<p>配置与单机版一致,只需修改<code>yml</code>文件中的<code>defaultZone</code>属性,添加除自己之外的其他注册中心的URL</p>
+<pre><code class="language-yml">defaultZone: http://another-server-ip:port/eureka/,http://another-server-ip:port/eureka/    #设置与eureka server交互的地址查询服务和注册服务都需要依赖这个地址,多个服务之间逗号分开
+</code></pre>
+<h2 id="provider-服务提供者">Provider 服务提供者</h2>
+<h3 id="单机版-2">单机版</h3>
+<ol>
+<li>
+<p>导入依赖<code>eureka-client</code></p>
+<pre><code class="language-xml">&lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p><code>application.yml</code>配置文件</p>
+<pre><code class="language-yml">spring:
+  application:
+    name: service-provider # 注册中心应用名称
+
+server:
+  port: 8080 # 微服务端口
+
+eureka:
+  client:
+    register-with-eureka: true # 在注册中心注册自己
+    fetchRegistry: true # 需要去检索服务
+    service-url:
+      defaultZone: http://118.31.244.185:8080/eureka/
+  instance:
+    instance-id: provider8080 # 注册中心自定义显示服务名称
+    prefer-ip-address: true # 服务名称链接显示ip
+</code></pre>
+</li>
+<li>
+<p>主启动类配置</p>
+<p>添加<code>@EnableDiscoveryClient</code>或<code>@EnableEurekaClient</code>(只适用于<code>Erueka</code>注册中心)</p>
+</li>
+</ol>
+<h3 id="集群版-2">集群版</h3>
+<p>配置与单机版一致,只需修改<code>yml</code>文件中的<code>defaultZone</code>属性,添加集群中所有的注册中心URL,之间逗号分隔即可</p>
+<h2 id="consumer-服务消费者">Consumer 服务消费者</h2>
+<ol>
+<li>
+<p>导入依赖<code>eureka-client</code></p>
+<pre><code class="language-xml">&lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p><code>application.yml</code>配置文件</p>
+<pre><code class="language-yml">spring:
+  application:
+    name: service-consumer-user # 注册中心服务名称
+    
+server:
+  port: 8080 # 服务端口
   
-SET SESSION TRANSACTION ISOLATION LEVEL read uncommitted;  
-SET SESSION TRANSACTION ISOLATION LEVEL read committed;  
-SET SESSION TRANSACTION ISOLATION LEVEL repeatable read;  
-SET SESSION TRANSACTION ISOLATION LEVEL serializable;  
-
-start transaction;
-
---建表
-drop table AMOUNT;
-CREATE TABLE `AMOUNT` (
-`id`  varchar(10) NULL,
-`money`  numeric NULL
-)
-;
---插入数据
-insert into amount(id,money) values('A', 800);
-insert into amount(id,money) values('B', 200);
-insert into amount(id,money) values('C', 1000);
---测试可重复读，插入数据
-insert into amount(id,money) values('D', 1000);
-
---设置事务
-SET SESSION TRANSACTION ISOLATION LEVEL read uncommitted;  
-SELECT @@tx_isolation;  
---开启事务
-start transaction;
-
---脏读演示，读到其他事务未提交的数据
---案列1，事务一：A向B转200，事务二：查看B金额变化，事务一回滚事务
-update amount set money = money - 200 where id = 'A';
-update amount set money = money + 200 where id = 'B';
-
---不可重复读演示，读到了其他事务提交的数据
---案列2，事务一：B向A转200，事务二：B向C转200转100
-SET SESSION TRANSACTION ISOLATION LEVEL read committed;  
-
---开启事务
-start transaction;
---两个事务都查一下数据(转账之前需要，查一下金额是否够满足转账)
-select * from amount;
---事务一：B向A转200
-update amount set money = money - 200 where id = 'B';
-update amount set money = money + 200 where id = 'A';
-
-commit;
---事务二：B向C转200转100
-update amount set money = money - 100 where id = 'B';
-update amount set money = money + 100 where id = 'C';
-commit;
---从事务二的角度来看，读到了事务一提交事务的数据，导致金额出现负数
-
---幻读演示
---案列3，事务一：B向A转200，事务二：B向C转200转100
-SET SESSION TRANSACTION ISOLATION LEVEL repeatable read;  
-
---开启事务
-start transaction;
---两个事务都查一下数据(转账之前需要，查一下金额是否够满足转账)
-select * from amount;
---事务一：B向A转200
-update amount set money = money - 200 where id = 'B';
-update amount set money = money + 200 where id = 'A';
-
-commit;
---事务二：B向C转200转100
-update amount set money = money - 100 where id = 'B';
-update amount set money = money + 100 where id = 'C';
-commit;
---从事务二的角度来看，读到了事务一提交事务的数据，导致金额出现负数
-
+eureka:
+  client:
+    register-with-eureka: true #在注册中心注册自己
+    fetchRegistry: true # 需要去检索服务
+    service-url:
+      defaultZone: http://118.31.244.185:8080/eureka/ #若注册中心为集群服务,需写多个注册中心地址
+  instance:
+  	instance-id: provider8080 # 注册中心自定义显示服务名称
+  	prefer-ip-address: true # 服务名称链接显示ip
 </code></pre>
+</li>
+<li>
+<p>添加配置类,向容器中注入<code>RestTemplate</code></p>
+<pre><code class="language-java">import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: BeanConfig
+ * @Desc:
+ * @package com.juyss.config
+ * @project HelloWorld
+ * @date 2020/10/29 21:39
+ */
+@SpringBootConfiguration
+public class BeanConfig {
+
+    @LoadBalanced // 开启集群负载均衡,如果服务提供者端配置了集群,不开启会报错
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+
+}
+</code></pre>
+</li>
+<li>
+<p>调用远程服务过程</p>
+<ol>
+<li>
+<p>在需要调用远程服务的<code>JavaBean</code>中注入<code>RestTemplate</code></p>
+</li>
+<li>
+<p>使用<code>RestTemplate.getForObject(String url, Class&lt;T&gt; responseType, Object... uriVariables)</code></p>
+</li>
+<li>
+<p>param --&gt; url : 远程服务地址,&quot;http://服务名称/controller映射路径/&quot;</p>
+</li>
+<li>
+<p>param --&gt; responseType: 远程服务返回值类型</p>
+</li>
+<li>
+<p>例如</p>
+<pre><code class="language-java">Movie movie = restTemplate.getForObject(&quot;http://service-provider/movie&quot;,Movie.class);
+</code></pre>
+<p>调用注册中心服务名为<code>service-provider</code>的映射为<code>/movie</code>的服务,返回值类型为<code>Movie.class</code></p>
+</li>
+</ol>
+</li>
+<li>
+<p>主启动类配置</p>
+<p>添加<code>@EnableDiscoveryClient</code>或<code>@EnableEurekaClient</code>(只适用于<code>Erueka</code>注册中心)</p>
+</li>
+</ol>
+<h3 id="服务启动顺序">服务启动顺序</h3>
+<p>注册中心 ===&gt; 服务提供者 ===&gt; 服务消费者</p>
+<h3 id="eureka自我保护机制">Eureka自我保护机制</h3>
+<h4 id="server端">Server端</h4>
+<pre><code class="language-yml">eureka:
+  server:
+  	# 确保注册中心中不可用的实例被及时的剔除,开发时设为false,上线应该为true
+    enableSelfPreservation: false 
+    # 清理无效节点的时间间隔,默认60000毫秒,即60秒
+    eviction-interval-timer-in-ms: 2000
+</code></pre>
+<h3 id="client端">Client端</h3>
+<pre><code class="language-yml">eureka:
+  instance:
+    # 客户端向服务端发送心跳的时间间隔,单位秒,默认30秒
+    lease-renewal-interval-in-seconds:  1
+    # 服务端收到客户端最后一次心跳的等待时间,单位秒,默认90秒,超时将剔除服务
+    lease-expiration-duration-in-seconds:  2
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Elasticsearch总结]]></title>
+        <id>https://juyss.github.io/post/elasticsearch-zong-jie/</id>
+        <link href="https://juyss.github.io/post/elasticsearch-zong-jie/">
+        </link>
+        <updated>2020-11-02T05:20:47.000Z</updated>
+        <summary type="html"><![CDATA[<h1 id="elasticsearch">Elasticsearch</h1>
+<p>Elasticsearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。</p>
+]]></summary>
+        <content type="html"><![CDATA[<h1 id="elasticsearch">Elasticsearch</h1>
+<p>Elasticsearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。</p>
+<!-- more -->
+<h2 id="基本概念">基本概念</h2>
+<ol>
+<li>
+<p>index (索引)<br>
+相当于数据库中的库或者表<br>
+<code>ES-6后索引只允许存在一个type(文档类型),ES-7中不允许创建指定type,默认type为_doc,ES-8中移除type</code></p>
+</li>
+<li>
+<p>mapping(映射)<br>
+相当于数据库中表的结构,比如说字段类型,或者表的属性.<br>
+mapping是对document的格式进行限制</p>
+</li>
+<li>
+<p>document(文档)<br>
+相当于数据库中的一行数据,包含一个或多个存有数据的字段.</p>
+</li>
+<li>
+<p>field(字段)<br>
+相当于数据库中的字段,可以指定字段的数据类型或属性</p>
+</li>
+</ol>
+<h2 id="索引操作">索引操作</h2>
+<pre><code># 添加索引
+PUT /test
+PUT /dangdang
+
+# 查看索引
+GET /dangdang
+# 查看所有索引
+GET /_cat/indices?v
+
+# 删除索引
+DELETE /test
+DELETE /dangdang
+</code></pre>
+<h2 id="映射操作">映射操作</h2>
+<pre><code># 创建索引dangdang 映射字段 id name price detail
+PUT /dangdang
+{
+  &quot;mappings&quot;: {
+      &quot;properties&quot;: {
+        &quot;id&quot;: {
+          &quot;type&quot;: &quot;integer&quot;
+        },
+        &quot;name&quot;: {
+          &quot;type&quot;: &quot;keyword&quot;
+        },
+        &quot;price&quot;: {
+          &quot;type&quot;: &quot;double&quot;
+        },
+        &quot;detail&quot;: {
+          &quot;type&quot;: &quot;text&quot;
+        }
+      }
+  }
+}
+
+# 查看mapping
+GET /dangdang/_mapping
+</code></pre>
+<h2 id="文档操作">文档操作</h2>
+<pre><code># 插入一条文档(不指定`_id`,会默认生成一个)
+POST /dangdang/_doc/
+{
+  &quot;id&quot;: 1,
+  &quot;name&quot;:&quot;java核心思想&quot;,
+  &quot;price&quot;:21.21,
+  &quot;detail&quot;: &quot;默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制&quot;
+}
+
+# 插入一条文档(指定`_id`)
+POST /dangdang/_doc/{_id}
+{
+  &quot;id&quot;: 1,
+  &quot;name&quot;:&quot;java核心思想2&quot;,
+  &quot;price&quot;:21.212,
+  &quot;detail&quot;: &quot;默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制2&quot;
+}
+
+# 根据`_id`获取文档数据
+GET /dangdang/_doc/{_id}
+
+# 查询索引下的所有文档
+GET /dangdang/_search
+
+# 更新文档
+# 1.覆盖更新
+POST /dangdang/_doc/{_id}
+{
+  &quot;id&quot;: 1,
+  &quot;name&quot;:&quot;java入门到入土&quot;,
+  &quot;price&quot;:15.78,
+  &quot;detail&quot;: &quot;使用的ES版本为7.2.0,不再支持创建指定类型,索引的默认类型为`_doc`&quot;
+}
+# 2.部分更新
+POST /dangdang/_update/{_id}
+{
+  &quot;doc&quot;:{
+    &quot;price&quot;:44.44
+  }
+}
+
+
+# 删除文档
+DELETE /dangdang/_doc/{_id}
+</code></pre>
+<h2 id="文档查询">文档查询</h2>
+<pre><code># 查询文档
+GET /dangdang/_search
+{
+  &quot;query&quot;:{
+    &quot;match_all&quot;:{}
+  }
+}
+
+# 查询排序
+GET /dangdang/_search
+{
+  &quot;query&quot;: {
+    &quot;match_all&quot;: {}
+  }
+  , &quot;sort&quot;: [
+    {
+      &quot;price&quot;: {
+        &quot;order&quot;: &quot;asc&quot;
+      }
+    },
+    {
+      &quot;name&quot;: {
+        &quot;order&quot;: &quot;desc&quot;
+      }
+    }
+  ]
+}
+
+# 分页查询
+GET /dangdang/_search
+{
+  &quot;query&quot;: {
+    &quot;match_all&quot;: {}
+  },
+  &quot;size&quot;: 10,
+  &quot;from&quot;: 0,
+  &quot;sort&quot;: [
+    {
+      &quot;id&quot;: {
+        &quot;order&quot;: &quot;desc&quot;
+      }
+    }
+  ]
+}
+
+# 指定查询结果返回的字段 _source
+GET /dangdang/_search
+{
+  &quot;query&quot;: {
+    &quot;match_all&quot;: {}
+  },
+  &quot;_source&quot;: [&quot;name&quot;,&quot;detail&quot;]
+}
+</code></pre>
+<pre><code># 关键词查询 term
+# text类型查询会进行分词,其他类型不分词
+# 英文按空格分词,中文按单字分词
+GET /dangdang/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;name&quot;: {
+        &quot;value&quot;: &quot;java核心思想&quot;
+      }
+    }
+  }
+}
+
+# 测试分词效果,可以指定分词器
+POST /dangdang/_analyze
+{
+  &quot;analyzer&quot;: &quot;ik_smart&quot;, 
+  &quot;text&quot;: &quot;默认(MaxHeapFreeRatio参数可以调)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制&quot;
+}
+
+# 范围查询:range 前缀查询:perfix
+# 通配符查询:wildcard  ?匹配一个字符 *匹配多个字符
+GET /dangdang/_search
+{
+  &quot;query&quot;: {
+    &quot;range&quot;: {
+      &quot;price&quot;: {
+        &quot;gte&quot;: 10,
+        &quot;lte&quot;: 50
+      }
+    }
+  }
+}
+
+# 高亮查询
+GET /dangdang/_search
+{
+  &quot;query&quot;: {
+    &quot;term&quot;: {
+      &quot;detail&quot;: {
+        &quot;value&quot;: &quot;小&quot;
+      }
+    }
+  },
+  &quot;highlight&quot;: {
+    &quot;fields&quot;: {
+      &quot;detail&quot;: {}
+    }, 
+    &quot;pre_tags&quot;: &quot;&lt;span style: red&gt;&quot;,
+    &quot;post_tags&quot;: &quot;&lt;/span&gt;&quot;
+  }
+}
+</code></pre>
+<h1 id="java操作es">Java操作ES</h1>
+<h2 id="springboot项目">SpringBoot项目</h2>
+<ol>
+<li>
+<p>引入依赖 pom.xml</p>
+<pre><code class="language-xml">        &lt;!--引入ElasticSearch依赖--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-elasticsearch&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>容器中注入<code>RestHighLevelClient</code></p>
+<pre><code class="language-java">@Configuration
+public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
+
+    @Override
+    @Bean
+    public RestHighLevelClient elasticsearchClient() {
+        // 定义客户端配置对象 9200端口
+        final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+                // 9200 : Restful风格调用端口 , 9300 : tcp端口
+                .connectedTo(&quot;192.168.112.133:9200&quot;)
+                .build();
+
+        return RestClients.create(clientConfiguration).rest();
+    }
+}
+</code></pre>
+</li>
+<li>
+<p>实体类注解配置</p>
+<pre><code class="language-java">@Document(indexName = &quot;moti-blog&quot;)
+public class Article{
+
+    /**
+    * 文章的主键ID
+    */
+    @Id
+    private Integer id;
+
+    /**
+    * 文章标题
+    */
+    @Field(type = FieldType.Text,analyzer = &quot;ik_max_word&quot;)
+    private String title;
+
+    /**
+    * 正文
+    */
+    @Field(type = FieldType.Text,analyzer = &quot;ik_max_word&quot;)
+    private Object content;
+}
+</code></pre>
+<p>注解说明:The following annotations are available:</p>
+<ul>
+<li><code>@Document</code>: Applied at the class level to indicate this class is a candidate for mapping to the database. The most important attributes are:
+<ul>
+<li><code>indexName</code>: the name of the index to store this entity in. This can contain a SpEL template expression like <code>&quot;log-#{T(java.time.LocalDate).now().toString()}&quot;</code></li>
+<li><code>type</code>: the mapping type. If not set, the lowercased simple name of the class is used. (deprecated since version 4.0)</li>
+<li><code>shards</code>: the number of shards for the index.</li>
+<li><code>replicas</code>: the number of replicas for the index.</li>
+<li><code>refreshIntervall</code>: Refresh interval for the index. Used for index creation. Default value is <em>&quot;1s&quot;</em>.</li>
+<li><code>indexStoreType</code>: Index storage type for the index. Used for index creation. Default value is <em>&quot;fs&quot;</em>.</li>
+<li><code>createIndex</code>: flag whether to create an index on repository bootstrapping. Default value is <em>true</em>. See <a href="https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#elasticsearch.repositories.autocreation">Automatic creation of indices with the corresponding mapping</a></li>
+<li><code>versionType</code>: Configuration of version management. Default value is <em>EXTERNAL</em>.</li>
+</ul>
+</li>
+<li><code>@Id</code>: Applied at the field level to mark the field used for identity purpose.</li>
+<li><code>@Transient</code>: By default all fields are mapped to the document when it is stored or retrieved, this annotation excludes the field.</li>
+<li><code>@PersistenceConstructor</code>: Marks a given constructor - even a package protected one - to use when instantiating the object from the database. Constructor arguments are mapped by name to the key values in the retrieved Document.</li>
+<li><code>@Field</code>: Applied at the field level and defines properties of the field, most of the attributes map to the respective <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html">Elasticsearch Mapping</a> definitions (the following list is not complete, check the annotation Javadoc for a complete reference):
+<ul>
+<li><code>name</code>: The name of the field as it will be represented in the Elasticsearch document, if not set, the Java field name is used.</li>
+<li><code>type</code>: the field type, can be one of <em>Text, Keyword, Long, Integer, Short, Byte, Double, Float, Half_Float, Scaled_Float, Date, Date_Nanos, Boolean, Binary, Integer_Range, Float_Range, Long_Range, Double_Range, Date_Range, Ip_Range, Object, Nested, Ip, TokenCount, Percolator, Flattened, Search_As_You_Type</em>. See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html">Elasticsearch Mapping Types</a></li>
+<li><code>format</code> and <code>pattern</code> definitions for the <em>Date</em> type. <code>format</code> must be defined for date types.</li>
+<li><code>store</code>: Flag whether the original field value should be store in Elasticsearch, default value is <em>false</em>.</li>
+<li><code>analyzer</code>, <code>searchAnalyzer</code>, <code>normalizer</code> for specifying custom analyzers and normalizer.</li>
+</ul>
+</li>
+<li><code>@GeoPoint</code>: marks a field as <em>geo_point</em> datatype. Can be omitted if the field is an instance of the <code>GeoPoint</code> class.</li>
+</ul>
+</li>
+</ol>
+<h2 id="resthighlevelclient-api">RestHighLevelClient API</h2>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ZooKeeper]]></title>
+        <id>https://juyss.github.io/post/zookeeper/</id>
+        <link href="https://juyss.github.io/post/zookeeper/">
+        </link>
+        <updated>2020-10-14T07:13:18.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="zookeeper">Zookeeper</h1>
+<h2 id="zookeeper注册中心">Zookeeper注册中心</h2>
+<p>启动<code>zookeeper</code>注册中心</p>
+<h2 id="service-provider-服务提供者">Service-provider 服务提供者</h2>
+<h4 id="引入zookeeper依赖">引入zookeeper依赖</h4>
+<pre><code class="language-xml">        &lt;!-- SpringBoot整合zookeeper客户端 --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-zookeeper-discovery&lt;/artifactId&gt;
+            &lt;!--先排除自带的zookeeper3.5.3--&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;
+                    &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+        &lt;!--添加zookeeper3.6.9版本--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;
+            &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;
+            &lt;version&gt;3.6.2&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<h4 id="配置applicationyml">配置application.yml</h4>
+<pre><code class="language-yml">#8004表示注册到zookeeper服务器的支付服务提供者端口号
+server:
+  port: 8004
+
+spring:
+  application:
+    # 服务别名----注册到zookeeper注册中心的名称
+    name: cloud-provider-payment
+  cloud:
+    zookeeper:
+      # 注册中心地址
+      connect-string: 192.168.112.133:2181
+</code></pre>
+<h4 id="主启动类配置">主启动类配置</h4>
+<p>添加注解<code>@EnableDiscoveryClient</code> , 该注解用于向使用consul或者zookeeper作为注册中心时注册服务</p>
+<h2 id="service-consumer-服务消费者">Service-consumer 服务消费者</h2>
+<h4 id="引入zookeeper依赖-2">引入zookeeper依赖</h4>
+<pre><code class="language-xml">        &lt;!-- SpringBoot整合zookeeper客户端 --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-cloud-starter-zookeeper-discovery&lt;/artifactId&gt;
+            &lt;!--先排除自带的zookeeper--&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;
+                    &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+        &lt;!--添加zookeeper3.4.9版本--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;
+            &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;
+            &lt;version&gt;3.4.9&lt;/version&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<h4 id="配置applicationyml-2">配置application.yml</h4>
+<pre><code class="language-yml">server:
+  port: 8005
+
+spring:
+  application:
+    # 服务别名----注册到zookeeper注册中心的名称
+    name: cloud-consumer-order
+  cloud:
+    zookeeper:
+      #注册到zookeeper地址
+      connect-string: 192.168.112.133:2181
+</code></pre>
+<h4 id="注入resttemplate">注入RestTemplate</h4>
+<pre><code class="language-java">import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * @auther juyss
+ * @create 2020-02-19 15:20
+ */
+@Configuration
+public class ApplicationContextConfig {
+
+    @Bean
+    @LoadBalanced //开启负载均衡
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
+    }
+
+}
+</code></pre>
+<h4 id="主启动类配置-2">主启动类配置</h4>
+<p>添加注解<code>@EnableDiscoveryClient</code> , 该注解用于向使用consul或者zookeeper作为注册中心时注册服务</p>
+<h4 id="远程调用服务">远程调用服务</h4>
+<p>通过<code>RestTemplate</code>的<code>getObject()</code>方法进行远程调用,传入参数<code>url</code> ===&gt;<code>http://注册中心的服务名称/请求映射</code> ; 参数<code>responseType</code>为远程服务的返回值的实例,通过这两个参数即可完成远程调用.</p>
+<pre><code class="language-java">import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.Resource;
+
+/**
+ * @auther zzyy
+ * @create 2020-02-19 15:21
+ */
+@RestController
+@Slf4j
+public class OrderZKController {
+
+    public static final String INVOKE_URL = &quot;http://cloud-provider-payment&quot;; //提供者的地址
+
+    @Resource
+    private RestTemplate restTemplate;
+
+    @GetMapping(value = &quot;/consumer/payment/zk&quot;) //消费者请求映射
+    public String paymentInfo() {
+        return restTemplate.getForObject(INVOKE_URL + &quot;/payment/zk&quot;, String.class); //远程调用的服务映射
+    }
+
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[索引]]></title>
+        <id>https://juyss.github.io/post/suo-yin/</id>
+        <link href="https://juyss.github.io/post/suo-yin/">
+        </link>
+        <updated>2020-10-14T06:58:19.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="索引">索引</h1>
+<p>索引就是数据结构</p>
+<p>Tree:</p>
+<p>​	B Tree : 一个节点(磁盘块)包含<code>数据项、向下指针、指向数据的指针</code></p>
+<p>​	B+ Tree : 一个节点(磁盘块)包含<code>数据项、向下指针</code> 非叶子节点不存储真实数据,叶子节点才包含真实数据</p>
+<p>建立索引的效果 :</p>
+<p>​	提高查询性能,但是会降低增删改性能</p>
+<p>聚簇索引 : 主键索引</p>
+<p>非聚簇索引 : 非主键索引的其他索引</p>
+<h2 id="索引分类">索引分类</h2>
+<h3 id="单值索引">单值索引</h3>
+<p>一个索引只包含单个列,一个表可以有多个单值索引</p>
+<pre><code class="language-sq"># 创建索引
+CREATE INDEX idx_name ON table_name(column_name);
+# 删除索引
+</code></pre>
+<h3 id="唯一索引">唯一索引</h3>
+<p>索引对应列的值必须唯一,但可以为空</p>
+<pre><code class="language-sql"># 创建索引
+CREATE UNIQUE INDEX idx_name ON table_name(column_name);
+</code></pre>
+<h3 id="主键索引">主键索引</h3>
+<p>指定主键后数据库会自动建立索引,InnoDB存储引擎为聚簇索引</p>
+<pre><code class="language-sql"># 创建索引(可在建表时添加)
+ALTER TABLE table_name add PRIMARY KEY table_name(column_name);
+
+# 删除主键
+ALTER TABLE table_name drop PRIMARY KEY;
+
+# 修改主键索引
+(先删除,再添加)
+</code></pre>
+<h3 id="复合索引">复合索引</h3>
+<p>一个索引包含多个列</p>
+<pre><code class="language-sql"># 创建索引
+CREATE INDEX idx_name ON table_name(column_name,...,column_name);
+</code></pre>
+<h3 id="使用alter命令创建索引">使用ALTER命令创建索引</h3>
+<pre><code class="language-sql"># 该语句添加一个主键索引，这意味着索引值必须是唯一的，且不能为NULL。
+ALTER TABLE tbl_name ADD PRIMARY KEY (column_list);
+
+# 这条语句创建索引的值必须是唯一的（除了NULL外，NULL可能会出现多次）。
+ALTER TABLE tbl_name ADD UNIQUE index_name (column_list);
+
+# 添加普通索引，索引值可出现多次。
+ALTER TABLE tbl_name ADD INDEX index_name (column_list): 
+
+# 该语句指定了索引为 FULLTEXT ，用于全文索引。
+ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list):
+</code></pre>
+<h2 id="哪些情况需要创建索引">哪些情况需要创建索引</h2>
+<ol>
+<li>主键自动创建索引</li>
+<li>频繁作为查询条件的字段需要创建索引</li>
+<li>查询中与其他表关联的字段,外键关系创建索引</li>
+<li>单键/组合索引的选择,组合索引更好</li>
+<li>查询中排序的字段,排序字段通过索引访问能提高排序速度</li>
+<li>查询中统计或分组字段 (group by更消耗性能,因为是先进行排序(order by),然后再执行的分组(group by))</li>
+</ol>
+<h2 id="哪些情况不要穿建索引">哪些情况不要穿建索引</h2>
+<ol>
+<li>表记录过少</li>
+<li>经常在增删改的表或字段</li>
+<li>where条件用不到的字段不创建索引</li>
+<li>过滤型不好的不适合创建索引</li>
+</ol>
+<h2 id="建索引的几大原则">建索引的几大原则</h2>
+<ol>
+<li>
+<p>最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(&gt;、&lt;、between、like)就停止匹配，比如a = 1 and b = 2 and c &gt; 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。</p>
+</li>
+<li>
+<p>=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式。</p>
+</li>
+<li>
+<p>尽量选择区分度高的列作为索引，区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录。</p>
+</li>
+<li>
+<p>索引列不能参与计算，保持列“干净”，比如from_unixtime(create_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create_time = unix_timestamp(’2014-05-29’)。</p>
+</li>
+<li>
+<p>尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。</p>
+</li>
+</ol>
+<h2 id="explain">Explain</h2>
+<p>使用explain关键字可以模拟MySQL优化器执行SQL查询语句.</p>
+<p>作用:</p>
+<ol>
+<li>查看表的读取顺序</li>
+<li>那些索引可以使用</li>
+<li>数据读取操作的操作类型</li>
+<li>哪些索引被实际引用</li>
+<li>表之间的引用</li>
+<li>每张表有多少行被物理查询</li>
+</ol>
+<p>解释结果分析:</p>
+<ol>
+<li>
+<p><strong>id</strong> : id相同,代表一趟查询,按从上到下的顺序执行. id不相同,值越大,优先级越高,越先执行</p>
+</li>
+<li>
+<p><strong>select_type</strong> : 查询类型<code>SIMPLE: 简单查询</code>、 <code>PRIMARY: 最外层查询</code>、<code>DERIVED : 衍生查询,临时的</code>、<code>SUBQUERY : 包含了子查询</code></p>
+</li>
+<li>
+<p><strong>type</strong> : 访问类型<code>system&gt;const&gt;eq_ref&gt;ref&gt;range&gt;index&gt;ALL</code>,应该尽量避免出现<code>ALL</code>全表扫描</p>
+</li>
+<li>
+<p>possible_keys : 查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用</p>
+</li>
+<li>
+<p><strong>key</strong> : 实际起作用的索引,如果值为NULL,则没用上索引.查询中若使用了覆盖索引,则该索引和查询的select字段重叠</p>
+</li>
+<li>
+<p>key_len : 表示索引中使用的字节数,可以计算查询中使用索引的长度</p>
+</li>
+<li>
+<p>ref : 显示索引的哪一列被使用了</p>
+</li>
+<li>
+<p><strong>rows</strong> : 显示MySQL执行查询时必须检查的行数.</p>
+</li>
+<li>
+<p>filtered : 这个字段表示存储引擎返回的数据在server层过滤后，剩下多少满足查询的记录数量的比例，注意是百分比，不是具体记录数</p>
+</li>
+<li>
+<p>Extra : 额外信息.</p>
+</li>
+</ol>
 ]]></content>
     </entry>
 </feed>

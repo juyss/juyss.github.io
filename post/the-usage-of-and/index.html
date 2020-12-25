@@ -9,7 +9,7 @@
 <meta name="description" content="记录自己的Java学习过程">
 <meta name="theme-color" content="#074181">
 <title>The usage of &#34;/&#34; and &#34;%&#34; | Juyss&#39;s Blog</title>
-<link rel="shortcut icon" href="/favicon.ico?v=1596985493242">
+<link rel="shortcut icon" href="/favicon.ico?v=1608889670529">
 <link rel="stylesheet" href="/media/css/gemini.css">
 <link rel="stylesheet" href="/media/fonts/font-awesome.css">
 <link
@@ -201,19 +201,19 @@
     <div class="sidebar-item-box">
       <a href="/archives/">
         
-        <span class="site-item-stat-count">28</span>
+        <span class="site-item-stat-count">50</span>
         <span class="site-item-stat-name language" data-lan="article">文章</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="">
-        <span class="site-item-stat-count">14</span>
+        <span class="site-item-stat-count">25</span>
         <span class="site-item-stat-name language" data-lan="category">分类</span>
       </a>
     </div>
     <div class="sidebar-item-box">
       <a href="/tags/">
-        <span class="site-item-stat-count">14</span>
+        <span class="site-item-stat-count">25</span>
         <span class="site-item-stat-name language" data-lan="tag">标签</span>
       </a>
     </div>
@@ -1419,8 +1419,2263 @@ It can get the last digit of a number with &quot;%10&quot;.</p>
     <div class="result" id="result">
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/rabbitmq/"" data-c="
+          &lt;h1 id=&#34;rabbitmq&#34;&gt;RabbitMQ&lt;/h1&gt;
+&lt;p&gt;RabbitMQ是基于AMQP的一款消息管理系统。AMQP&lt;code&gt;(Advanced Message Queuing Protocol)&lt;/code&gt;，是一个提供消息服务的应用层标准高级消息队列协议，其中RabbitMQ就是基于这种协议的一种实现。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;rabbitmq五种常见的消息模型&#34;&gt;RabbitMQ五种常见的消息模型&lt;/h2&gt;
+&lt;p&gt;（基于SpringBoot项目）&lt;/p&gt;
+&lt;h3 id=&#34;消息生产者&#34;&gt;消息生产者&lt;/h3&gt;
+&lt;p&gt;包含五种消息类型的发送代码&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;引入依赖pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-starter-amqp&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-starter-web&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;application.yml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;server:
+  port: 5673 # 服务端口号
+
+spring:
+  application:
+    name: rabbitmq-provider # 服务名
+  # rabbitmq 相关配置
+  rabbitmq:
+    host: 192.168.112.133 
+    port: 5672
+    username: user
+    password: 102850
+    virtual-host: /host-1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;代码部分&lt;/p&gt;
+&lt;p&gt;service接口&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MessageSender
+ * @Desc:
+ * @package com.juyss.service
+ * @project RabbitMQ
+ * @date 2020/11/23 14:08
+ */
+public interface MessageSender {
+
+    /**
+     * 发送消息
+     * Direct模式 : 一对一
+     * Work queues模式 : 一对多
+     * @param msg 请求传入的消息
+     */
+    void sendMessage(String msg);
+
+    /**
+     * Publish/Subscribe示例
+     * 交换机类型为fanout
+     * @param msg 消息
+     */
+    void fanout(String msg);
+
+    /**
+     * Routing示例
+     * 交换机类型为direct(默认)
+     * @param msg 消息
+     * @param routeKey 路由key
+     */
+    void routing(String msg,String routeKey);
+
+    /**
+     * Topic示例
+     * 按路由key匹配
+     * @param msg 消息
+     * @param routeKey 路由key
+     */
+    void topic(String msg,String routeKey);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;service实现类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MessageSenderImpl
+ * @Desc:
+ * @package com.juyss.service.impl
+ * @project RabbitMQ
+ * @date 2020/11/23 14:10
+ */
+@Service
+public class MessageSenderImpl implements MessageSender {
+
+    private final RabbitTemplate template;
+
+    @Autowired
+    public MessageSenderImpl(RabbitTemplate template) {
+        this.template = template;
+    }
+
+    /**
+     * 发送消息
+     * Direct模式 : 一对一
+     * Work queues模式 : 一对多
+     * @param msg 请求传入的消息
+     */
+    @Override
+    public void sendMessage(String msg) {
+        template.convertAndSend(&amp;quot;hello&amp;quot;,&amp;quot;消息提供者发送消息:&amp;quot;+msg);
+    }
+
+    /**
+     * Publish/Subscribe示例
+     * 交换机类型为fanout
+     *
+     * @param msg 消息
+     */
+    @Override
+    public void fanout(String msg) {
+        template.convertAndSend(&amp;quot;logs&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;消息提供者发送消息&amp;quot;+msg);
+    }
+
+    /**
+     * Routing示例
+     * 交换机类型为direct(默认)
+     *
+     * @param msg      消息
+     * @param routeKey 路由key
+     */
+    @Override
+    public void routing(String msg,String routeKey) {
+        template.convertAndSend(&amp;quot;routing&amp;quot;, routeKey, &amp;quot;消息提供者发送消息&amp;quot;+msg);
+    }
+
+    /**
+     * Topic示例
+     * 按路由key匹配
+     *
+     * @param msg      消息
+     * @param routeKey 路由key
+     */
+    @Override
+    public void topic(String msg, String routeKey) {
+        template.convertAndSend(&amp;quot;topic&amp;quot;,routeKey, &amp;quot;消息提供者发送消息&amp;quot;+msg);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;controller&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MsgController
+ * @Desc:
+ * @package com.juyss.controller
+ * @project RabbitMQ
+ * @date 2020/11/23 14:12
+ */
+@RestController
+public class MsgController {
+
+    @Autowired
+    private MessageSender sender;
+
+    @RequestMapping(&amp;quot;/&amp;quot;)
+    public String Hello(){
+        return &amp;quot;Hello,RabbitMQ&amp;quot;;
+    }
+
+    /**
+     * 提供者向队列发送消息,接受者从队列接收消息
+     * 1. 一对一发送消息 (Hello World示例)
+     * 2. 一对多发送消息,一个消息只能给一个接受者,公平分配 (Work Queues示例)
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&amp;quot;/send/{msg}&amp;quot;)
+    public String sendMsg(@PathVariable(&amp;quot;msg&amp;quot;)String msg){
+        sender.sendMessage(msg);
+        return &amp;quot;消息发送成功&amp;quot;+msg;
+    }
+
+    /**
+     * 提供者向交换机(exchange)发送消息,接收者从指定交换机找到消息队列获取消息
+     * 一对多同时发送,一个消息同时给多个接受者 (Publish/Subscribe示例)
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&amp;quot;/fanout/{msg}&amp;quot;)
+    public String sendFanoutMsg(@PathVariable(&amp;quot;msg&amp;quot;)String msg){
+        sender.fanout(msg);
+        return &amp;quot;消息发送成功&amp;quot;+msg;
+    }
+
+    /**
+     * 提供者向交换机(exchange)发送消息,同时指定路由key,然后接受者寻找指定交换机,判断路由key是否匹配,然后接受对应消息
+     * 一对多同时发送,一个消息可以给多个接受者,但是需要路由key匹配 (Routing示例)
+     * @param key 路由key
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&amp;quot;/route/{key}/{msg}&amp;quot;)
+    public String sendRouting(@PathVariable(&amp;quot;key&amp;quot;)String key,
+                              @PathVariable(&amp;quot;msg&amp;quot;)String msg){
+        sender.routing(msg,key);
+        return &amp;quot;消息发送成功&amp;quot;+msg;
+    }
+
+    /**
+     * 提供者向交换机发送消息,指定路由key,一般由两个以上字段,然后接受者找到交换机,根据自己的路由key匹配规则,获取对应消息.
+     * @param key 路由key
+     * @param msg 消息
+     * @return String
+     */
+    @RequestMapping(&amp;quot;/topic/{key}/{msg}&amp;quot;)
+    public String sendTopic(@PathVariable(&amp;quot;key&amp;quot;)String key,
+                            @PathVariable(&amp;quot;msg&amp;quot;)String msg){
+        sender.routing(msg,key);
+        return &amp;quot;消息发送成功&amp;quot;+msg;
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;1-基本消息模型&#34;&gt;1. 基本消息模型&lt;/h3&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608361309360.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;生产者将消息发送到队列，消费者从队列中获取消息，队列是存储消息的缓冲区。&lt;/strong&gt;&lt;/p&gt;
+&lt;h4 id=&#34;消息消费者&#34;&gt;消息消费者&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;pom.xml 与生产者相同&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;application.yml&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;MessageReceiver.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MessageReceiver
+ * @Desc: 消费者接收消息
+ * @package com.juyss.rabbit
+ * @project RabbitMQ
+ * @date 2020/11/23 15:03
+ */
+@Component
+@RabbitListener(queuesToDeclare = @Queue(value = &amp;quot;hello&amp;quot;))
+public class MessageReceiver {
+
+    @RabbitHandler
+    public void receive(String msg) {
+        System.out.println(&amp;quot;消费者接收消息==============&amp;gt;&amp;quot;+msg);
+    }
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;2-工作队列模型work-queues&#34;&gt;2. 工作队列模型（Work queues）&lt;/h3&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;2&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608361322140.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;一个生产发送消息到队列，允许有多个消费者接收消息，但是一条消息只会被一个消费者获取。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;消息接收者代码部分&lt;/p&gt;
+&lt;p&gt;MessageReceive.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MsgConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 15:33
+ */
+@Component
+public class MsgConsumer {
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &amp;quot;hello&amp;quot;))
+    public void receiver1(String msg){
+        System.out.println(&amp;quot;消费者1接收消息==============&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &amp;quot;hello&amp;quot;))
+    public void receiver2(String msg){
+        System.out.println(&amp;quot;消费者2接收消息==============&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &amp;quot;hello&amp;quot;))
+    public void receiver3(String msg){
+        System.out.println(&amp;quot;消费者3接收消息==============&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = &amp;quot;hello&amp;quot;))
+    public void receiver4(String msg){
+        System.out.println(&amp;quot;消费者4接收消息==============&amp;gt;&amp;quot;+msg);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;3-订阅模式&#34;&gt;3. 订阅模式&lt;/h3&gt;
+&lt;h5 id=&#34;31-fanout广播&#34;&gt;3.1 Fanout（广播）&lt;/h5&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;3&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608361345771.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;交换机将消息发送到所有与之绑定的队列中去&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;消息接收者代码部分&lt;/p&gt;
+&lt;p&gt;MessageReceive.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: MsgConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 16:03
+ */
+@Component
+public class MsgConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &amp;quot;logs&amp;quot;,type = &amp;quot;fanout&amp;quot;))
+    })
+    public void receiver1(String msg){
+        System.out.println(&amp;quot;消费者1接收消息=====================&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &amp;quot;logs&amp;quot;,type = &amp;quot;fanout&amp;quot;))
+    })
+    public void receiver2(String msg){
+        System.out.println(&amp;quot;消费者2接收消息=====================&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &amp;quot;logs&amp;quot;,type = &amp;quot;fanout&amp;quot;))
+    })
+    public void receiver3(String msg){
+        System.out.println(&amp;quot;消费者3接收消息=====================&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,exchange = @Exchange(value = &amp;quot;logs&amp;quot;,type = &amp;quot;fanout&amp;quot;))
+    })
+    public void receiver4(String msg){
+        System.out.println(&amp;quot;消费者4接收消息=====================&amp;gt;&amp;quot;+msg);
+    }
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;32-direct-定向&#34;&gt;3.2  Direct （定向）&lt;/h5&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;4&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608361357882.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;交换机按照指定的Routing Key发送到匹配的队列中去&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;消息接收者代码部分&lt;/p&gt;
+&lt;p&gt;MessageReceive.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: RoutingConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 16:45
+ */
+@Component
+public class RoutingConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                          exchange = @Exchange(&amp;quot;routing&amp;quot;),
+                          key = {&amp;quot;debug&amp;quot;,&amp;quot;info&amp;quot;,&amp;quot;warning&amp;quot;,&amp;quot;error&amp;quot;})
+    })
+    public void routingReceiver1(String msg){
+        System.out.println(&amp;quot;Routing消费者1接收消息=================&amp;gt;&amp;quot;+msg);
+    }
+
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                          exchange = @Exchange(&amp;quot;routing&amp;quot;),
+                          key = {&amp;quot;error&amp;quot;})
+    })
+    public void routingReceiver2(String msg){
+        System.out.println(&amp;quot;Routing消费者2接收消息=================&amp;gt;&amp;quot;+msg);
+    }
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h5 id=&#34;33-topic-通配符&#34;&gt;3.3 Topic （通配符）&lt;/h5&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;5&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608361367342.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;与Direct大致相同，不同在于Routing Key可以根据通配符进行匹配&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;消息接收者代码部分&lt;/p&gt;
+&lt;p&gt;MessageReceive.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: TopicConsumer
+ * @Desc:
+ * @package com.juyss.rabbitmq
+ * @project RabbitMQ
+ * @date 2020/11/23 17:09
+ */
+@Component
+public class TopicConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                    exchange = @Exchange(value = &amp;quot;topic&amp;quot;,type = &amp;quot;topic&amp;quot;),
+                    key = {&amp;quot;user.*&amp;quot;,&amp;quot;admin.#&amp;quot;})
+    })
+    public void topicReceiver1(String msg){
+        System.out.println(&amp;quot;Topic消费者1接收消息====================&amp;gt;&amp;quot;+msg);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(value = @Queue,
+                    exchange = @Exchange(value = &amp;quot;topic&amp;quot;,type = &amp;quot;topic&amp;quot;),
+                    key = {&amp;quot;user.#&amp;quot;,&amp;quot;admin.*&amp;quot;})
+    })
+    public void topicReceiver2(String msg){
+        System.out.println(&amp;quot;Topic消费者2接收消息====================&amp;gt;&amp;quot;+msg);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+">RabbitMQ</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/sentinel/"" data-c="
+          &lt;h1 id=&#34;sentinel&#34;&gt;Sentinel&lt;/h1&gt;
+&lt;p&gt;Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从流量控制、熔断降级、系统自适应保护等多个维度来帮助您保障微服务的稳定性。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;使用总结&#34;&gt;使用总结:&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;提前启动Nacos注册中心&lt;code&gt;端口号:8848&lt;/code&gt;和Sentinel Dashboard服务&lt;code&gt;端口号: 8080&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;构建微服务项目,注册进入注册中心.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;配置Sentinel,微服务与DashBoard通过&lt;code&gt;端口:8719&lt;/code&gt;进行通讯,对微服务进行监控&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@SentinelResource&lt;/code&gt;表明某个方法为资源方法.可以指定属性&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;value&lt;/code&gt;:定义一个资源名称&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;fallback&lt;/code&gt;:定义一个回调方法,针对所有异常&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;fallbackClass&lt;/code&gt;:定义回调方法所在类,对应方法必须为&lt;code&gt;static&lt;/code&gt;,若不指定则为本类&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;blockHandler&lt;/code&gt;:定义处理 &lt;code&gt;BlockException&lt;/code&gt; 的函数名称,,会在原方法被限流/降级/系统保护的时候调用,&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;被标记的方法,正常执行时,不影响.当服务调用时抛出异常,则会调用&lt;code&gt;fallback&lt;/code&gt;定义的回调方法,当方法被降级限流或者熔断时,调用方法会抛出&lt;code&gt;BlockException&lt;/code&gt;,进而调用&lt;code&gt;blockHandler&lt;/code&gt;指定的方法.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;需要被流控的微服务&#34;&gt;需要被流控的微服务&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;导入依赖&lt;/p&gt;
+&lt;p&gt;pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!--SpringCloud alibaba nacos --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;com.alibaba.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-alibaba-nacos-discovery&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+		&amp;lt;!--SpringCloud alibaba sentinel-datasource-nacos 后续做持久化用到--&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;com.alibaba.csp&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;sentinel-datasource-nacos&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+        &amp;lt;!--SpringCloud alibaba sentinel --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;com.alibaba.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-alibaba-sentinel&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;application.yml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;server:
+  port: 8401 # 当前服务端口
+
+spring:
+  application:
+    name: cloudalibaba-sentinel-service
+  cloud:
+    # 注册中心配置
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #Nacos服务注册中心地址
+    # 流控配置
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #配置Sentinel dashboard地址
+        port: 8719 # 微服务和Sentinel dashboard通讯端口
+      datasource:
+        ds1: # 流控规则持久化数据源
+          nacos:
+            server-addr: localhost:8848
+            dataId: cloudalibaba-sentinel-service
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: &#39;*&#39;
+
+feign:
+  sentinel:
+    enabled: true # 激活Sentinel对Feign的支持
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;根据业务逻辑添加&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    // 资源方法
+	@GetMapping(&amp;quot;/byResource&amp;quot;)
+    @SentinelResource(value = &amp;quot;byResource&amp;quot;, blockHandler = &amp;quot;handleException&amp;quot;)
+    public CommonResult byResource() {
+        return new CommonResult(200, &amp;quot;按资源名称限流测试OK&amp;quot;, new Payment(2020L, &amp;quot;serial001&amp;quot;));
+    }
+
+	// 降级回调方法
+    public CommonResult handleException(BlockException exception) {
+        return new CommonResult(444, exception.getClass().getCanonicalName() + &amp;quot;\t 服务不可用&amp;quot;);
+    }
+
+	// 资源方法
+    @GetMapping(&amp;quot;/rateLimit/byUrl&amp;quot;)
+    @SentinelResource(value = &amp;quot;byUrl&amp;quot;)
+    public CommonResult byUrl() {
+        return new CommonResult(200, &amp;quot;按url限流测试OK&amp;quot;, new Payment(2020L, &amp;quot;serial002&amp;quot;));
+    }
+
+ 	//资源方法,指定了降级回调方法为另一个类
+    @GetMapping(&amp;quot;/rateLimit/customerBlockHandler&amp;quot;)
+    @SentinelResource(value = &amp;quot;customerBlockHandler&amp;quot;,
+            blockHandlerClass = CustomerBlockHandler.class,
+            blockHandler = &amp;quot;handlerException2&amp;quot;)
+    public CommonResult customerBlockHandler() {
+        return new CommonResult(200, &amp;quot;按客戶自定义&amp;quot;, new Payment(2020L, &amp;quot;serial003&amp;quot;));
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;CustomerBlockHandler.class&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class CustomerBlockHandler {
+    public static CommonResult handlerException(BlockException exception) {
+        return new CommonResult(4444, &amp;quot;按客戶自定义,global handlerException----1&amp;quot;);
+    }
+
+    public static CommonResult handlerException2(BlockException exception) {
+        return new CommonResult(4444, &amp;quot;按客戶自定义,global handlerException----2&amp;quot;);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+">Sentinel</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/ribbon/"" data-c="
+          &lt;h1 id=&#34;ribbon&#34;&gt;Ribbon&lt;/h1&gt;
+&lt;h2 id=&#34;核心组件irule&#34;&gt;核心组件IRule&lt;/h2&gt;
+&lt;h4 id=&#34;默认-轮询&#34;&gt;默认 : 轮询&lt;/h4&gt;
+&lt;p&gt;根据特定算法从服务列表选取一个要访问的服务&lt;/p&gt;
+&lt;p&gt;共有7种算法&lt;/p&gt;
+&lt;h4 id=&#34;替换方法&#34;&gt;替换方法&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;创建自定义配置类&lt;code&gt;@Configuration&lt;/code&gt;,注意不能放在&lt;code&gt;@ComponentScan&lt;/code&gt;所扫描的包下.即不能与&lt;code&gt;SpringBoot启动类&lt;/code&gt;同一个包&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package com.atguigu.myrule;
+
+import com.netflix.loadbalancer.IRule;
+import com.netflix.loadbalancer.RandomRule;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MySelfRule {
+
+    @Bean
+    public IRule myRule(){
+        return new RandomRule();//定义为随机
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类添加注解&lt;code&gt;@RibbanClient&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@SpringBootApplication
+@EnableEurekaClient
+@RibbonClient(name = &amp;quot;CLOUD-PAYMENT-SERVICE&amp;quot;, configuration = MySelfRule.class)
+public class OrderMain80 {
+       
+    public static void main(String[] args) {
+        SpringApplication.run(OrderMain80.class, args);
+    }
+       
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+">Ribbon</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/openfegin/"" data-c="
+          &lt;h1 id=&#34;openfeign&#34;&gt;OpenFeign&lt;/h1&gt;
+&lt;p&gt;（主要用在服务消费端）&lt;/p&gt;
+&lt;h2 id=&#34;service-consumer服务消费者&#34;&gt;Service-Consumer服务消费者&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;引入pom依赖&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Eurkea&lt;/code&gt;作为注册中心,引入&lt;code&gt;OpenFeign&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!--openfeign--&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-openfeign&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+        &amp;lt;!--eureka client--&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-netflix-eureka-client&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;配置application.yml , 和&lt;code&gt;OpenFeign&lt;/code&gt;关系不大,主要是配置注册服务和负载均衡、日志监控&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;eureka:
+  client:
+    register-with-eureka: false
+    service-url:
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/
+#设置feign客户端超时时间(OpenFeign默认支持ribbon)
+ribbon:
+#指的是建立连接所用的时间，适用于网络状况正常的情况下,两端连接所用的时间
+  ReadTimeout: 5000
+#指的是建立连接后从服务器读取到可用资源所用的时间
+  ConnectTimeout: 5000
+
+logging:
+  level:
+    # feign日志以什么级别监控哪个接口
+    com.atguigu.springcloud.service.PaymentFeignService: debug
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类添加注解&lt;code&gt;@EnableDiscoveryClient&lt;/code&gt;和&lt;code&gt;@EnableFeignClients&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;编写消费端接口,用于调取远程服务,方法声明&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Component
+@FeignClient(value = &amp;quot;CLOUD-PAYMENT-SERVICE&amp;quot;) //表明调用远程服务的名称
+public interface PaymentFeignService {
+    
+    @GetMapping(value = &amp;quot;/payment/get/{id}&amp;quot;) //对应远程服务的请求路径
+    CommonResult&amp;lt;Payment&amp;gt; getPaymentById(@PathVariable(&amp;quot;id&amp;quot;) Long id);
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;当程序调用此接口的方法时,Feign会自动去调用注册中心对应服务名称的对应请求路径的方法.并获得返回值作为此接口方法的返回值.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+">OpenFegin</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/nacos/"" data-c="
+          &lt;h1 id=&#34;naocs&#34;&gt;Naocs&lt;/h1&gt;
+&lt;h2 id=&#34;服务治理&#34;&gt;服务治理&lt;/h2&gt;
+&lt;h3 id=&#34;服务注册&#34;&gt;服务注册&lt;/h3&gt;
+&lt;h4 id=&#34;前提&#34;&gt;前提&lt;/h4&gt;
+&lt;p&gt;启动NacosServer服务注册中心&lt;/p&gt;
+&lt;p&gt;父工程引入依赖&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependencyManagement&amp;gt;
+    &amp;lt;dependencies&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;com.alibaba.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-alibaba-dependencies&amp;lt;/artifactId&amp;gt;
+            &amp;lt;version&amp;gt;2.2.3.RELEASE&amp;lt;/version&amp;gt;
+            &amp;lt;type&amp;gt;pom&amp;lt;/type&amp;gt;
+            &amp;lt;scope&amp;gt;import&amp;lt;/scope&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+    &amp;lt;/dependencies&amp;gt;
+&amp;lt;/dependencyManagement&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;服务提供者provider&#34;&gt;服务提供者（Provider）&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!--SpringCloud ailibaba nacos --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;com.alibaba.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-alibaba-nacos-discovery&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;application.yml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  application:
+    name: nacos-payment-provider # 服务名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 # 配置Nacos地址,注册中心地址
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: &#39;*&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@EnableDiscoveryClient //开启服务发现功能
+@SpringBootApplication
+public class PaymentMain9001 {
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentMain9001.class, args);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;业务类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@RestController
+public class PaymentController {
+    @Value(&amp;quot;${server.port}&amp;quot;)
+    private String serverPort;
+
+    @GetMapping(value = &amp;quot;/payment/nacos/{id}&amp;quot;)
+    public String getPayment(@PathVariable(&amp;quot;id&amp;quot;) Integer id) {
+        return &amp;quot;nacos registry, serverPort: &amp;quot; + serverPort + &amp;quot;\t id&amp;quot; + id;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;服务消费者consumer&#34;&gt;服务消费者（Consumer）&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!--SpringCloud ailibaba nacos --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;com.alibaba.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-alibaba-nacos-discovery&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;application.yml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  application:
+    name: nacos-order-consumer # 服务名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 # 注册中心地址
+
+
+#消费者将要去访问的微服务名称(注册成功进nacos的微服务提供者)
+service-url:
+  nacos-user-service: http://nacos-payment-provider
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;容器内注入RestTemplate,通过RestTemplate方式进行远程服务调用&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Configuration
+public class RestTemplateConfig
+{
+    @Bean
+    @LoadBalanced // 启用负载均衡
+    public RestTemplate getRestTemplate()
+    {
+        return new RestTemplate();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@EnableDiscoveryClient //开启服务发现
+@SpringBootApplication
+public class OrderNacosMain83 {
+    public static void main(String[] args) {
+        SpringApplication.run(OrderNacosMain83.class, args);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;业务类&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@RestController
+@Slf4j
+public class OrderNacosController
+{
+    @Resource
+    private RestTemplate restTemplate;
+
+    @Value(&amp;quot;${service-url.nacos-user-service}&amp;quot;)
+    private String serverURL;
+
+    @GetMapping(value = &amp;quot;/consumer/payment/nacos/{id}&amp;quot;)
+    public String paymentInfo(@PathVariable(&amp;quot;id&amp;quot;) Long id)
+    {
+        return restTemplate.getForObject(serverURL+&amp;quot;/payment/nacos/&amp;quot;+id,String.class);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;配置中心&#34;&gt;配置中心&lt;/h3&gt;
+&lt;h4 id=&#34;微服务配置&#34;&gt;微服务配置&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.alibaba.cloud&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-cloud-starter-alibaba-nacos-config&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;${latest.version}&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;bootstrap.yml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  application:
+    name: nacos-config-client
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #Nacos服务注册中心地址
+      config:
+        server-addr: localhost:8848 #Nacos作为配置中心地址
+        file-extension: yaml #指定yaml格式的配置
+        group: DEFAULT_GROUP # 默认为`default group`
+        namespace: public # 默认为`public`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;application.yml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  profiles: 
+    active: prod
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;业务类,添加&lt;code&gt;@RefreshScope&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@RestController
+@RefreshScope //支持Nacos的动态刷新功能。
+public class ConfigClientController {
+    
+    @Value(&amp;quot;${config.info}&amp;quot;)
+    private String configInfo;
+
+    @GetMapping(&amp;quot;/config/info&amp;quot;)
+    public String getConfigInfo() {
+        return configInfo;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;nacos控制台配置&#34;&gt;Nacos控制台配置&lt;/h4&gt;
+&lt;p&gt;Nacos配置管理页面添加文件&lt;/p&gt;
+&lt;p&gt;dataId完整格式 :&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;${prefix}-${spring.profiles.active}.${file-extension}&lt;/code&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;prefix&lt;/code&gt; 默认为 &lt;code&gt;spring.application.name&lt;/code&gt; 的值，也可以通过配置项 &lt;code&gt;spring.cloud.nacos.config.prefix&lt;/code&gt; 来配置&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;spring.profiles.active&lt;/code&gt; 即为当前环境对应的 &lt;code&gt;profile&lt;/code&gt;。 注意：当 &lt;code&gt;spring.profiles.active&lt;/code&gt; 为空时，对应的连接符 - 也将不存在，&lt;code&gt;dataId&lt;/code&gt; 的拼接格式变成 &lt;code&gt;${prefix}.${file-extension}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;file-exetension&lt;/code&gt; 为配置内容的数据格式，可以通过配置项 &lt;code&gt;spring.cloud.nacos.config.file-extension&lt;/code&gt; 来配置。目前只支持 &lt;code&gt;properties&lt;/code&gt; 和 &lt;code&gt;yaml&lt;/code&gt; 类型&lt;/li&gt;
+&lt;/ol&gt;
+">Nacos</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/hystrix/"" data-c="
+          &lt;h1 id=&#34;hystrix&#34;&gt;Hystrix&lt;/h1&gt;
+&lt;h2 id=&#34;重要概念&#34;&gt;重要概念&lt;/h2&gt;
+&lt;h3 id=&#34;服务降级fallback&#34;&gt;服务降级（fallback）&lt;/h3&gt;
+&lt;p&gt;某些服务不可用时&lt;code&gt;（服务超时、服务出现异常、服务熔断触发服务降级、线程池或信号量打满）&lt;/code&gt;，执行备用逻辑从故障服务中快速失败或快速返回，以保障主体业务不受影响&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h3 id=&#34;服务熔断circuit-breaker&#34;&gt;服务熔断（circuit breaker）&lt;/h3&gt;
+&lt;p&gt;应对雪崩效应的一种微服务链路保护机制.当某个微服务出现报错或者响应超时,会进行服务降级,进而熔断该服务的调用,快速返回错误响应.在一定时间后进行尝试调用,如果调用相应恢复正常,则恢复该服务的的调用链路&lt;/p&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
+&lt;p&gt;在配置了熔断器后,微服务调用过程中,微服务执行业务逻辑过程中响应超时或者程序错误,触发服务降级,执行降级方法.在一定时间内出现一定比率的服务调用错误后,熔断器打开,之后再发送的请求不执行业务逻辑,直接执行降级方法,返回错误响应.熔断器打开过程中,尽管微服务恢复正常,仍会直接调用降级方法.熔断持续时间过后,熔断器处于半开状态,尝试执行一次请求,调用正常的业务逻辑,若出错,则继续保持打开状态,如果调用成功,则关闭熔断,恢复调用链路,让请求执行正确的业务逻辑&lt;/p&gt;
+&lt;h2 id=&#34;微服务使用hystrix&#34;&gt;微服务使用Hystrix&lt;/h2&gt;
+&lt;p&gt;（Provider端或Consumer端都可配置）&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;引入依赖&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-netflix-hystrix&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;配置application.yml （无特殊配置）&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;feign:
+  hystrix:
+    enabled: true # 和OpenFegin一起使用需要配置此选项
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类添加&lt;code&gt;@EnableHystrix&lt;/code&gt;,启用&lt;code&gt;Hystrix&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;服务降级配置&#34;&gt;服务降级配置&lt;/h3&gt;
+&lt;h4 id=&#34;针对方法的服务降级&#34;&gt;针对方法的服务降级&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;添加&lt;code&gt;@HystrixCommand&lt;/code&gt;注解,配置注解属性&lt;code&gt;fallbackMethod&lt;/code&gt;,指定服务降级后执行的方法&lt;/li&gt;
+&lt;li&gt;配置注解属性&lt;code&gt;commandProperties&lt;/code&gt;,指定超时时间&lt;code&gt;@HystrixProperty(name = &amp;quot;execution.isolation.thread.timeoutInMilliseconds&amp;quot;, value = &amp;quot;3000&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;    @HystrixCommand(fallbackMethod = &amp;quot;paymentInfo_TimeOutHandler&amp;quot;, commandProperties = {
+            @HystrixProperty(name = &amp;quot;execution.isolation.thread.timeoutInMilliseconds&amp;quot;, value = &amp;quot;3000&amp;quot;)
+    })
+    public String paymentInfo_TimeOut(Integer id) {
+        int age = 10/0; //程序异常,触发降级
+        try {
+            TimeUnit.MILLISECONDS.sleep(5000); //响应超时,触发降级
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return &amp;quot;线程池:  &amp;quot; + Thread.currentThread().getName() + &amp;quot; id:  &amp;quot; + id + &amp;quot;\t&amp;quot; + &amp;quot;O(∩_∩)O哈哈~&amp;quot; + &amp;quot;  耗时(秒): &amp;quot;;
+    }
+
+    public String paymentInfo_TimeOutHandler(Integer id) {
+        return &amp;quot;线程池:  &amp;quot; + Thread.currentThread().getName() + &amp;quot;  8001系统繁忙或者运行报错，请稍后再试,id:  &amp;quot; + id + &amp;quot;\t&amp;quot; + &amp;quot;o(╥﹏╥)o&amp;quot;;
+    }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;当服务响应时间超过设定值,便会执行降级方法&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;针对全局的服务降级&#34;&gt;针对全局的服务降级&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;在类上添加注解&lt;code&gt;@DefaultProperties(defaultFallback = &amp;quot;payment_Global_FallbackMethod&amp;quot;)&lt;/code&gt;,指定全局降级方法&lt;/li&gt;
+&lt;li&gt;在需要降级的方法上添加注解&lt;code&gt;@HystrixCommand&lt;/code&gt;即可&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@RestController
+@Slf4j
+@DefaultProperties(defaultFallback = &amp;quot;payment_Global_FallbackMethod&amp;quot;)
+public class OrderHystirxController {
+    @Resource
+    private PaymentHystrixService paymentHystrixService;
+
+    @GetMapping(&amp;quot;/consumer/payment/hystrix/ok/{id}&amp;quot;)
+    public String paymentInfo_OK(@PathVariable(&amp;quot;id&amp;quot;) Integer id) {
+        return paymentHystrixService.paymentInfo_OK(id);
+    }
+
+    @GetMapping(&amp;quot;/consumer/payment/hystrix/timeout/{id}&amp;quot;)
+    @HystrixCommand
+    public String paymentInfo_TimeOut(@PathVariable(&amp;quot;id&amp;quot;) Integer id) {
+        int age = 10 / 0;
+        return paymentHystrixService.paymentInfo_TimeOut(id);
+    }
+
+    // 下面是全局fallback方法
+    public String payment_Global_FallbackMethod() {
+        return &amp;quot;Global异常处理信息，请稍后再试，/(ㄒoㄒ)/~~&amp;quot;;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;降级方法与业务逻辑解耦&#34;&gt;降级方法与业务逻辑解耦&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;服务消费者端远程调用接口的&lt;code&gt;@FeignClient&lt;/code&gt;注解,添加属性&lt;code&gt;fallback&lt;/code&gt;指向一个实现此接口的类&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;此实现类是实现接口的所有方法,作为服务降级的调用方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;调用远程服务的接口&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Component
+@FeignClient(value = &amp;quot;CLOUD-PROVIDER-HYSTRIX-PAYMENT&amp;quot;, fallback = PaymentFallbackService.class)
+public interface PaymentHystrixService {
+
+    @GetMapping(&amp;quot;/payment/hystrix/ok/{id}&amp;quot;)
+    String paymentInfo_OK(@PathVariable(&amp;quot;id&amp;quot;) Integer id);
+
+    @GetMapping(&amp;quot;/payment/hystrix/timeout/{id}&amp;quot;)
+    String paymentInfo_TimeOut(@PathVariable(&amp;quot;id&amp;quot;) Integer id);
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;接口实现类,实现方法作为服务降级方法,实现业务逻辑和服务降级的解耦&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Component
+public class PaymentFallbackService implements PaymentHystrixService {
+
+    @Override
+    public String paymentInfo_OK(Integer id) {
+        return &amp;quot;-----PaymentFallbackService fall back-paymentInfo_OK ,o(╥﹏╥)o&amp;quot;;
+    }
+
+    @Override
+    public String paymentInfo_TimeOut(Integer id) {
+        return &amp;quot;-----PaymentFallbackService fall back-paymentInfo_TimeOut ,o(╥﹏╥)o&amp;quot;;
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;服务熔断配置&#34;&gt;服务熔断配置&lt;/h3&gt;
+&lt;p&gt;配置服务熔断需在&lt;code&gt;@HystrixCommand&lt;/code&gt;添加属性&lt;code&gt;commandProperty&lt;/code&gt;的值,开启服务熔断&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;//=====服务熔断
+    @HystrixCommand(fallbackMethod = &amp;quot;paymentCircuitBreaker_fallback&amp;quot;, commandProperties = {
+            @HystrixProperty(name = &amp;quot;circuitBreaker.enabled&amp;quot;, value = &amp;quot;true&amp;quot;),// 是否开启断路器
+            @HystrixProperty(name = &amp;quot;circuitBreaker.requestVolumeThreshold&amp;quot;, value = &amp;quot;10&amp;quot;),// 请求次数
+            @HystrixProperty(name = &amp;quot;circuitBreaker.sleepWindowInMilliseconds&amp;quot;, value = &amp;quot;10000&amp;quot;), // 时间窗口期
+            @HystrixProperty(name = &amp;quot;circuitBreaker.errorThresholdPercentage&amp;quot;, value = &amp;quot;60&amp;quot;),// 失败率达到多少后跳闸
+    })
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;配置断路器开关&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@HystrixProperty(name = &amp;quot;circuitBreaker.enabled&amp;quot;, value = &amp;quot;true&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;请求总数阈值&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@HystrixProperty(name = &amp;quot;circuitBreaker.requestVolumeThreshold&amp;quot;, value = &amp;quot;10&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;快照时间窗&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@HystrixProperty(name = &amp;quot;circuitBreaker.sleepWindowInMilliseconds&amp;quot;, value = &amp;quot;10000&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;错误百分比阈值&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@HystrixProperty(name = &amp;quot;circuitBreaker.errorThresholdPercentage&amp;quot;, value = &amp;quot;60&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;断路器开启条件&#34;&gt;断路器开启条件&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;请求达到设定阈值数（默认10秒内超过20个请求次数）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;失败请求百分比达到设定值（默认10秒内超过50%请求失败）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;达到以上任意一种情况,断路器打开,并持续快照时间窗设定的时间,所有请求直接返回服务降级方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;快照时间窗过后（默认是5秒）,会尝试恢复请求,此时熔断器处于半开状态,如果响应错误,则重复1-3步骤,如果响应成功则关闭断路器,恢复服务调用链路.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;hystrixdashboard&#34;&gt;HystrixDashBoard&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;新建项目作为监控服务&lt;/li&gt;
+&lt;li&gt;引入依赖&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!--Hystrix服务监控Dashboard依赖--&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-cloud-starter-hystrix&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-cloud-starter-hystrix-dashboard&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;spring-boot-starter-actuator&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;启动类添加注解&lt;code&gt;@EnableHystrixDashBoard&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;被监听的服务提供者，都需要添加&lt;code&gt;spring-boot-starter-actuator&lt;/code&gt;依赖&lt;/li&gt;
+&lt;li&gt;启动访问本服务的&lt;code&gt;/hystrix&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;页面输入被监控的服务&lt;code&gt;/hystrix.stream&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+">Hystrix</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/eureka/"" data-c="
+          &lt;h1 id=&#34;eureka&#34;&gt;Eureka&lt;/h1&gt;
+&lt;h2 id=&#34;registry-center-注册中心&#34;&gt;Registry-Center 注册中心&lt;/h2&gt;
+&lt;h3 id=&#34;单机版&#34;&gt;单机版&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;导入依赖&lt;code&gt;reueka-server&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-netflix-eureka-server&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;application.yml&lt;/code&gt;配置文件&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  application:
+    name: eureka-registry-center # 注册中心服务名称
+
+server:
+  port: 8080 #微服务端口
+
+eureka:
+  instance:
+    hostname: 118.31.244.185 # 表明注册中心的IP地址
+    instance-id: provider8080 # 注册中心自定义显示服务名称
+    prefer-ip-address: true # 服务名称链接显示ip
+  server:
+  	# 确保注册中心中不可用的实例被及时的剔除,开发时设为false,上线应该为true
+    enableSelfPreservation: false 
+  client:
+    register-with-eureka: false # 不在注册中心注册自己
+    fetch-registry: false # 表示自己就是注册中心，职责是维护服务实例，并不需要去检索服务
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ # 注册中心url
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类配置&lt;/p&gt;
+&lt;p&gt;添加&lt;code&gt;@EnableEurekaServer&lt;/code&gt;注解启动&lt;code&gt;Eureka&lt;/code&gt; 注册中心服务&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;集群版&#34;&gt;集群版&lt;/h3&gt;
+&lt;p&gt;配置与单机版一致,只需修改&lt;code&gt;yml&lt;/code&gt;文件中的&lt;code&gt;defaultZone&lt;/code&gt;属性,添加除自己之外的其他注册中心的URL&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;defaultZone: http://another-server-ip:port/eureka/,http://another-server-ip:port/eureka/    #设置与eureka server交互的地址查询服务和注册服务都需要依赖这个地址,多个服务之间逗号分开
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;provider-服务提供者&#34;&gt;Provider 服务提供者&lt;/h2&gt;
+&lt;h3 id=&#34;单机版-2&#34;&gt;单机版&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;导入依赖&lt;code&gt;eureka-client&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+      &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+      &amp;lt;artifactId&amp;gt;spring-cloud-starter-netflix-eureka-client&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;application.yml&lt;/code&gt;配置文件&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  application:
+    name: service-provider # 注册中心应用名称
+
+server:
+  port: 8080 # 微服务端口
+
+eureka:
+  client:
+    register-with-eureka: true # 在注册中心注册自己
+    fetchRegistry: true # 需要去检索服务
+    service-url:
+      defaultZone: http://118.31.244.185:8080/eureka/
+  instance:
+    instance-id: provider8080 # 注册中心自定义显示服务名称
+    prefer-ip-address: true # 服务名称链接显示ip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类配置&lt;/p&gt;
+&lt;p&gt;添加&lt;code&gt;@EnableDiscoveryClient&lt;/code&gt;或&lt;code&gt;@EnableEurekaClient&lt;/code&gt;(只适用于&lt;code&gt;Erueka&lt;/code&gt;注册中心)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;集群版-2&#34;&gt;集群版&lt;/h3&gt;
+&lt;p&gt;配置与单机版一致,只需修改&lt;code&gt;yml&lt;/code&gt;文件中的&lt;code&gt;defaultZone&lt;/code&gt;属性,添加集群中所有的注册中心URL,之间逗号分隔即可&lt;/p&gt;
+&lt;h2 id=&#34;consumer-服务消费者&#34;&gt;Consumer 服务消费者&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;导入依赖&lt;code&gt;eureka-client&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+      &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+      &amp;lt;artifactId&amp;gt;spring-cloud-starter-netflix-eureka-client&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;application.yml&lt;/code&gt;配置文件&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;spring:
+  application:
+    name: service-consumer-user # 注册中心服务名称
+    
+server:
+  port: 8080 # 服务端口
+  
+eureka:
+  client:
+    register-with-eureka: true #在注册中心注册自己
+    fetchRegistry: true # 需要去检索服务
+    service-url:
+      defaultZone: http://118.31.244.185:8080/eureka/ #若注册中心为集群服务,需写多个注册中心地址
+  instance:
+  	instance-id: provider8080 # 注册中心自定义显示服务名称
+  	prefer-ip-address: true # 服务名称链接显示ip
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;添加配置类,向容器中注入&lt;code&gt;RestTemplate&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: BeanConfig
+ * @Desc:
+ * @package com.juyss.config
+ * @project HelloWorld
+ * @date 2020/10/29 21:39
+ */
+@SpringBootConfiguration
+public class BeanConfig {
+
+    @LoadBalanced // 开启集群负载均衡,如果服务提供者端配置了集群,不开启会报错
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;调用远程服务过程&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;在需要调用远程服务的&lt;code&gt;JavaBean&lt;/code&gt;中注入&lt;code&gt;RestTemplate&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;使用&lt;code&gt;RestTemplate.getForObject(String url, Class&amp;lt;T&amp;gt; responseType, Object... uriVariables)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;param --&amp;gt; url : 远程服务地址,&amp;quot;http://服务名称/controller映射路径/&amp;quot;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;param --&amp;gt; responseType: 远程服务返回值类型&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;例如&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Movie movie = restTemplate.getForObject(&amp;quot;http://service-provider/movie&amp;quot;,Movie.class);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;调用注册中心服务名为&lt;code&gt;service-provider&lt;/code&gt;的映射为&lt;code&gt;/movie&lt;/code&gt;的服务,返回值类型为&lt;code&gt;Movie.class&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主启动类配置&lt;/p&gt;
+&lt;p&gt;添加&lt;code&gt;@EnableDiscoveryClient&lt;/code&gt;或&lt;code&gt;@EnableEurekaClient&lt;/code&gt;(只适用于&lt;code&gt;Erueka&lt;/code&gt;注册中心)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;服务启动顺序&#34;&gt;服务启动顺序&lt;/h3&gt;
+&lt;p&gt;注册中心 ===&amp;gt; 服务提供者 ===&amp;gt; 服务消费者&lt;/p&gt;
+&lt;h3 id=&#34;eureka自我保护机制&#34;&gt;Eureka自我保护机制&lt;/h3&gt;
+&lt;h4 id=&#34;server端&#34;&gt;Server端&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;eureka:
+  server:
+  	# 确保注册中心中不可用的实例被及时的剔除,开发时设为false,上线应该为true
+    enableSelfPreservation: false 
+    # 清理无效节点的时间间隔,默认60000毫秒,即60秒
+    eviction-interval-timer-in-ms: 2000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;client端&#34;&gt;Client端&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;eureka:
+  instance:
+    # 客户端向服务端发送心跳的时间间隔,单位秒,默认30秒
+    lease-renewal-interval-in-seconds:  1
+    # 服务端收到客户端最后一次心跳的等待时间,单位秒,默认90秒,超时将剔除服务
+    lease-expiration-duration-in-seconds:  2
+&lt;/code&gt;&lt;/pre&gt;
+">Eureka</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/elasticsearch-zong-jie/"" data-c="
+          &lt;h1 id=&#34;elasticsearch&#34;&gt;Elasticsearch&lt;/h1&gt;
+&lt;p&gt;Elasticsearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎，基于RESTful web接口。&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;基本概念&#34;&gt;基本概念&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;index (索引)&lt;br&gt;
+相当于数据库中的库或者表&lt;br&gt;
+&lt;code&gt;ES-6后索引只允许存在一个type(文档类型),ES-7中不允许创建指定type,默认type为_doc,ES-8中移除type&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;mapping(映射)&lt;br&gt;
+相当于数据库中表的结构,比如说字段类型,或者表的属性.&lt;br&gt;
+mapping是对document的格式进行限制&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;document(文档)&lt;br&gt;
+相当于数据库中的一行数据,包含一个或多个存有数据的字段.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;field(字段)&lt;br&gt;
+相当于数据库中的字段,可以指定字段的数据类型或属性&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;索引操作&#34;&gt;索引操作&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 添加索引
+PUT /test
+PUT /dangdang
+
+# 查看索引
+GET /dangdang
+# 查看所有索引
+GET /_cat/indices?v
+
+# 删除索引
+DELETE /test
+DELETE /dangdang
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;映射操作&#34;&gt;映射操作&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 创建索引dangdang 映射字段 id name price detail
+PUT /dangdang
+{
+  &amp;quot;mappings&amp;quot;: {
+      &amp;quot;properties&amp;quot;: {
+        &amp;quot;id&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;integer&amp;quot;
+        },
+        &amp;quot;name&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;keyword&amp;quot;
+        },
+        &amp;quot;price&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;double&amp;quot;
+        },
+        &amp;quot;detail&amp;quot;: {
+          &amp;quot;type&amp;quot;: &amp;quot;text&amp;quot;
+        }
+      }
+  }
+}
+
+# 查看mapping
+GET /dangdang/_mapping
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;文档操作&#34;&gt;文档操作&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 插入一条文档(不指定`_id`,会默认生成一个)
+POST /dangdang/_doc/
+{
+  &amp;quot;id&amp;quot;: 1,
+  &amp;quot;name&amp;quot;:&amp;quot;java核心思想&amp;quot;,
+  &amp;quot;price&amp;quot;:21.21,
+  &amp;quot;detail&amp;quot;: &amp;quot;默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制&amp;quot;
+}
+
+# 插入一条文档(指定`_id`)
+POST /dangdang/_doc/{_id}
+{
+  &amp;quot;id&amp;quot;: 1,
+  &amp;quot;name&amp;quot;:&amp;quot;java核心思想2&amp;quot;,
+  &amp;quot;price&amp;quot;:21.212,
+  &amp;quot;detail&amp;quot;: &amp;quot;默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制2&amp;quot;
+}
+
+# 根据`_id`获取文档数据
+GET /dangdang/_doc/{_id}
+
+# 查询索引下的所有文档
+GET /dangdang/_search
+
+# 更新文档
+# 1.覆盖更新
+POST /dangdang/_doc/{_id}
+{
+  &amp;quot;id&amp;quot;: 1,
+  &amp;quot;name&amp;quot;:&amp;quot;java入门到入土&amp;quot;,
+  &amp;quot;price&amp;quot;:15.78,
+  &amp;quot;detail&amp;quot;: &amp;quot;使用的ES版本为7.2.0,不再支持创建指定类型,索引的默认类型为`_doc`&amp;quot;
+}
+# 2.部分更新
+POST /dangdang/_update/{_id}
+{
+  &amp;quot;doc&amp;quot;:{
+    &amp;quot;price&amp;quot;:44.44
+  }
+}
+
+
+# 删除文档
+DELETE /dangdang/_doc/{_id}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;文档查询&#34;&gt;文档查询&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# 查询文档
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;:{
+    &amp;quot;match_all&amp;quot;:{}
+  }
+}
+
+# 查询排序
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;: {
+    &amp;quot;match_all&amp;quot;: {}
+  }
+  , &amp;quot;sort&amp;quot;: [
+    {
+      &amp;quot;price&amp;quot;: {
+        &amp;quot;order&amp;quot;: &amp;quot;asc&amp;quot;
+      }
+    },
+    {
+      &amp;quot;name&amp;quot;: {
+        &amp;quot;order&amp;quot;: &amp;quot;desc&amp;quot;
+      }
+    }
+  ]
+}
+
+# 分页查询
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;: {
+    &amp;quot;match_all&amp;quot;: {}
+  },
+  &amp;quot;size&amp;quot;: 10,
+  &amp;quot;from&amp;quot;: 0,
+  &amp;quot;sort&amp;quot;: [
+    {
+      &amp;quot;id&amp;quot;: {
+        &amp;quot;order&amp;quot;: &amp;quot;desc&amp;quot;
+      }
+    }
+  ]
+}
+
+# 指定查询结果返回的字段 _source
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;: {
+    &amp;quot;match_all&amp;quot;: {}
+  },
+  &amp;quot;_source&amp;quot;: [&amp;quot;name&amp;quot;,&amp;quot;detail&amp;quot;]
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;# 关键词查询 term
+# text类型查询会进行分词,其他类型不分词
+# 英文按空格分词,中文按单字分词
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;: {
+    &amp;quot;term&amp;quot;: {
+      &amp;quot;name&amp;quot;: {
+        &amp;quot;value&amp;quot;: &amp;quot;java核心思想&amp;quot;
+      }
+    }
+  }
+}
+
+# 测试分词效果,可以指定分词器
+POST /dangdang/_analyze
+{
+  &amp;quot;analyzer&amp;quot;: &amp;quot;ik_smart&amp;quot;, 
+  &amp;quot;text&amp;quot;: &amp;quot;默认(MaxHeapFreeRatio参数可以调)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制&amp;quot;
+}
+
+# 范围查询:range 前缀查询:perfix
+# 通配符查询:wildcard  ?匹配一个字符 *匹配多个字符
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;: {
+    &amp;quot;range&amp;quot;: {
+      &amp;quot;price&amp;quot;: {
+        &amp;quot;gte&amp;quot;: 10,
+        &amp;quot;lte&amp;quot;: 50
+      }
+    }
+  }
+}
+
+# 高亮查询
+GET /dangdang/_search
+{
+  &amp;quot;query&amp;quot;: {
+    &amp;quot;term&amp;quot;: {
+      &amp;quot;detail&amp;quot;: {
+        &amp;quot;value&amp;quot;: &amp;quot;小&amp;quot;
+      }
+    }
+  },
+  &amp;quot;highlight&amp;quot;: {
+    &amp;quot;fields&amp;quot;: {
+      &amp;quot;detail&amp;quot;: {}
+    }, 
+    &amp;quot;pre_tags&amp;quot;: &amp;quot;&amp;lt;span style: red&amp;gt;&amp;quot;,
+    &amp;quot;post_tags&amp;quot;: &amp;quot;&amp;lt;/span&amp;gt;&amp;quot;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;java操作es&#34;&gt;Java操作ES&lt;/h1&gt;
+&lt;h2 id=&#34;springboot项目&#34;&gt;SpringBoot项目&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;引入依赖 pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!--引入ElasticSearch依赖--&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-starter-data-elasticsearch&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;容器中注入&lt;code&gt;RestHighLevelClient&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Configuration
+public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
+
+    @Override
+    @Bean
+    public RestHighLevelClient elasticsearchClient() {
+        // 定义客户端配置对象 9200端口
+        final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+                // 9200 : Restful风格调用端口 , 9300 : tcp端口
+                .connectedTo(&amp;quot;192.168.112.133:9200&amp;quot;)
+                .build();
+
+        return RestClients.create(clientConfiguration).rest();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;实体类注解配置&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Document(indexName = &amp;quot;moti-blog&amp;quot;)
+public class Article{
+
+    /**
+    * 文章的主键ID
+    */
+    @Id
+    private Integer id;
+
+    /**
+    * 文章标题
+    */
+    @Field(type = FieldType.Text,analyzer = &amp;quot;ik_max_word&amp;quot;)
+    private String title;
+
+    /**
+    * 正文
+    */
+    @Field(type = FieldType.Text,analyzer = &amp;quot;ik_max_word&amp;quot;)
+    private Object content;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;注解说明:The following annotations are available:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;@Document&lt;/code&gt;: Applied at the class level to indicate this class is a candidate for mapping to the database. The most important attributes are:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;indexName&lt;/code&gt;: the name of the index to store this entity in. This can contain a SpEL template expression like &lt;code&gt;&amp;quot;log-#{T(java.time.LocalDate).now().toString()}&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt;: the mapping type. If not set, the lowercased simple name of the class is used. (deprecated since version 4.0)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;shards&lt;/code&gt;: the number of shards for the index.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;replicas&lt;/code&gt;: the number of replicas for the index.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;refreshIntervall&lt;/code&gt;: Refresh interval for the index. Used for index creation. Default value is &lt;em&gt;&amp;quot;1s&amp;quot;&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;indexStoreType&lt;/code&gt;: Index storage type for the index. Used for index creation. Default value is &lt;em&gt;&amp;quot;fs&amp;quot;&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;createIndex&lt;/code&gt;: flag whether to create an index on repository bootstrapping. Default value is &lt;em&gt;true&lt;/em&gt;. See &lt;a href=&#34;https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#elasticsearch.repositories.autocreation&#34;&gt;Automatic creation of indices with the corresponding mapping&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;versionType&lt;/code&gt;: Configuration of version management. Default value is &lt;em&gt;EXTERNAL&lt;/em&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@Id&lt;/code&gt;: Applied at the field level to mark the field used for identity purpose.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@Transient&lt;/code&gt;: By default all fields are mapped to the document when it is stored or retrieved, this annotation excludes the field.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@PersistenceConstructor&lt;/code&gt;: Marks a given constructor - even a package protected one - to use when instantiating the object from the database. Constructor arguments are mapped by name to the key values in the retrieved Document.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@Field&lt;/code&gt;: Applied at the field level and defines properties of the field, most of the attributes map to the respective &lt;a href=&#34;https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html&#34;&gt;Elasticsearch Mapping&lt;/a&gt; definitions (the following list is not complete, check the annotation Javadoc for a complete reference):
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;name&lt;/code&gt;: The name of the field as it will be represented in the Elasticsearch document, if not set, the Java field name is used.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt;: the field type, can be one of &lt;em&gt;Text, Keyword, Long, Integer, Short, Byte, Double, Float, Half_Float, Scaled_Float, Date, Date_Nanos, Boolean, Binary, Integer_Range, Float_Range, Long_Range, Double_Range, Date_Range, Ip_Range, Object, Nested, Ip, TokenCount, Percolator, Flattened, Search_As_You_Type&lt;/em&gt;. See &lt;a href=&#34;https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html&#34;&gt;Elasticsearch Mapping Types&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;format&lt;/code&gt; and &lt;code&gt;pattern&lt;/code&gt; definitions for the &lt;em&gt;Date&lt;/em&gt; type. &lt;code&gt;format&lt;/code&gt; must be defined for date types.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;store&lt;/code&gt;: Flag whether the original field value should be store in Elasticsearch, default value is &lt;em&gt;false&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;analyzer&lt;/code&gt;, &lt;code&gt;searchAnalyzer&lt;/code&gt;, &lt;code&gt;normalizer&lt;/code&gt; for specifying custom analyzers and normalizer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@GeoPoint&lt;/code&gt;: marks a field as &lt;em&gt;geo_point&lt;/em&gt; datatype. Can be omitted if the field is an instance of the &lt;code&gt;GeoPoint&lt;/code&gt; class.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;resthighlevelclient-api&#34;&gt;RestHighLevelClient API&lt;/h2&gt;
+">Elasticsearch总结</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/zookeeper/"" data-c="
+          &lt;h1 id=&#34;zookeeper&#34;&gt;Zookeeper&lt;/h1&gt;
+&lt;h2 id=&#34;zookeeper注册中心&#34;&gt;Zookeeper注册中心&lt;/h2&gt;
+&lt;p&gt;启动&lt;code&gt;zookeeper&lt;/code&gt;注册中心&lt;/p&gt;
+&lt;h2 id=&#34;service-provider-服务提供者&#34;&gt;Service-provider 服务提供者&lt;/h2&gt;
+&lt;h4 id=&#34;引入zookeeper依赖&#34;&gt;引入zookeeper依赖&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!-- SpringBoot整合zookeeper客户端 --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-zookeeper-discovery&amp;lt;/artifactId&amp;gt;
+            &amp;lt;!--先排除自带的zookeeper3.5.3--&amp;gt;
+            &amp;lt;exclusions&amp;gt;
+                &amp;lt;exclusion&amp;gt;
+                    &amp;lt;groupId&amp;gt;org.apache.zookeeper&amp;lt;/groupId&amp;gt;
+                    &amp;lt;artifactId&amp;gt;zookeeper&amp;lt;/artifactId&amp;gt;
+                &amp;lt;/exclusion&amp;gt;
+            &amp;lt;/exclusions&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+        &amp;lt;!--添加zookeeper3.6.9版本--&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.apache.zookeeper&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;zookeeper&amp;lt;/artifactId&amp;gt;
+            &amp;lt;version&amp;gt;3.6.2&amp;lt;/version&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;配置applicationyml&#34;&gt;配置application.yml&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;#8004表示注册到zookeeper服务器的支付服务提供者端口号
+server:
+  port: 8004
+
+spring:
+  application:
+    # 服务别名----注册到zookeeper注册中心的名称
+    name: cloud-provider-payment
+  cloud:
+    zookeeper:
+      # 注册中心地址
+      connect-string: 192.168.112.133:2181
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;主启动类配置&#34;&gt;主启动类配置&lt;/h4&gt;
+&lt;p&gt;添加注解&lt;code&gt;@EnableDiscoveryClient&lt;/code&gt; , 该注解用于向使用consul或者zookeeper作为注册中心时注册服务&lt;/p&gt;
+&lt;h2 id=&#34;service-consumer-服务消费者&#34;&gt;Service-consumer 服务消费者&lt;/h2&gt;
+&lt;h4 id=&#34;引入zookeeper依赖-2&#34;&gt;引入zookeeper依赖&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!-- SpringBoot整合zookeeper客户端 --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-cloud-starter-zookeeper-discovery&amp;lt;/artifactId&amp;gt;
+            &amp;lt;!--先排除自带的zookeeper--&amp;gt;
+            &amp;lt;exclusions&amp;gt;
+                &amp;lt;exclusion&amp;gt;
+                    &amp;lt;groupId&amp;gt;org.apache.zookeeper&amp;lt;/groupId&amp;gt;
+                    &amp;lt;artifactId&amp;gt;zookeeper&amp;lt;/artifactId&amp;gt;
+                &amp;lt;/exclusion&amp;gt;
+            &amp;lt;/exclusions&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+        &amp;lt;!--添加zookeeper3.4.9版本--&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.apache.zookeeper&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;zookeeper&amp;lt;/artifactId&amp;gt;
+            &amp;lt;version&amp;gt;3.4.9&amp;lt;/version&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;配置applicationyml-2&#34;&gt;配置application.yml&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yml&#34;&gt;server:
+  port: 8005
+
+spring:
+  application:
+    # 服务别名----注册到zookeeper注册中心的名称
+    name: cloud-consumer-order
+  cloud:
+    zookeeper:
+      #注册到zookeeper地址
+      connect-string: 192.168.112.133:2181
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;注入resttemplate&#34;&gt;注入RestTemplate&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * @auther juyss
+ * @create 2020-02-19 15:20
+ */
+@Configuration
+public class ApplicationContextConfig {
+
+    @Bean
+    @LoadBalanced //开启负载均衡
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;主启动类配置-2&#34;&gt;主启动类配置&lt;/h4&gt;
+&lt;p&gt;添加注解&lt;code&gt;@EnableDiscoveryClient&lt;/code&gt; , 该注解用于向使用consul或者zookeeper作为注册中心时注册服务&lt;/p&gt;
+&lt;h4 id=&#34;远程调用服务&#34;&gt;远程调用服务&lt;/h4&gt;
+&lt;p&gt;通过&lt;code&gt;RestTemplate&lt;/code&gt;的&lt;code&gt;getObject()&lt;/code&gt;方法进行远程调用,传入参数&lt;code&gt;url&lt;/code&gt; ===&amp;gt;&lt;code&gt;http://注册中心的服务名称/请求映射&lt;/code&gt; ; 参数&lt;code&gt;responseType&lt;/code&gt;为远程服务的返回值的实例,通过这两个参数即可完成远程调用.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.Resource;
+
+/**
+ * @auther zzyy
+ * @create 2020-02-19 15:21
+ */
+@RestController
+@Slf4j
+public class OrderZKController {
+
+    public static final String INVOKE_URL = &amp;quot;http://cloud-provider-payment&amp;quot;; //提供者的地址
+
+    @Resource
+    private RestTemplate restTemplate;
+
+    @GetMapping(value = &amp;quot;/consumer/payment/zk&amp;quot;) //消费者请求映射
+    public String paymentInfo() {
+        return restTemplate.getForObject(INVOKE_URL + &amp;quot;/payment/zk&amp;quot;, String.class); //远程调用的服务映射
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+">ZooKeeper</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/suo-yin/"" data-c="
+          &lt;h1 id=&#34;索引&#34;&gt;索引&lt;/h1&gt;
+&lt;p&gt;索引就是数据结构&lt;/p&gt;
+&lt;p&gt;Tree:&lt;/p&gt;
+&lt;p&gt;​	B Tree : 一个节点(磁盘块)包含&lt;code&gt;数据项、向下指针、指向数据的指针&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;​	B+ Tree : 一个节点(磁盘块)包含&lt;code&gt;数据项、向下指针&lt;/code&gt; 非叶子节点不存储真实数据,叶子节点才包含真实数据&lt;/p&gt;
+&lt;p&gt;建立索引的效果 :&lt;/p&gt;
+&lt;p&gt;​	提高查询性能,但是会降低增删改性能&lt;/p&gt;
+&lt;p&gt;聚簇索引 : 主键索引&lt;/p&gt;
+&lt;p&gt;非聚簇索引 : 非主键索引的其他索引&lt;/p&gt;
+&lt;h2 id=&#34;索引分类&#34;&gt;索引分类&lt;/h2&gt;
+&lt;h3 id=&#34;单值索引&#34;&gt;单值索引&lt;/h3&gt;
+&lt;p&gt;一个索引只包含单个列,一个表可以有多个单值索引&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sq&#34;&gt;# 创建索引
+CREATE INDEX idx_name ON table_name(column_name);
+# 删除索引
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;唯一索引&#34;&gt;唯一索引&lt;/h3&gt;
+&lt;p&gt;索引对应列的值必须唯一,但可以为空&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;# 创建索引
+CREATE UNIQUE INDEX idx_name ON table_name(column_name);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;主键索引&#34;&gt;主键索引&lt;/h3&gt;
+&lt;p&gt;指定主键后数据库会自动建立索引,InnoDB存储引擎为聚簇索引&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;# 创建索引(可在建表时添加)
+ALTER TABLE table_name add PRIMARY KEY table_name(column_name);
+
+# 删除主键
+ALTER TABLE table_name drop PRIMARY KEY;
+
+# 修改主键索引
+(先删除,再添加)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;复合索引&#34;&gt;复合索引&lt;/h3&gt;
+&lt;p&gt;一个索引包含多个列&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;# 创建索引
+CREATE INDEX idx_name ON table_name(column_name,...,column_name);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;使用alter命令创建索引&#34;&gt;使用ALTER命令创建索引&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;# 该语句添加一个主键索引，这意味着索引值必须是唯一的，且不能为NULL。
+ALTER TABLE tbl_name ADD PRIMARY KEY (column_list);
+
+# 这条语句创建索引的值必须是唯一的（除了NULL外，NULL可能会出现多次）。
+ALTER TABLE tbl_name ADD UNIQUE index_name (column_list);
+
+# 添加普通索引，索引值可出现多次。
+ALTER TABLE tbl_name ADD INDEX index_name (column_list): 
+
+# 该语句指定了索引为 FULLTEXT ，用于全文索引。
+ALTER TABLE tbl_name ADD FULLTEXT index_name (column_list):
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;哪些情况需要创建索引&#34;&gt;哪些情况需要创建索引&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;主键自动创建索引&lt;/li&gt;
+&lt;li&gt;频繁作为查询条件的字段需要创建索引&lt;/li&gt;
+&lt;li&gt;查询中与其他表关联的字段,外键关系创建索引&lt;/li&gt;
+&lt;li&gt;单键/组合索引的选择,组合索引更好&lt;/li&gt;
+&lt;li&gt;查询中排序的字段,排序字段通过索引访问能提高排序速度&lt;/li&gt;
+&lt;li&gt;查询中统计或分组字段 (group by更消耗性能,因为是先进行排序(order by),然后再执行的分组(group by))&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;哪些情况不要穿建索引&#34;&gt;哪些情况不要穿建索引&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;表记录过少&lt;/li&gt;
+&lt;li&gt;经常在增删改的表或字段&lt;/li&gt;
+&lt;li&gt;where条件用不到的字段不创建索引&lt;/li&gt;
+&lt;li&gt;过滤型不好的不适合创建索引&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;建索引的几大原则&#34;&gt;建索引的几大原则&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(&amp;gt;、&amp;lt;、between、like)就停止匹配，比如a = 1 and b = 2 and c &amp;gt; 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;尽量选择区分度高的列作为索引，区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;索引列不能参与计算，保持列“干净”，比如from_unixtime(create_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create_time = unix_timestamp(’2014-05-29’)。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;explain&#34;&gt;Explain&lt;/h2&gt;
+&lt;p&gt;使用explain关键字可以模拟MySQL优化器执行SQL查询语句.&lt;/p&gt;
+&lt;p&gt;作用:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;查看表的读取顺序&lt;/li&gt;
+&lt;li&gt;那些索引可以使用&lt;/li&gt;
+&lt;li&gt;数据读取操作的操作类型&lt;/li&gt;
+&lt;li&gt;哪些索引被实际引用&lt;/li&gt;
+&lt;li&gt;表之间的引用&lt;/li&gt;
+&lt;li&gt;每张表有多少行被物理查询&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;解释结果分析:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;id&lt;/strong&gt; : id相同,代表一趟查询,按从上到下的顺序执行. id不相同,值越大,优先级越高,越先执行&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;select_type&lt;/strong&gt; : 查询类型&lt;code&gt;SIMPLE: 简单查询&lt;/code&gt;、 &lt;code&gt;PRIMARY: 最外层查询&lt;/code&gt;、&lt;code&gt;DERIVED : 衍生查询,临时的&lt;/code&gt;、&lt;code&gt;SUBQUERY : 包含了子查询&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;type&lt;/strong&gt; : 访问类型&lt;code&gt;system&amp;gt;const&amp;gt;eq_ref&amp;gt;ref&amp;gt;range&amp;gt;index&amp;gt;ALL&lt;/code&gt;,应该尽量避免出现&lt;code&gt;ALL&lt;/code&gt;全表扫描&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;possible_keys : 查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;key&lt;/strong&gt; : 实际起作用的索引,如果值为NULL,则没用上索引.查询中若使用了覆盖索引,则该索引和查询的select字段重叠&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;key_len : 表示索引中使用的字节数,可以计算查询中使用索引的长度&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ref : 显示索引的哪一列被使用了&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;rows&lt;/strong&gt; : 显示MySQL执行查询时必须检查的行数.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;filtered : 这个字段表示存储引擎返回的数据在server层过滤后，剩下多少满足查询的记录数量的比例，注意是百分比，不是具体记录数&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Extra : 额外信息.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+">索引</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/springboot-shi-yong-aop-bian-cheng/"" data-c="
+          &lt;h1 id=&#34;aspect&#34;&gt;Aspect&lt;/h1&gt;
+&lt;p&gt;（与SpringBoot整合）&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;作用位置&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;try{
+	try{
+		@Around 前置环绕通知
+		@Before 前置通知
+		method.invoke(..);
+       }catch(){
+        @AfterThrowing 异常通知
+		throw.....;
+   }finally{
+		@After 后置通知
+   }
+	@AfterReturning 返回通知
+}finally{
+    @Around 后置环绕通知
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;执行流程&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;正常情况: @Around ==&amp;gt; @Before ==&amp;gt; 目标方法 ==&amp;gt; @After ==&amp;gt; @AfterReturning ==&amp;gt; @Around;&lt;/li&gt;
+&lt;li&gt;异常情况: @Around ==&amp;gt; @Before ==&amp;gt; 目标方法(出现异常) ==&amp;gt; @AfterThrowing ==&amp;gt; @After ==&amp;gt; @Around;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;同级通知优先级问题&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;添加@Order注解指定属性为优先级&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;此注解只能用在类上,不能用在方法上&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;代码演示&#34;&gt;代码演示&lt;/h3&gt;
+&lt;h4 id=&#34;1-引入aop依赖&#34;&gt;1. 引入aop依赖&lt;/h4&gt;
+&lt;p&gt;pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;        &amp;lt;!--    引入AOP依赖    --&amp;gt;
+        &amp;lt;dependency&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-starter-aop&amp;lt;/artifactId&amp;gt;
+        &amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;2-核心业务类&#34;&gt;2. 核心业务类&lt;/h4&gt;
+&lt;p&gt;Service层&lt;/p&gt;
+&lt;p&gt;UserService.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Service
+public class UserService {
+
+ public void service1(){
+     System.out.println(&amp;quot;Service-1-执行&amp;quot;);
+ }
+
+ public String service2(){
+     System.out.println(&amp;quot;Service-2-执行&amp;quot;);
+     //int i = 1/0;  //异常测试
+     return &amp;quot;Success!!!&amp;quot;;
+ }
+
+ public ArrayList&amp;lt;String&amp;gt; service3(String userName){
+     System.out.println(&amp;quot;Service-3-执行&amp;quot;);
+     ArrayList&amp;lt;String&amp;gt; list = new ArrayList&amp;lt;&amp;gt;();
+     list.add(&amp;quot;Service-3-执行成功!!!&amp;quot;);
+     list.add(userName);
+     return list;
+ }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;3-切面&#34;&gt;3. 切面&lt;/h4&gt;
+&lt;p&gt;MyAspect.java&lt;/p&gt;
+&lt;p&gt;注:一定要将切面作为Spring组件注入容器&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Component
+@Aspect
+public class MyAspect {
+
+    //定义切入点
+    @Pointcut(&amp;quot;within(com.juyss.service.*)&amp;quot;)
+    public void pointcut(){}
+
+    //环绕通知 ===&amp;gt; 正常情况执行在@Before和@After之前,如果执行过程中抛异常,只执行前置环绕通知,后置环绕不执行
+    @Around(value = &amp;quot;pointcut()&amp;quot;)
+    public Object around(ProceedingJoinPoint point){
+        System.out.println(&amp;quot;前置环绕通知!!!&amp;quot;);
+        Object proceed = null;
+        try {
+            System.out.println(&amp;quot;point.proceed()执行前----------------------------&amp;quot;);
+            Signature signature = point.getSignature();
+            System.out.println(&amp;quot;获取类名:&amp;quot;+signature.getName());
+            System.out.println(&amp;quot;point.proceed()执行前----------------------------&amp;quot;);
+            proceed = point.proceed();
+            System.out.println(&amp;quot;point.proceed()执行后----------------------------&amp;quot;);
+            System.out.println(&amp;quot;获取返回值:&amp;quot;+proceed);
+            System.out.println(&amp;quot;point.proceed()执行后----------------------------&amp;quot;);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        System.out.println(&amp;quot;后置环绕通知!!!&amp;quot;);
+        return proceed;
+    }
+
+    //前置通知 ===&amp;gt; 方法执行前
+    @Before(&amp;quot;pointcut()&amp;quot;)
+    public void before(){
+        System.out.println(&amp;quot;前置通知生效!!!&amp;quot;);
+    }
+
+    //返回通知 ===&amp;gt; 方法正常执行完后执行,可以获取返回值.如果方法执行过程中抛异常,则不会执行
+    @AfterReturning(value = &amp;quot;pointcut()&amp;quot;,returning = &amp;quot;returnValue&amp;quot;)
+    public void afterReturning(Object returnValue){
+        System.out.println(&amp;quot;返回通知生效!!! ------返回值:&amp;quot;+returnValue);
+    }
+
+    //后置通知 ===&amp;gt; 在finally代码块中执行,无论如何都会执行的通知
+    @After(&amp;quot;pointcut()&amp;quot;)
+    public void after(JoinPoint joinPoint){
+        Signature signature = joinPoint.getSignature();
+        System.out.println(&amp;quot;后置通知生效!!! ------ 方法名:&amp;quot;+signature.getName());
+    }
+
+    //异常通知 ===&amp;gt; 在执行过程中抛出异常时执行
+    @AfterThrowing(value = &amp;quot;pointcut()&amp;quot;,throwing = &amp;quot;e&amp;quot;)
+    public void afterThrowing(Exception e){
+        System.out.println(&amp;quot;异常通知生效!!! 异常信息:&amp;quot;+e.getMessage());
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;4-测试类&#34;&gt;4. 测试类&lt;/h4&gt;
+&lt;p&gt;AspectApplicationTests.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@SpringBootTest
+class AspectApplicationTests {
+
+    @Autowired
+    private UserService service;
+
+    @Test
+    public void Test(){
+        service.service1();
+        System.out.println(&amp;quot;************************************************************************&amp;quot;);
+        service.service2();
+        System.out.println(&amp;quot;************************************************************************&amp;quot;);
+        service.service3(&amp;quot;方法参数&amp;quot;);
+        System.out.println(&amp;quot;************************************************************************&amp;quot;);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;5-测试结果&#34;&gt;5. 测试结果&lt;/h4&gt;
+&lt;p&gt;正常运行时:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;前置环绕通知!!!
+point.proceed()执行前----------------------------
+获取类名:service1
+point.proceed()执行前----------------------------
+前置通知生效!!!
+Service-1-执行
+返回通知生效!!! ------返回值:null
+后置通知生效!!! ------ 方法名:service1
+point.proceed()执行后----------------------------
+获取返回值:null
+point.proceed()执行后----------------------------
+后置环绕通知!!!
+************************************************************************************************
+前置环绕通知!!!
+point.proceed()执行前----------------------------
+获取类名:service2
+point.proceed()执行前----------------------------
+前置通知生效!!!
+Service-2-执行
+返回通知生效!!! ------返回值:Success!!!
+后置通知生效!!! ------ 方法名:service2
+point.proceed()执行后----------------------------
+获取返回值:Success!!!
+point.proceed()执行后----------------------------
+后置环绕通知!!!
+************************************************************************************************
+前置环绕通知!!!
+point.proceed()执行前----------------------------
+获取类名:service3
+point.proceed()执行前----------------------------
+前置通知生效!!!
+Service-3-执行
+返回通知生效!!! ------返回值:[Service-3-执行成功!!!, 方法参数]
+后置通知生效!!! ------ 方法名:service3
+point.proceed()执行后----------------------------
+获取返回值:[Service-3-执行成功!!!, 方法参数]
+point.proceed()执行后----------------------------
+后置环绕通知!!!
+************************************************************************************************
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;方法运行抛出异常时&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;前置环绕通知!!!
+point.proceed()执行前----------------------------
+获取类名:service1
+point.proceed()执行前----------------------------
+前置通知生效!!!
+Service-1-执行
+返回通知生效!!! ------返回值:null
+后置通知生效!!! ------ 方法名:service1
+point.proceed()执行后----------------------------
+获取返回值:null
+point.proceed()执行后----------------------------
+后置环绕通知!!!
+************************************************************************************************
+前置环绕通知!!!
+point.proceed()执行前----------------------------
+获取类名:service2
+point.proceed()执行前----------------------------
+前置通知生效!!!
+Service-2-执行
+异常通知生效!!! 异常信息:/ by zero
+后置通知生效!!! ------ 方法名:service2
+java.lang.ArithmeticException: / by zero
+	at com.juyss.service.UserService.service2(UserService.java:25)
+	##############其他异常信息省略################
+后置环绕通知!!!
+************************************************************************************************
+前置环绕通知!!!
+point.proceed()执行前----------------------------
+获取类名:service3
+point.proceed()执行前----------------------------
+前置通知生效!!!
+Service-3-执行
+返回通知生效!!! ------返回值:[Service-3-执行成功!!!, 方法参数]
+后置通知生效!!! ------ 方法名:service3
+point.proceed()执行后----------------------------
+获取返回值:[Service-3-执行成功!!!, 方法参数]
+point.proceed()执行后----------------------------
+后置环绕通知!!!
+************************************************************************************************
+&lt;/code&gt;&lt;/pre&gt;
+">SpringBoot使用AOP编程</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/jwt-zheng-he-springboot/"" data-c="
+          &lt;h1 id=&#34;jwt&#34;&gt;JWT&lt;/h1&gt;
+&lt;p&gt;（整合SpringBoot）&lt;/p&gt;
+&lt;h3 id=&#34;1-引入依赖&#34;&gt;1. 引入依赖&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!--    引入JWT    --&amp;gt;
+&amp;lt;dependency&amp;gt;
+    &amp;lt;groupId&amp;gt;com.auth0&amp;lt;/groupId&amp;gt;
+    &amp;lt;artifactId&amp;gt;java-jwt&amp;lt;/artifactId&amp;gt;
+    &amp;lt;version&amp;gt;3.4.0&amp;lt;/version&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;2-编写工具类&#34;&gt;2. 编写工具类&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class JWTUtil {
+
+    // 用于JWT进行签名加密的秘钥
+    private static String SECRET = &amp;quot;code-duck-*%#@*!&amp;amp;&amp;quot;;
+
+    /**
+     * @Param: 传入需要设置的payload信息
+     * @return: 返回token
+     */
+    public static String generateToken(Map&amp;lt;String, String&amp;gt; map) {
+        JWTCreator.Builder builder = JWT.create();
+
+        // 将map内的信息传入JWT的payload中
+        map.forEach((k, v) -&amp;gt; {
+            builder.withClaim(k, v);
+        });
+
+        // 设置JWT令牌的过期时间为60
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.SECOND, 60);
+        builder.withExpiresAt(instance.getTime());
+
+        // 设置签名并返回token
+        return builder.sign(Algorithm.HMAC256(SECRET)).toString();
+    }
+
+    /**
+     * @Param: 传入token
+     * @return:
+     */
+    public static void verify(String token) {
+        JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
+    }
+
+    /**
+     * @Param: 传入token
+     * @return: 解密的token信息
+     */
+    public static DecodedJWT getTokenInfo(String token) {
+        return JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;3-准备项目测试环境&#34;&gt;3. 准备项目测试环境&lt;/h3&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608360846281.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;p&gt;编写&lt;code&gt;controller&lt;/code&gt;&lt;mark&gt;&amp;gt;&lt;code&gt;service&lt;/code&gt;&lt;/mark&gt;&amp;gt;&lt;code&gt;mapper&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;4-获取token&#34;&gt;4. 获取Token&lt;/h3&gt;
+&lt;p&gt;UserController.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@RestController
+@RequestMapping(&amp;quot;/user&amp;quot;)
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping(&amp;quot;/login&amp;quot;)
+    public Map&amp;lt;String,String&amp;gt; login(@RequestParam(&amp;quot;username&amp;quot;)String username,
+                                    @RequestParam(&amp;quot;password&amp;quot;)String password){
+
+        HashMap&amp;lt;String, String&amp;gt; result = new HashMap&amp;lt;&amp;gt;();
+
+        User user = userService.getUser(username);
+
+        //返回用户为空,则说明此用户名信息不存在
+        if (user==null){
+            result.put(&amp;quot;msg&amp;quot;, &amp;quot;用户不存在&amp;quot;);
+            return result;
+        }
+
+        //判断密码是否正确
+        if (!user.getPassword().equals(password)){
+            result.put(&amp;quot;msg&amp;quot;, &amp;quot;密码错误&amp;quot;);
+            return result;
+        }
+
+        //验证通过
+        HashMap&amp;lt;String, String&amp;gt; map = new HashMap&amp;lt;&amp;gt;();
+        map.put(&amp;quot;msg&amp;quot;,&amp;quot;success&amp;quot;);
+        map.put(&amp;quot;username&amp;quot;,username);
+        map.put(&amp;quot;role&amp;quot;,&amp;quot;admin&amp;quot;);
+
+        //生成token
+        String token = JwtUtils.generateToken(map);
+
+        result.put(&amp;quot;token&amp;quot;, token);
+
+        return result;
+    }
+
+    @RequestMapping(&amp;quot;/test&amp;quot;)
+    public String test(){
+
+        return &amp;quot;请求成功!!!&amp;quot;;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;5-编写拦截器&#34;&gt;5. 编写拦截器&lt;/h3&gt;
+&lt;p&gt;JwtInceptor.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;public class JwtInterceptor implements HandlerInterceptor {
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String token = request.getHeader(&amp;quot;token&amp;quot;);
+        HashMap&amp;lt;String, String&amp;gt; map = new HashMap&amp;lt;&amp;gt;();
+        try {
+            JwtUtils.verify(token);//验证令牌
+            return true;//放行请求
+        } catch (SignatureVerificationException e) {
+            e.printStackTrace();
+            map.put(&amp;quot;msg&amp;quot;, &amp;quot;无效签名!&amp;quot;);
+        } catch (TokenExpiredException e) {
+            e.printStackTrace();
+            map.put(&amp;quot;msg&amp;quot;, &amp;quot;token过期!&amp;quot;);
+        } catch (AlgorithmMismatchException e) {
+            e.printStackTrace();
+            map.put(&amp;quot;msg&amp;quot;, &amp;quot;token算法不一致!&amp;quot;);
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put(&amp;quot;msg&amp;quot;, &amp;quot;token无效!!&amp;quot;);
+        }
+        map.put(&amp;quot;code&amp;quot;, &amp;quot;403&amp;quot;);//设置状态
+        //将 map 转为json  jackson
+        String json = new ObjectMapper().writeValueAsString(map);
+        response.setContentType(&amp;quot;application/json;charset=UTF-8&amp;quot;);
+        response.getWriter().println(json); //前台返回数据
+        return false;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;6-注册mvc配置&#34;&gt;6. 注册MVC配置&lt;/h3&gt;
+&lt;p&gt;JwtInterceptorConfig.java&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Configuration
+public class JwtInterceptorConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new JwtInterceptor()) //注册自定义拦截器
+                .addPathPatterns(&amp;quot;/**&amp;quot;) //拦截所有路径
+                .excludePathPatterns(&amp;quot;/user/login&amp;quot;); //排除登陆请求
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+">JWT整合SpringBoot</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/ji-ben-shu-ju-lei-xing-zhuan-huan-yuan-ze/"" data-c="
-          &lt;p&gt;Java中七种基本数据类型相互之间的转换原则&lt;/p&gt;
+          &lt;p&gt;基本数据类型之间互相转换遵循的一些原则&lt;/p&gt;
 &lt;!-- more --&gt;
 &lt;p&gt;&lt;em&gt;(只讨论数值型,不包含布尔类型)&lt;/em&gt;&lt;/p&gt;
 &lt;h3 id=&#34;1-自动类型提升&#34;&gt;1. 自动类型提升&lt;/h3&gt;
@@ -1767,6 +4022,239 @@ public class MailSend {
 &lt;h4 id=&#34;功能-3&#34;&gt;功能&lt;/h4&gt;
 &lt;p&gt;接受请求 , 控制页面跳转 , 调用Service层处理数据&lt;/p&gt;
 ">MVC架构分析</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/innodb-he-myisam-de-qu-bie/"" data-c="
+          &lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;对比项&lt;/th&gt;
+&lt;th&gt;外键&lt;/th&gt;
+&lt;th&gt;事务&lt;/th&gt;
+&lt;th&gt;行表锁&lt;/th&gt;
+&lt;th&gt;缓存&lt;/th&gt;
+&lt;th&gt;关注点&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;MyISAM&lt;/td&gt;
+&lt;td&gt;不支持&lt;/td&gt;
+&lt;td&gt;不支持&lt;/td&gt;
+&lt;td&gt;表锁,直接锁住整张表&lt;/td&gt;
+&lt;td&gt;只缓存索引,不缓存数据&lt;/td&gt;
+&lt;td&gt;节省资源,消耗少&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;InnoDB&lt;/td&gt;
+&lt;td&gt;支持&lt;/td&gt;
+&lt;td&gt;支持&lt;/td&gt;
+&lt;td&gt;行锁(适合高并发,会发生死锁)&lt;/td&gt;
+&lt;td&gt;数据和索引都缓存&lt;/td&gt;
+&lt;td&gt;并发写,事务,消耗资源更大&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;引擎物理存储区别:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;MyIASM:	&lt;code&gt;.frm&lt;/code&gt;表结构定义文件&lt;/p&gt;
+&lt;p&gt;​				  &lt;code&gt;.MYD&lt;/code&gt;数据文件&lt;/p&gt;
+&lt;p&gt;​				 &lt;code&gt;.MYI&lt;/code&gt;索引文件&lt;/p&gt;
+&lt;p&gt;InnoDB:	只有一个&lt;code&gt;.frm&lt;/code&gt;文件&lt;/p&gt;
+">InnoDB和MyISAM的区别</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/springboot-zi-dong-pei-zhi-yuan-li/"" data-c="
+          &lt;h1 id=&#34;sprigboot自动配置原理&#34;&gt;SprigBoot自动配置原理&lt;/h1&gt;
+&lt;!-- more --&gt;
+&lt;p&gt;简要总结:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Spring Boot启动的时候会通过@EnableAutoConfiguration注解找到META-INF/spring.factories配置文件中的所有自动配置类，并对其进行加载，而这些自动配置类都是以AutoConfiguration结尾来命名的，它实际上就是一个JavaConfig形式的Spring容器配置类，它能通过以Properties结尾命名的类中取得在全局配置文件中配置的属性如：server.port，而XxxxProperties类是通过@ConfigurationProperties注解与全局配置文件中对应的属性进行绑定的。&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;自动配置流程&#34;&gt;自动配置流程&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;@SpringBootApplication
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;@SpringBootConfiguration ---表明这是一个配置类&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;@Configuration ---表明这是一个配置类&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@EnableAutoConfiguration ---开启自动配置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;@AtuoConfigurationPackages ---指示包含注释类的程序包应向AutoConfigurationPackages注册。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;@Import(AutoConfigurationPackages.Registrar.class) ---&amp;gt;静态内部类,用于储存导入的基本包&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@Import(AutoConfigurationImportSelector.class)   &lt;em&gt;重点&lt;/em&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;selectImports(AnnotationMetadata annotationMetadata){
+    ***
+    AutoConfigurationEntry autoConfigurationEntry = getAutoConfigurationEntry(autoConfigurationMetadata,
+				annotationMetadata);
+    ***
+}
+|
+|  调用
+V
+protected AutoConfigurationEntry getAutoConfigurationEntry(AutoConfigurationMetadata autoConfigurationMetadata,
+			AnnotationMetadata annotationMetadata) {
+     ***
+     List&amp;lt;String&amp;gt; configurations = getCandidateConfigurations(annotationMetadata, attributes);
+     ***
+ }
+|
+|  调用
+V
+protected List&amp;lt;String&amp;gt; getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
+	***
+	List&amp;lt;String&amp;gt; configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),
+				getBeanClassLoader());
+	***
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@ComponentScan ---&amp;gt;扫描当前类所在包及其子包&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;xxxautoconfiguration配置生效&#34;&gt;XxxAutoConfiguration配置生效&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;首先,要符合条件才能生效&lt;/p&gt;
+&lt;p&gt;以下为常见的条件注解&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@ConditionalOnBean：当容器里有指定的bean的条件下。
+
+@ConditionalOnMissingBean：当容器里不存在指定bean的条件下。
+
+@ConditionalOnClass：当类路径下有指定类的条件下。
+
+@ConditionalOnMissingClass：当类路径下不存在指定类的条件下。
+
+@ConditionalOnProperty：指定的属性是否有指定的值，比如@ConditionalOnProperties(prefix=”xxx.xxx”, value=”enable”, matchIfMissing=true)，代表当xxx.xxx为enable时条件的布尔值为true，如果没有设置的情况下也为true。
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@EnableConfigurationProperties(XxxProperties.calss)注解&lt;/p&gt;
+&lt;p&gt;开启配置属性,关联XxxProperties类,在这个类上，我们看到了一个非常熟悉的注解：&lt;strong&gt;@ConfigurationProperties&lt;/strong&gt;，它的作用就是从配置文件中绑定属性到对应的bean上，而**@EnableConfigurationProperties&lt;strong&gt;负责导入这个已经绑定了属性的bean到spring容器中（见上面截图）。那么所有其他的和这个类相关的属性都可以在全局配置文件中定义，也就是说，真正“限制”我们可以在全局配置文件中配置哪些属性的类就是这些&lt;/strong&gt;XxxxProperties**类，它与配置文件中定义的prefix关键字开头的一组属性是唯一对应的。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+">SpringBoot自动配置原理</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/xian-cheng-tong-bu-wen-ti/"" data-c="
+          &lt;h2 id=&#34;线程同步&#34;&gt;线程同步&lt;/h2&gt;
+&lt;h3 id=&#34;synchronized关键字&#34;&gt;synchronized关键字&lt;/h3&gt;
+&lt;h4 id=&#34;方式一同步代码块&#34;&gt;方式一:同步代码块&lt;/h4&gt;
+&lt;p&gt;把可能出现线程安全问题的代码包起来&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;synchronized(Object object){
+//同步的代码
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;同步监视器(锁):可以是任意一个对象,需要线程共用一把锁&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;继承Thread类的多线程可以使用&lt;code&gt;ClassName.class&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;实现Runnable接口的多线程可使用&lt;code&gt;this&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;方式二同步方法&#34;&gt;方式二:同步方法&lt;/h4&gt;
+&lt;p&gt;使用synchronized修饰方法&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;同步监视器(不需要显示声明): 非静态方法,默认为this&lt;/li&gt;
+&lt;li&gt;静态方法,同步监视器变为&lt;code&gt;ClassName.class&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+">线程同步问题</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/dan-li-mo-shi-shi-li-dai-ma/"" data-c="
+          &lt;p&gt;package singleton;&lt;/p&gt;
+&lt;p&gt;/**&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;@author ShmeBluk&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@version 1.0&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@ClassName: Singleton&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@Desc: 单例模式示例代码,&lt;code&gt;懒汉式&lt;/code&gt;和&lt;code&gt;饿汉式&lt;/code&gt;两种实现方式&lt;br&gt;
+懒汉式:&lt;br&gt;
+1. 延迟创建实例&lt;br&gt;
+饿汉式:&lt;br&gt;
+1. 提前创建实例&lt;br&gt;
+2. 线程安全&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@package singleton&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@project DailyDemo&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;@date 2020/7/26 18:45&lt;br&gt;
+*/&lt;br&gt;
+public class Singleton {&lt;br&gt;
+public static void main(String[] args) {&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; //饿汉式
+ Bank bank1 = Bank.getInstance();
+ Bank bank2 = Bank.getInstance();
+ System.out.println(bank1==bank2);
+
+ //懒汉式
+ Person person1 = Person.getInstance();
+ Person person2 = Person.getInstance();
+ System.out.println(person1==person2);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;}&lt;br&gt;
+}&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;//饿汉式&lt;br&gt;
+class Bank {&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;//1. 私有化类构造器
+private Bank() {
+}
+
+//2. 内部创建类的实例
+private static Bank instance = new Bank();
+
+//3. 提供公共的静态方法返回类的实例
+public static Bank getInstance() {
+    return instance;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;p&gt;//懒汉式&lt;br&gt;
+class Person {&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;//声明类的对象
+private static Person instance;
+
+//私有化构造器
+private Person() {
+}
+
+//提供静态方法获取实例
+public static Person getInstance() {
+    if (instance != null) {
+        instance = new Person();
+    }
+    return instance;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;
+">单例模式示例代码</a>
       </div>
       
       <div class="item">
@@ -2855,6 +5343,49 @@ commit;
       </div>
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/html-he-css/"" data-c="
+          &lt;h2 id=&#34;表单&#34;&gt;表单&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;form标签就是表单
+    input type=text     是文件输入框  value设置默认显示内容
+    input type=password 是密码输入框  value设置默认显示内容
+    input type=radio    是单选框    name属性可以对其进行分组   checked=&amp;quot;checked&amp;quot;表示默认选中
+    input type=checkbox 是复选框   checked=&amp;quot;checked&amp;quot;表示默认选中
+    input type=reset    是重置按钮      value属性修改按钮上的文本
+    input type=submit   是提交按钮      value属性修改按钮上的文本
+    input type=button   是按钮          value属性修改按钮上的文本
+    input type=file     是文件上传域
+    input type=hidden   是隐藏域    当我们要发送某些信息，而这些信息，不需要用户参与，就可以使用隐藏域（提交的时候同时发送给服务器）
+
+    select 标签是下拉列表框
+    option 标签是下拉列表框中的选项 selected=&amp;quot;selected&amp;quot;设置默认选中
+
+    textarea 表示多行文本输入框 （起始标签和结束标签中的内容是默认值）
+        rows 属性设置可以显示几行的高度
+        cols 属性设置每行可以显示几个字符宽度
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;    form标签是表单标签
+        action属性设置提交的服务器地址
+        method属性设置提交的方式GET(默认值)或POST
+
+    表单提交的时候，数据没有发送给服务器的三种情况：
+        1、表单项没有name属性值
+        2、单选、复选（下拉列表中的option标签）都需要添加value属性，以便发送给服务器
+        3、表单项不在提交的form标签中
+
+    GET请求的特点是：
+        1、浏览器地址栏中的地址是：action属性[+?+请求参数]
+            请求参数的格式是：name=value&amp;amp;name=value
+        2、不安全
+        3、它有数据长度的限制
+
+    POST请求的特点是：
+        1、浏览器地址栏中只有action属性值
+        2、相对于GET请求要安全
+        3、理论上没有数据长度的限制&lt;/code&gt;&lt;/pre&gt;
+">HTML和CSS</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/using-zergba-and-slider-widgets-to-control-virtual-and-physical-rgb-led/"" data-c="
           &lt;p&gt;This code will allow zeRGBa or individual Red Blue Green Sliders to control the colour of both a Virtual LED (vRGB LED) and any physical one connected to the device.&lt;/p&gt;
 &lt;!-- more --&gt;
@@ -3080,6 +5611,66 @@ void getTemp() {
       </div>
       
       <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/spring-zheng-he-mybatis/"" data-c="
+          &lt;h3 id=&#34;mybatis-springxml&#34;&gt;Mybatis-Spring.xml&lt;/h3&gt;
+&lt;!-- more --&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+       xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+       xmlns:context=&amp;quot;http://www.springframework.org/schema/context&amp;quot;
+       xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd&amp;quot;&amp;gt;
+
+    &amp;lt;context:property-placeholder location=&amp;quot;classpath:jdbc.properties&amp;quot;/&amp;gt;
+
+    &amp;lt;!-- 注册datasource --&amp;gt;
+    &amp;lt;bean name=&amp;quot;datasource&amp;quot; class=&amp;quot;org.springframework.jdbc.datasource.DriverManagerDataSource&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;${jdbc.username}&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;${jdbc.password}&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;driverClassName&amp;quot; value=&amp;quot;${jdbc.driver}&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;${jdbc.url}&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;!-- 注册SqlSessionFactory --&amp;gt;
+    &amp;lt;bean id=&amp;quot;sqlSessionFactory&amp;quot; class=&amp;quot;org.mybatis.spring.SqlSessionFactoryBean&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;dataSource&amp;quot; ref=&amp;quot;datasource&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;configLocation&amp;quot; value=&amp;quot;mybatis/mybatis-config.xml&amp;quot;/&amp;gt;
+        &amp;lt;property name=&amp;quot;mapperLocations&amp;quot; value=&amp;quot;mybatis/mapper/*.xml&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+    &amp;lt;!-- SqlSessionTemplate等同于SqlSession --&amp;gt;
+    &amp;lt;bean id=&amp;quot;sqlSessionTemplate&amp;quot; class=&amp;quot;org.mybatis.spring.SqlSessionTemplate&amp;quot;&amp;gt;
+        &amp;lt;!--     此类没有set方法,只能用构造器注入参数 --&amp;gt;
+        &amp;lt;constructor-arg index=&amp;quot;0&amp;quot; ref=&amp;quot;sqlSessionFactory&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;applicationcontextxml&#34;&gt;ApplicationContext.xml&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot;
+       xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+       xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&amp;quot;&amp;gt;
+
+    &amp;lt;import resource=&amp;quot;Mybatis-Spring.xml&amp;quot;/&amp;gt;
+
+&amp;lt;!--    注册UserMapperImpl --&amp;gt;
+    &amp;lt;bean id=&amp;quot;userMapperImpl&amp;quot; class=&amp;quot;com.juyss.mapper.impl.UserMapperImpl&amp;quot;&amp;gt;
+        &amp;lt;property name=&amp;quot;sqlSessionTemplate&amp;quot; ref=&amp;quot;sqlSessionTemplate&amp;quot;/&amp;gt;
+    &amp;lt;/bean&amp;gt;
+
+&amp;lt;/beans&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;jdbcproperties&#34;&gt;jdbc.properties&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-prop&#34;&gt;jdbc.driver=com.mysql.cj.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/mybatis?useSSL=true&amp;amp;serverTimezone=UTC&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8
+jdbc.username=
+jdbc.password=
+&lt;/code&gt;&lt;/pre&gt;
+">Spring整合Mybatis</a>
+      </div>
+      
+      <div class="item">
         <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/mysql/"" data-c="
           &lt;h2 id=&#34;mysql学习记录&#34;&gt;MySQL学习记录&lt;/h2&gt;
 &lt;p&gt;DDL : 数据库定义语句(Datebase Define Language)&lt;br&gt;
@@ -3209,6 +5800,526 @@ FROM dailytext.`cartoon` c RIGHT JOIN shmebluk.`person` p
 ON p.`name`=c.`name`; -- 可选择不同数据库的表连接,用 datebase.table_name 选择
 &lt;/code&gt;&lt;/pre&gt;
 ">MySQL</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/mybatis-xue-xi-bi-ji/"" data-c="
+          &lt;h2 id=&#34;基本入门&#34;&gt;基本入门&lt;/h2&gt;
+&lt;!-- more --&gt;
+&lt;h4 id=&#34;创建测试表&#34;&gt;创建测试表&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;CREATE DATABASE `mybatis`;
+
+USE `mybatis`;
+
+CREATE TABLE `user`(
+	`id` INT(20) NOT NULL,
+	`name` VARCHAR(30) DEFAULT NULL,
+	`pwd` VARCHAR(30) DEFAULT NULL,
+	PRIMARY KEY(`id`)
+
+)ENGINE=INNODB CHARSET=utf8;
+
+INSERT INTO `user` 
+(`id`,`name`,`pwd`)
+VALUES
+(1,&#39;狂神&#39;,&#39;123456&#39;),
+(2,&#39;张三&#39;,&#39;102850&#39;),
+(3,&#39;李四&#39;,&#39;000000&#39;);
+
+SELECT * FROM `user`;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;创建项目&#34;&gt;创建项目&lt;/h4&gt;
+&lt;h5 id=&#34;项目结构&#34;&gt;项目结构&lt;/h5&gt;
+&lt;figure data-type=&#34;image&#34; tabindex=&#34;1&#34;&gt;&lt;img src=&#34;https://juyss.github.io//post-images/1608355529266.png&#34; alt=&#34;&#34; loading=&#34;lazy&#34;&gt;&lt;/figure&gt;
+&lt;h6 id=&#34;userclass&#34;&gt;User.class&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: User
+ * @Desc:  实体类
+ * @package com.juyss.pojo
+ * @project Mybatis
+ * @date 2020/8/25 18:32
+ */
+public class User {
+
+    private int id;
+    private String name;
+    private String pwd;
+
+    public User() {
+    }
+
+    public User(int id, String name, String pwd) {
+        this.id = id;
+        this.name = name;
+        this.pwd = pwd;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    @Override
+    public String toString() {
+        return &amp;quot;User{&amp;quot; +
+                &amp;quot;id=&amp;quot; + id +
+                &amp;quot;, name=&#39;&amp;quot; + name + &#39;\&#39;&#39; +
+                &amp;quot;, pwd=&#39;&amp;quot; + pwd + &#39;\&#39;&#39; +
+                &#39;}&#39;;
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h6 id=&#34;mybatis-configxml&#34;&gt;mybatis-config.xml&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; ?&amp;gt;
+&amp;lt;!DOCTYPE configuration
+        PUBLIC &amp;quot;-//mybatis.org//DTD Config 3.0//EN&amp;quot;
+        &amp;quot;http://mybatis.org/dtd/mybatis-3-config.dtd&amp;quot;&amp;gt;
+&amp;lt;configuration&amp;gt;
+    
+&amp;lt;!--    日志实现:默认控制台打印--&amp;gt;   
+    &amp;lt;settings&amp;gt;
+        &amp;lt;setting name=&amp;quot;logImpl&amp;quot; value=&amp;quot;STDOUT_LOGGING&amp;quot;/&amp;gt;
+    &amp;lt;/settings&amp;gt;
+
+&amp;lt;!--    环境配置--&amp;gt;
+    &amp;lt;environments default=&amp;quot;development&amp;quot;&amp;gt;
+        &amp;lt;environment id=&amp;quot;development&amp;quot;&amp;gt;
+            &amp;lt;transactionManager type=&amp;quot;JDBC&amp;quot;/&amp;gt;
+            &amp;lt;dataSource type=&amp;quot;POOLED&amp;quot;&amp;gt;
+                &amp;lt;!--数据库配置信息--&amp;gt;
+                &amp;lt;property name=&amp;quot;driver&amp;quot; value=&amp;quot;com.mysql.cj.jdbc.Driver&amp;quot;/&amp;gt;
+                &amp;lt;property name=&amp;quot;url&amp;quot; value=&amp;quot;jdbc:mysql://localhost:3306/mybatis?useSSL=true&amp;amp;amp;serverTimezone=UTC&amp;amp;amp;useUnicode=true&amp;amp;amp;characterEncoding=UTF-8&amp;quot;/&amp;gt;
+                &amp;lt;property name=&amp;quot;username&amp;quot; value=&amp;quot;user04&amp;quot;/&amp;gt;
+                &amp;lt;property name=&amp;quot;password&amp;quot; value=&amp;quot;102850&amp;quot;/&amp;gt;
+            &amp;lt;/dataSource&amp;gt;
+        &amp;lt;/environment&amp;gt;
+    &amp;lt;/environments&amp;gt;
+
+&amp;lt;!--    映射配置文件--&amp;gt;
+    &amp;lt;mappers&amp;gt;
+        &amp;lt;mapper resource=&amp;quot;Mybatis/Mapper/UserMapper.xml&amp;quot; /&amp;gt;
+    &amp;lt;/mappers&amp;gt;
+
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h6 id=&#34;mybatisutilscalss&#34;&gt;MybatisUtils.calss&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+* @version 1.0
+ * @ClassName: MybatisUtils
+ * @Desc:  Mybatis工具类包
+ * @package com.juyss.util
+ * @project Mybatis
+ * @date 2020/8/25 18:02
+ */
+public class MybatisUtils {
+
+    /**
+     * 从SqlSessionFactory中可以获取SqlSession实例
+     */
+    private static SqlSessionFactory sqlSessionFactory;
+
+    //获取sqlSessionFactory对象
+    static{
+        try {
+            String resource = &amp;quot;Mybatis/mybatis-config.xml&amp;quot;;
+            InputStream is = Resources.getResourceAsStream(resource);
+            sqlSessionFactory = new SqlSessionFactoryBuilder().build(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取SqlSession对象
+     * @return SqlSession实例
+     */
+    public static SqlSession getSqlSession(){
+        return sqlSessionFactory.openSession();
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h6 id=&#34;usermapperclass&#34;&gt;UserMapper.class&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: UserMapper
+ * @Desc:  User数据库访问对象
+ * @package com.juyss.dao
+ * @project Mybatis
+ * @date 2020/8/25 18:34
+ */
+public interface UserMapper {
+
+    /**
+     * 获取用户列表
+     * @return List&amp;lt;User&amp;gt; 用户列表
+     */
+    List&amp;lt;User&amp;gt; getUserList();
+
+    /**
+     * 根据id查询用户
+     * @param id Integer 用户ID
+     * @return User 查询到的用户
+     */
+    User getUserById(int id);
+
+    /**
+     * 添加一个用户数据
+     * @param user
+     * @return
+     */
+    int insertUser(User user);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h6 id=&#34;usermapperxml&#34;&gt;UserMapper.xml&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; ?&amp;gt;
+&amp;lt;!DOCTYPE mapper
+        PUBLIC &amp;quot;-//mybatis.org//DTD Mapper 3.0//EN&amp;quot;
+        &amp;quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&amp;quot;&amp;gt;
+&amp;lt;!--namespace:绑定一个对应的DAO接口--&amp;gt;
+&amp;lt;!--id:接口方法名; resultType:返回值类型实体类--&amp;gt;
+&amp;lt;mapper namespace=&amp;quot;com.juyss.mapper.UserMapper&amp;quot;&amp;gt;
+
+&amp;lt;!--    获取用户列表--&amp;gt;
+    &amp;lt;select id=&amp;quot;getUserList&amp;quot; resultType=&amp;quot;com.juyss.pojo.User&amp;quot;&amp;gt;
+        select * from `mybatis`.`user`
+    &amp;lt;/select&amp;gt;
+
+&amp;lt;!--    根据id查询用户--&amp;gt;
+    &amp;lt;select id=&amp;quot;getUserById&amp;quot; parameterType=&amp;quot;int&amp;quot; resultType=&amp;quot;com.juyss.pojo.User&amp;quot;&amp;gt;
+        select * from `mybatis`.`user` where `id`=#{id}
+    &amp;lt;/select&amp;gt;
+
+&amp;lt;!--    添加一条数据--&amp;gt;
+    &amp;lt;insert id=&amp;quot;insertUser&amp;quot; parameterType=&amp;quot;com.juyss.pojo.User&amp;quot;&amp;gt;
+        insert into `mybatis`.`user` (`id`,`name`,`pwd`) values (#{id},#{name},#{pwd})
+    &amp;lt;/insert&amp;gt;
+
+&amp;lt;/mapper&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;测试&#34;&gt;测试&lt;/h4&gt;
+&lt;h6 id=&#34;usermappertestcalss&#34;&gt;UserMapperTest.calss&lt;/h6&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;/**
+ * @author ShmeBluk
+ * @version 1.0
+ * @ClassName: UserMapperTest
+ * @Desc:  UserDao测试类
+ * @package com.juyss.dao
+ * @project Mybatis
+ * @date 2020/8/25 19:34
+ */
+public class UserMapperTest {
+
+    @Test
+    public void getUserListTest(){
+        SqlSession sqlSession = null;
+        try {
+            //获取SqlSession对象
+            sqlSession = MybatisUtils.getSqlSession();
+
+            //方式一:getMapper()
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            List&amp;lt;User&amp;gt; userList = mapper.getUserList();
+            for (User user : userList) {
+                System.out.println(user);
+            }
+        } finally {
+            //关闭SqlSession
+            if (sqlSession!=null){
+                sqlSession.close();
+                System.out.println(&amp;quot;sqlSession关闭了&amp;quot;);
+            }
+        }
+    }
+
+    @Test
+    public void getUserByIdTest(){
+        SqlSession sqlSession = null;
+        try {
+            //获取SqlSession对象
+            sqlSession = MybatisUtils.getSqlSession();
+
+            //方式一:getMapper()
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            User user01 = mapper.getUserById(1);
+            User user02 = mapper.getUserById(2);
+            User user03 = mapper.getUserById(3);
+            System.out.println(user01);
+            System.out.println(user02);
+            System.out.println(user03);
+        } finally {
+            //关闭SqlSession
+            if (sqlSession!=null){
+                sqlSession.close();
+                System.out.println(&amp;quot;sqlSession关闭了&amp;quot;);
+            }
+        }
+    }
+
+    @Test
+    public void insertUserTest(){
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            int update = mapper.insertUser(new User(4, &amp;quot;哈哈&amp;quot;, &amp;quot;102850&amp;quot;));
+            System.out.println(update);
+            sqlSession.commit();
+        } finally {
+            if (sqlSession!=null){
+                System.out.println(&amp;quot;连接关闭&amp;quot;);
+                sqlSession.close();
+            }
+        }
+
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;配置&#34;&gt;配置&lt;/h2&gt;
+&lt;h3 id=&#34;类型别名typealiases&#34;&gt;类型别名（typeAliases）&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;类型别名是为 Java 类型设置一个短的名字。‘&lt;/li&gt;
+&lt;li&gt;存在的意义仅在于用来减少类完全限定名的冗余。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;    &amp;lt;!--可以给实体类起别名--&amp;gt;
+    &amp;lt;typeAliases&amp;gt;
+        &amp;lt;typeAlias type=&amp;quot;com.kuang.pojo.User&amp;quot; alias=&amp;quot;user&amp;quot;/&amp;gt;
+    &amp;lt;/typeAliases&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;也可以指定一个包名，MyBatis 会在包名下面搜索需要的 Java Bean，比如：&lt;/p&gt;
+&lt;p&gt;扫描实体类的包，它的默认别名就为这个类的 类名，首字母小写&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!--可以给实体类起别名--&amp;gt;
+&amp;lt;typeAliases&amp;gt;
+    &amp;lt;package name=&amp;quot;com.kuang.pojo&amp;quot;/&amp;gt;
+&amp;lt;/typeAliases&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;在实体类比较少的时候，使用第一种方式。&lt;/p&gt;
+&lt;p&gt;如果实体类十分多，建议使用第二种。&lt;/p&gt;
+&lt;p&gt;第一种可以DIY别名，第二种则·不行·，如果非要改，需要在实体上增加注解&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;@Alias(&amp;quot;user&amp;quot;)
+public class User {}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;映射器mappers&#34;&gt;映射器（mappers）&lt;/h3&gt;
+&lt;p&gt;MapperRegistry：注册绑定我们的Mapper文件；&lt;/p&gt;
+&lt;p&gt;方式一： 【推荐使用】&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!--每一个Mapper.XML都需要在Mybatis核心配置文件中注册！--&amp;gt;
+&amp;lt;mappers&amp;gt;
+    &amp;lt;mapper resource=&amp;quot;com/kuang/dao/UserMapper.xml&amp;quot;/&amp;gt;
+&amp;lt;/mappers&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;方式二：使用class文件绑定注册&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!--每一个Mapper.XML都需要在Mybatis核心配置文件中注册！--&amp;gt;
+&amp;lt;mappers&amp;gt;
+    &amp;lt;mapper class=&amp;quot;com.kuang.dao.UserMapper&amp;quot;/&amp;gt;
+&amp;lt;/mappers&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;注意点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;接口和他的Mapper配置文件必须同名！&lt;/li&gt;
+&lt;li&gt;接口和他的Mapper配置文件必须在同一个包下！&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;方式三：使用扫描包进行注入绑定&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;!--每一个Mapper.XML都需要在Mybatis核心配置文件中注册！--&amp;gt;
+&amp;lt;mappers&amp;gt;
+    &amp;lt;package name=&amp;quot;com.kuang.dao&amp;quot;/&amp;gt;
+&amp;lt;/mappers&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;注意点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;接口和他的Mapper配置文件必须同名！&lt;/li&gt;
+&lt;li&gt;接口和他的Mapper配置文件必须在同一个包下！&lt;/li&gt;
+&lt;/ul&gt;
+">Mybatis学习笔记</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/ji-ben-shu-ju-lei-xing-he-bao-zhuang-lei-hu-xiang-zhuan-huan/"" data-c="
+          &lt;h1 id=&#34;基本数据类型-包装类&#34;&gt;基本数据类型--&amp;gt;包装类&lt;/h1&gt;
+&lt;h3 id=&#34;调用包装类的构造器&#34;&gt;调用包装类的构造器&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;int i = 10;
+Integer integer = new Integer(i);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;boolean b = true;
+Boolean boolean1 = new Boolean(b);
+Boolean boolean2 = new Boolean(true); //true
+Boolean boolean3 = new Boolean(&amp;quot;True&amp;quot;); //true,不区分大小写
+Boolean boolean3 = new Boolean(&amp;quot;true123&amp;quot;); //false
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;包装类-基本数据类型&#34;&gt;包装类--&amp;gt;基本数据类型&lt;/h1&gt;
+&lt;h3 id=&#34;调用包装类的xxxvalue方法&#34;&gt;调用包装类的xxxValue()方法&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Integer integer = new Integer(10);
+int i = integer.intValue();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;自动装箱和自动拆箱&#34;&gt;自动装箱和自动拆箱&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;int i = 10;
+Integer integer = new Integer();
+integer = i; //自动装箱
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;基本数据类型-string&#34;&gt;基本数据类型&amp;lt;--&amp;gt;String&lt;/h1&gt;
+&lt;h3 id=&#34;基本数据类型-string-2&#34;&gt;基本数据类型--&amp;gt;String&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;调用String.valueof()方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;int i = 10;
+String s = String.valueOf(i); //&amp;quot;10&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;string-基本数据类型或包装类&#34;&gt;String--&amp;gt;基本数据类型或包装类&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;调用包装类的parseXxx()方法&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;String s = &amp;quot;10&amp;quot;;
+int i = Integer.parseInt(s); //10
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;一道面试题&#34;&gt;一道面试题&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Integer i = new Integer(1);
+Integer j = new Integer(1);
+System.out.println( i == j ); //false
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Integer i = 1;
+Integer j = 1;
+System.out.println( i == j ); //true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;Integer i = 128;
+Integer j = 128;
+System.out.println( i == j ); //false
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;解释:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Integer&lt;/code&gt;内部定义了&lt;code&gt;IntegerCache&lt;/code&gt;结构,定义了&lt;code&gt;Integer cache[]&lt;/code&gt;数组,保存了&lt;code&gt;-128~127&lt;/code&gt;区间内的整数.&lt;br&gt;
+如果使用自动装箱的方式&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;赋值范围在此区间内时,会直接使用对应元素,没有创建新的对象.(如第二段代码所示)&lt;/li&gt;
+&lt;li&gt;赋值范围在此区间外,才会创建新的对象.(如第三段代码所示)&lt;/li&gt;
+&lt;/ul&gt;
+">基本数据类型和包装类互相转换</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/he-equalsde-qu-bie/"" data-c="
+          &lt;p&gt;==和&lt;code&gt;equals&lt;/code&gt;的区别&lt;/p&gt;
+&lt;!-- more --&gt;
+&lt;h2 id=&#34;运算符&#34;&gt;== : 运算符&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;可以使用在基本数据类型变量和引用数据类型变量中&lt;/li&gt;
+&lt;li&gt;(1. 如果变量是基本数据类型,比较的是两个变量的数值是否相等(不一定类型要相等)&lt;br&gt;
+(2. 如果变量是引用数据类型,比较的是两个对象的地址值是否相同(两个引用指向同一对象)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;equals方法的使用&#34;&gt;equals()方法的使用&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;是一个方法,并非运算符.只适用于引用数据类型&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Object中&lt;code&gt;equals()&lt;/code&gt;和&lt;code&gt;==&lt;/code&gt;作用是相同的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果调用对象的&lt;code&gt;equals()&lt;/code&gt;,取决于此对象是否有重写&lt;code&gt;equals()&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;比如String、Date、File、包装类重写了&lt;code&gt;equals()&lt;/code&gt;,比较的是对象的属性值&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;开发中一般会重写equals方法&#34;&gt;开发中一般会重写&lt;code&gt;equals()&lt;/code&gt;方法&lt;/h4&gt;
+">==和`equals`的区别</a>
+      </div>
+      
+      <div class="item">
+        <a class="result-title" style="opacity: 0;" href="https://juyss.github.io/post/ssm-zheng-he-bu-zou/"" data-c="
+          &lt;h2 id=&#34;ssm整合步骤&#34;&gt;SSM整合步骤：&lt;/h2&gt;
+&lt;h3 id=&#34;1-导入jar&#34;&gt;1. 导入jar&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;spring:
+  	springMVC:
+  	mybatis:
+  	第三方支持:log4j,pageHelper,AspectJ,jackson,jstl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!-- more --&gt;
+&lt;h3 id=&#34;2-搭建springmvc&#34;&gt;2. 搭建springMVC&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;(1)web.xml:
+  		DispatcherServlet
+  		HiddenHttpMethodFilter
+  		CharacterEncodingFilter
+  	(2)springMVC.xml:
+  		扫描控制层组件
+  		视图解析器
+  		Default Servlet
+  		MVC驱动
+  		可选：MultipartResolver，拦截器
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;3-整合springmvc和spring&#34;&gt;3. 整合springMVC和spring&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;(1)web.xml:
+  		ContextLoaderListener
+  		context-param
+   (2)spring.xml:
+  		扫描组件（排除控制层）
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-搭建mybatis&#34;&gt;4. 搭建mybatis:&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;核心配置文件
+  	mapper接口和mapper映射文件
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;5-spring整合mybatis&#34;&gt;5. spring整合mybatis&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;spring.xml:
+  		properties文件的引入
+  		DataSource数据源的配置
+  		事务管理器
+  		开启事务驱动
+  		SqlSessionFactoryBean：管理SqlSession
+  		MapperScannerConfigurer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;6-rest-crud&#34;&gt;6. REST CRUD&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;查询+分页
+  	修改（form）&lt;/code&gt;&lt;/pre&gt;
+">SSM整合步骤</a>
       </div>
       
       <div class="item">
@@ -4086,8 +7197,9 @@ public class VendingMachine {
           &lt;blockquote&gt;
 &lt;p&gt;欢迎来到我的小站呀，很高兴遇见你！🤝&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;github&#34;&gt;👨‍💻 &lt;a href=&#34;https://github.com/shmebluk?tab=repositories&#34;&gt;GitHub&lt;/a&gt;&lt;/h2&gt;
-&lt;h2 id=&#34;mail&#34;&gt;📬 &lt;a href=&#34;1028507471@qq.com&#34;&gt;Mail&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;github&#34;&gt;👨‍💻 &lt;a href=&#34;https://github.com/juyss?tab=repositories&#34;&gt;GitHub&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;mail-outlook&#34;&gt;📬 &lt;a href=&#34;mailto:a1028507471@outlook.com&#34;&gt;Mail-Outlook&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;mail-foxmail&#34;&gt;📬 &lt;a href=&#34;mailto:juyss@foxmail.com&#34;&gt;Mail-Foxmail&lt;/a&gt;&lt;/h2&gt;
 &lt;h2 id=&#34;bilibili&#34;&gt;📺&lt;a href=&#34;https://space.bilibili.com/73290361&#34;&gt;Bilibili&lt;/a&gt;&lt;/h2&gt;
 &lt;h2 id=&#34;sina&#34;&gt;🌈&lt;a href=&#34;https://www.weibo.com/5934632940/profile?rightmod=1&amp;amp;wvr=6&amp;amp;mod=personinfo&#34;&gt;Sina&lt;/a&gt;&lt;/h2&gt;
 ">关于</a>
